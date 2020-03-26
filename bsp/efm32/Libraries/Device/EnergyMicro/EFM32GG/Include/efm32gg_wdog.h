@@ -1,52 +1,60 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_wdog Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_WDOG register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32GG_WDOG
  * @{
  * @brief EFM32GG_WDOG Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;     /**< Control Register  */
-  __IO uint32_t CMD;      /**< Command Register  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;     /**< Control Register  */
+  __IOM uint32_t CMD;      /**< Command Register  */
 
-  __I uint32_t  SYNCBUSY; /**< Synchronization Busy Register  */
-} WDOG_TypeDef;           /** @} */
+  __IM uint32_t  SYNCBUSY; /**< Synchronization Busy Register  */
+} WDOG_TypeDef;            /**< WDOG Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG_WDOG_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for WDOG CTRL */
 #define _WDOG_CTRL_RESETVALUE            0x00000F00UL                         /**< Default value for WDOG_CTRL */
@@ -117,17 +125,16 @@ typedef struct
 /* Bit fields for WDOG SYNCBUSY */
 #define _WDOG_SYNCBUSY_RESETVALUE        0x00000000UL                       /**< Default value for WDOG_SYNCBUSY */
 #define _WDOG_SYNCBUSY_MASK              0x00000003UL                       /**< Mask for WDOG_SYNCBUSY */
-#define WDOG_SYNCBUSY_CTRL               (0x1UL << 0)                       /**< WDOG_CTRL Register Busy */
+#define WDOG_SYNCBUSY_CTRL               (0x1UL << 0)                       /**< CTRL Register Busy */
 #define _WDOG_SYNCBUSY_CTRL_SHIFT        0                                  /**< Shift value for WDOG_CTRL */
 #define _WDOG_SYNCBUSY_CTRL_MASK         0x1UL                              /**< Bit mask for WDOG_CTRL */
 #define _WDOG_SYNCBUSY_CTRL_DEFAULT      0x00000000UL                       /**< Mode DEFAULT for WDOG_SYNCBUSY */
 #define WDOG_SYNCBUSY_CTRL_DEFAULT       (_WDOG_SYNCBUSY_CTRL_DEFAULT << 0) /**< Shifted mode DEFAULT for WDOG_SYNCBUSY */
-#define WDOG_SYNCBUSY_CMD                (0x1UL << 1)                       /**< WDOG_CMD Register Busy */
+#define WDOG_SYNCBUSY_CMD                (0x1UL << 1)                       /**< CMD Register Busy */
 #define _WDOG_SYNCBUSY_CMD_SHIFT         1                                  /**< Shift value for WDOG_CMD */
 #define _WDOG_SYNCBUSY_CMD_MASK          0x2UL                              /**< Bit mask for WDOG_CMD */
 #define _WDOG_SYNCBUSY_CMD_DEFAULT       0x00000000UL                       /**< Mode DEFAULT for WDOG_SYNCBUSY */
 #define WDOG_SYNCBUSY_CMD_DEFAULT        (_WDOG_SYNCBUSY_CMD_DEFAULT << 1)  /**< Shifted mode DEFAULT for WDOG_SYNCBUSY */
 
 /** @} End of group EFM32GG_WDOG */
-
-
+/** @} End of group Parts */

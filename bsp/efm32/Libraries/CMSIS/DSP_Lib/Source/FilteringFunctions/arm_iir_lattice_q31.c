@@ -1,65 +1,58 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:	    arm_iir_lattice_q31.c    
-*    
-* Description:	Q31 IIR lattice filter processing function.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated    
-*    
-* Version 0.0.7  2010/06/10     
-*    Misra-C changes done    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_iir_lattice_q31.c
+ * Description:  Q31 IIR lattice filter processing function
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupFilters    
+/**
+ * @ingroup groupFilters
  */
 
-/**    
- * @addtogroup IIR_Lattice    
- * @{    
+/**
+ * @addtogroup IIR_Lattice
+ * @{
  */
 
-/**    
- * @brief Processing function for the Q31 IIR lattice filter.    
- * @param[in] *S points to an instance of the Q31 IIR lattice structure.    
- * @param[in] *pSrc points to the block of input data.    
- * @param[out] *pDst points to the block of output data.    
- * @param[in] blockSize number of samples to process.    
- * @return none.    
- *    
- * @details    
- * <b>Scaling and Overflow Behavior:</b>    
- * \par    
- * The function is implemented using an internal 64-bit accumulator.    
- * The accumulator has a 2.62 format and maintains full precision of the intermediate multiplication results but provides only a single guard bit.    
- * Thus, if the accumulator result overflows it wraps around rather than clip.    
- * In order to avoid overflows completely the input signal must be scaled down by 2*log2(numStages) bits.    
- * After all multiply-accumulates are performed, the 2.62 accumulator is saturated to 1.32 format and then truncated to 1.31 format.    
+/**
+ * @brief Processing function for the Q31 IIR lattice filter.
+ * @param[in] *S points to an instance of the Q31 IIR lattice structure.
+ * @param[in] *pSrc points to the block of input data.
+ * @param[out] *pDst points to the block of output data.
+ * @param[in] blockSize number of samples to process.
+ * @return none.
+ *
+ * @details
+ * <b>Scaling and Overflow Behavior:</b>
+ * \par
+ * The function is implemented using an internal 64-bit accumulator.
+ * The accumulator has a 2.62 format and maintains full precision of the intermediate multiplication results but provides only a single guard bit.
+ * Thus, if the accumulator result overflows it wraps around rather than clip.
+ * In order to avoid overflows completely the input signal must be scaled down by 2*log2(numStages) bits.
+ * After all multiply-accumulates are performed, the 2.62 accumulator is saturated to 1.32 format and then truncated to 1.31 format.
  */
 
 void arm_iir_lattice_q31(
@@ -81,12 +74,12 @@ void arm_iir_lattice_q31(
   pState = &S->pState[0];
 
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /* Sample processing */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* Read Sample from input buffer */
     /* fN(n) = x(n) */
@@ -119,9 +112,9 @@ void arm_iir_lattice_q31(
     fcurr = fnext;
 
     /* Loop unrolling.  Process 4 taps at a time. */
-    tapCnt = (numStages - 1u) >> 2;
+    tapCnt = (numStages - 1U) >> 2;
 
-    while(tapCnt > 0u)
+    while (tapCnt > 0U)
     {
 
       /* Process sample for 2nd, 6th .. taps */
@@ -188,9 +181,9 @@ void arm_iir_lattice_q31(
     fnext = fcurr;
 
     /* If the filter length is not a multiple of 4, compute the remaining filter taps */
-    tapCnt = (numStages - 1u) % 0x4u;
+    tapCnt = (numStages - 1U) % 0x4U;
 
-    while(tapCnt > 0u)
+    while (tapCnt > 0U)
     {
       gcurr = *px1++;
       /* Process sample for last taps */
@@ -212,25 +205,25 @@ void arm_iir_lattice_q31(
     *px2++ = fnext;
 
     /* write out into pDst */
-    *pDst++ = (q31_t) (acc >> 31u);
+    *pDst++ = (q31_t) (acc >> 31U);
 
     /* Advance the state pointer by 4 to process the next group of 4 samples */
-    pState = pState + 1u;
+    pState = pState + 1U;
     blkCnt--;
 
   }
 
-  /* Processing is complete. Now copy last S->numStages samples to start of the buffer    
+  /* Processing is complete. Now copy last S->numStages samples to start of the buffer
      for the preperation of next frame process */
 
   /* Points to the start of the state buffer */
   pStateCurnt = &S->pState[0];
   pState = &S->pState[blockSize];
 
-  tapCnt = numStages >> 2u;
+  tapCnt = numStages >> 2U;
 
   /* copy data */
-  while(tapCnt > 0u)
+  while (tapCnt > 0U)
   {
     *pStateCurnt++ = *pState++;
     *pStateCurnt++ = *pState++;
@@ -243,10 +236,10 @@ void arm_iir_lattice_q31(
   }
 
   /* Calculate remaining number of copies */
-  tapCnt = (numStages) % 0x4u;
+  tapCnt = (numStages) % 0x4U;
 
   /* Copy the remaining q31_t data */
-  while(tapCnt > 0u)
+  while (tapCnt > 0U)
   {
     *pStateCurnt++ = *pState++;
 
@@ -258,7 +251,7 @@ void arm_iir_lattice_q31(
 
   /* Run the below code for Cortex-M0 */
   /* Sample processing */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* Read Sample from input buffer */
     /* fN(n) = x(n) */
@@ -277,7 +270,7 @@ void arm_iir_lattice_q31(
 
     tapCnt = numStages;
 
-    while(tapCnt > 0u)
+    while (tapCnt > 0U)
     {
       gcurr = *px1++;
       /* Process sample */
@@ -307,15 +300,15 @@ void arm_iir_lattice_q31(
     *px2++ = fnext;
 
     /* write out into pDst */
-    *pDst++ = (q31_t) (acc >> 31u);
+    *pDst++ = (q31_t) (acc >> 31U);
 
     /* Advance the state pointer by 1 to process the next group of samples */
-    pState = pState + 1u;
+    pState = pState + 1U;
     blkCnt--;
 
   }
 
-  /* Processing is complete. Now copy last S->numStages samples to start of the buffer           
+  /* Processing is complete. Now copy last S->numStages samples to start of the buffer
      for the preperation of next frame process */
 
   /* Points to the start of the state buffer */
@@ -325,7 +318,7 @@ void arm_iir_lattice_q31(
   tapCnt = numStages;
 
   /* Copy the remaining q31_t data */
-  while(tapCnt > 0u)
+  while (tapCnt > 0U)
   {
     *pStateCurnt++ = *pState++;
 
@@ -333,13 +326,13 @@ void arm_iir_lattice_q31(
     tapCnt--;
   }
 
-#endif /*   #ifndef ARM_MATH_CM0 */
+#endif /*   #if defined (ARM_MATH_DSP) */
 
 }
 
 
 
 
-/**    
- * @} end of IIR_Lattice group    
+/**
+ * @} end of IIR_Lattice group
  */

@@ -1,374 +1,312 @@
-/***************************************************************************//**
- * @file    rtconfig.h
- * @brief   RT-Thread config file
- * 	COPYRIGHT (C) 2009, RT-Thread Development Team
- * @author
- * @version 1.0
- *******************************************************************************
- * @section License
- * The license and distribution terms for this file may be found in the file
- *  LICENSE in this distribution or at http://www.rt-thread.org/license/LICENSE
- ******************************************************************************/
-#ifndef __RTTHREAD_CFG_H__
-#define __RTTHREAD_CFG_H__
+#ifndef RT_CONFIG_H__
+#define RT_CONFIG_H__
 
-/* Includes ------------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* EFM32_BOARD */
-//#define EFM32_G8XX_STK
-//#define EFM32_GXXX_DK
-#define EFM32GG_DK3750
+/* Automatically generated file; DO NOT EDIT. */
+/* RT-Thread Configuration */
 
-/* RT_NAME_MAX */
-#define RT_NAME_MAX					(8)
+/* RT-Thread Kernel */
 
-/* RT_ALIGN_SIZE */
-#define RT_ALIGN_SIZE				(4)
-
-/* PRIORITY_MAX */
-#define RT_THREAD_PRIORITY_MAX		(32)
-
-/* Tick per Second */
-#define RT_TICK_PER_SECOND			(100)
-
-/* SECTION: RT_DEBUG */
-#define RT_DEBUG
-#define RT_DEBUG_COLOR
-//#define RT_DEBUG_MEM 				(1)
-//#define RT_DEBUG_SCHEDULER 			(1)
-//#define RT_DEBUG_IPC 				(1)
-//#define THREAD_DEBUG
-//#define IRQ_DEBUG
+#define RT_NAME_MAX 8
+#define RT_ALIGN_SIZE 4
+#define RT_THREAD_PRIORITY_32
+#define RT_THREAD_PRIORITY_MAX 32
+#define RT_TICK_PER_SECOND 1000
 #define RT_USING_OVERFLOW_CHECK
-//#define DFS_DEBUG
-#define RT_LWIP_DEBUG
+#define RT_USING_HOOK
+#define RT_USING_IDLE_HOOK
+#define RT_IDEL_HOOK_LIST_SIZE 4
+#define IDLE_THREAD_STACK_SIZE 256
+#define RT_USING_TIMER_SOFT
+#define RT_TIMER_THREAD_PRIO 4
+#define RT_TIMER_THREAD_STACK_SIZE 512
+#define RT_DEBUG
 
-//#define RT_IRQHDL_DEBUG
-//#define RT_USART_DEBUG
-//#define RT_LEUART_DEBUG
-//#define RT_IIC_DEBUG
-//#define RT_MISC_DEBUG
-//#define RT_ADC_DEBUG
-//#define RT_ACMP_DEBUG
-//#define RT_TIMER_DEBUG
-//#define RT_RTC_DEBUG
+/* Inter-Thread communication */
 
-#define EFM32_DEBUG
-#define EFM32_EMU_DEBUG
-#define EFM32_ACCEL_DEBUG
-#define EFM32_SFLASH_DEBUG
-//#define EFM32_SDCARD_DEBUG
-#define EFM32_ETHERNET_DEBUG
-#define EFM32_LCD_DEBUG
-#define EFM32_KEYS_DEBUG
+#define RT_USING_SEMAPHORE
+#define RT_USING_MUTEX
+#define RT_USING_EVENT
+#define RT_USING_MAILBOX
+#define RT_USING_MESSAGEQUEUE
 
-/* Using Hook */
-//#define RT_USING_HOOK
+/* Memory Management */
 
-/* Using Software Timer */
-/* #define RT_USING_TIMER_SOFT */
-#define RT_TIMER_THREAD_PRIO		(4)
-#define RT_TIMER_THREAD_STACK_SIZE	(512)
-#define RT_TIMER_TICK_PER_SECOND	(10)
-
-/* SECTION: IPC */
-/* Using Semaphore*/
-#define RT_USING_SEMAPHORE                  /* Required by DFS and lwIP */
-/* Using Mutex */
-#define RT_USING_MUTEX                      /* Required by DFS */
-/* Using Event */
-//#define RT_USING_EVENT
-/* Using MailBox */
-#define RT_USING_MAILBOX                    /* Required by lwIP */
-/* Using Message Queue */
-#define RT_USING_MESSAGEQUEUE               /* Required by RTGUI */
-/* SECTION: Memory Management */
-/* Using Memory Pool Management*/
-//#define RT_USING_MEMPOOL
-
-/* Using Dynamic Heap Management */
+#define RT_USING_MEMPOOL
+#define RT_USING_MEMHEAP
+#define RT_USING_MEMHEAP_AS_HEAP
 #define RT_USING_HEAP
 
-/* Using Small MM */
-#define RT_USING_SMALL_MEM
+/* Kernel Device Object */
 
-/* SECTION: Device System */
-/* Using Device System */
 #define RT_USING_DEVICE
-
-/* SECTION: UART options */
-/* USART/UART/LEUART Device for Console */
-#if defined(EFM32_G8XX_STK)
-#define RT_USING_USART1             (0x1UL)
-#define RT_USART1_NAME              "debug"
-//#define RT_USART1_USING_DMA           (0x0UL)
-#elif defined(EFM32_GXXX_DK)
-#define RT_USING_USART1             (0x0UL)
-#define RT_USART1_NAME              "debug"
-//#define RT_USART1_USING_DMA           (0x0UL)
-#elif defined(EFM32GG_DK3750)
-#define EFM32GG_DK3750_USING_LEUART1
- #if defined(EFM32GG_DK3750_USING_LEUART1)
- #define RT_USING_LEUART1           (0x0UL)
- #define RT_LEUART1_NAME            "debug0"
- //#define RT_LEUART1_USING_DMA       (0x0UL)
- #else
- #define RT_USING_UART1              (0x2UL)
- #define RT_UART1_NAME               "debug"
- //#define RT_UART1_USING_DMA          (0x0UL)
- #endif
-#endif
-
-/* SECTION: SPI options */
-#define EFM32_SPI_MASTER            (1 << 0)    /* Master mode */
-#define EFM32_SPI_AUTOCS            (1 << 1)    /* Auto chip select */
-#define EFM32_SPI_9BIT              (1 << 2)    /* 9-bit data */
-/*
-    0: Clock idle low, sample on rising edge
-    1: Clock idle low, sample on falling edge
-    2: Clock idle high, sample on falling edge
-    3: Clock idle high, sample on rising edge.
-*/
-#define EFM32_SPI_CLK_MODE(mode)    (mode << 3) /* clock mode */
-
-#if defined(EFM32_G8XX_STK)
-//#define RT_USING_USART0				(0x0UL)
-//#define RT_USART0_SYNC_MODE			(EFM32_SPI_MASTER)
-//#define RT_USART0_NAME				"spi0"
-//#define RT_USART0_USING_DMA			(0x1UL)
-#elif defined(EFM32_GXXX_DK)
-#define RT_USING_USART0             (0x2UL)
-#define RT_USART0_SYNC_MODE         (EFM32_SPI_MASTER | EFM32_SPI_AUTOCS | \
-                                    EFM32_SPI_CLK_MODE(0))
-#define RT_USART0_NAME              "spi0"
-#define RT_USART0_USING_DMA         (0x1UL)
-
-#define RT_USING_USART2             (0x1UL)
-#define RT_USART2_SYNC_MODE         (EFM32_SPI_MASTER | EFM32_SPI_CLK_MODE(0))
-#define RT_USART2_NAME              "spi2"
-#define RT_USART2_USING_DMA         (0x2UL)
-
-#elif defined(EFM32GG_DK3750)
-#define RT_USING_USART0             (0x1UL)
-#define RT_USART0_SYNC_MODE         (EFM32_SPI_MASTER | EFM32_SPI_AUTOCS | \
-                                    EFM32_SPI_CLK_MODE(0))
-#define RT_USART0_NAME              "spi0"
-#define RT_USART0_USING_DMA         (0x1UL)
-
-#define RT_USING_USART1             (0x1UL)
-#define RT_USART1_SYNC_MODE         (EFM32_SPI_MASTER | EFM32_SPI_AUTOCS | \
-                                    EFM32_SPI_9BIT | EFM32_SPI_CLK_MODE(3))
-#define RT_USART1_NAME              "spi1"
-#define RT_USART1_USING_DMA         (0x2UL)
-#endif
-
-/* SECTION: IIC options */
-//#define RT_USING_IIC0				0x3UL
-#define RT_IIC0_NAME				"iic0"
-
-/* SECTION: ACMP options */
-//#define RT_USING_ACMP0
-#define RT_ACMP0_NAME 				"acmp0"
-
-/* SECTION: ADC options */
-#define RT_USING_ADC0
-#define RT_ADC0_NAME 				"adc0"
-#if defined(RT_USING_ADC0)
-#define RT_USING_MISC
-#endif
-
-/* SECTION: TIMER options */
-//#define RT_USING_TIMER2				(0x00) 		/* Continuous mode */
-#define RT_TIMER2_NAME				"tmr2"
-
-/* SECTION: RTC options */
-#if (defined(EFM32_G8XX_STK) || defined(EFM32_GXXX_DK) || defined(EFM32GG_DK3750))
-#define RT_USING_RTC
-#define RT_RTC_NAME 				"rtc"
-#endif
-
-/* SECTION: Serial options */
-#define EFM_USART0                  (0x00UL)
-#define EFM_USART1                  (0x01UL)
-#define EFM_USART2                  (0x02UL)
-#define EFM_UART0                   (0x10UL)
-#define EFM_UART1                   (0x11UL)
-#define EFM_LEUART0                 (0x20UL)
-#define EFM_LEUART1                 (0x21UL)
-
-#if defined(EFM32_G8XX_STK)
-#define RT_CONSOLE_DEVICE			(EFM_USART1)
-#elif defined(EFM32_GXXX_DK)
-#define RT_CONSOLE_DEVICE			(EFM_USART1)
-#elif defined(EFM32GG_DK3750)
- #if defined(EFM32GG_DK3750_USING_LEUART1)
- #define RT_CONSOLE_DEVICE          (EFM_LEUART1)
- #else
- #define RT_CONSOLE_DEVICE          (EFM_UART1)
- #endif
-#endif
-
-/* SECTION: Runtime library */
-// #define RT_USING_NOLIBC
-// #define RT_USING_NEWLIB
-
-/* SECTION: Console options */
 #define RT_USING_CONSOLE
-/* the buffer size of console*/
-#define RT_CONSOLEBUF_SIZE			(128)
+#define RT_CONSOLEBUF_SIZE 128
+#define RT_CONSOLE_DEVICE_NAME "leuart0"
+#define RT_VER_NUM 0x40002
 
-/* SECTION: finsh, a C-Express shell */
+/* RT-Thread Components */
+
+#define RT_USING_COMPONENTS_INIT
+
+/* C++ features */
+
+
+/* Command shell */
+
 #define RT_USING_FINSH
-/* Using symbol table */
+#define FINSH_THREAD_NAME "tshell"
+#define FINSH_USING_HISTORY
+#define FINSH_HISTORY_LINES 5
 #define FINSH_USING_SYMTAB
 #define FINSH_USING_DESCRIPTION
+#define FINSH_THREAD_PRIORITY 20
+#define FINSH_THREAD_STACK_SIZE 4096
+#define FINSH_CMD_SIZE 80
+#define FINSH_USING_MSH
+#define FINSH_USING_MSH_DEFAULT
+#define FINSH_ARG_MAX 10
 
-/* SECTION: Peripheral devices */
-#define EFM32_INTERFACE_ADC 		(0)
-#define EFM32_INTERFACE_IIC 		(1)
-#define EFM32_INTERFACE_SPI 		(2)
-#if (defined(EFM32_GXXX_DK) || defined(EFM32GG_DK3750))
-//#define EFM32_USING_ACCEL 			EFM32_INTERFACE_IIC	/* Three axis accelerometer */
-//#define EFM32_USING_SFLASH 							/* SPI Flash */
-#define EFM32_USING_SPISD                       /* MicroSD card */
-//#define EFM32_USING_ETHERNET                    /* Ethernet controller */
-//#define EFM32_USING_LCD                         /* TFT LCD */
-//#define EFM32_USING_KEYS                        /* Keys and joystick */
-#endif
+/* Device virtual file system */
 
-#if defined(EFM32_USING_ACCEL)
-#if (EFM32_USING_ACCEL == EFM32_INTERFACE_ADC)
-#define ACCEL_USING_DEVICE_NAME 	RT_ADC0_NAME
-#define ACCEL_USING_DMA				(0x3UL) 			/* For multiple channels scan mode */
-#elif (EFM32_USING_ACCEL == EFM32_INTERFACE_IIC)
-#define ACCEL_USING_DEVICE_NAME 	RT_IIC0_NAME
-#endif
-#endif
-
-#if defined(EFM32_USING_SFLASH)
-#define SFLASH_USING_DEVICE_NAME 	RT_USART0_NAME
-#endif
-
-#if defined(EFM32_USING_SPISD)
-#define SPISD_USING_DEVICE_NAME 	RT_USART0_NAME
-#define SPISD_DEVICE_NAME 			"spiSd"
-#endif
-
-#if defined(EFM32_USING_ETHERNET)
- #if defined(EFM32_GXXX_DK)
- #define ETH_USING_DEVICE_NAME 		RT_USART2_NAME
- #elif defined(EFM32GG_DK3750)
- #define ETH_USING_DEVICE_NAME 		RT_USART1_NAME
- #endif
-#define ETH_DEVICE_NAME 			"spiEth"
-#define ETH_ADDR_DEFAULT 			{0x00, 0x01, 0x02, 0x03, 0x04, 0x05}
-#endif
-
-/* SECTION: device filesystem */
-#if (defined(RT_USING_NEWLIB) || defined(EFM32_USING_SPISD))
 #define RT_USING_DFS
-/* the max number of mounted filesystem */
-#define DFS_FILESYSTEMS_MAX         (2)
-/* the max number of opened files 		*/
-#define DFS_FD_MAX                  (4)
-/* the max number of cached sector 		*/
-#define DFS_CACHE_MAX_NUM           (4)
-#endif /* defined(RT_USING_NEWLIB) || defined(EFM32_USING_SPISD) */
-#if defined(EFM32_USING_SPISD)
-#define RT_USING_DFS_ELMFAT
-#define DFS_ELMFAT_INTERFACE_EFM
-#endif /* defined(EFM32_USING_SPISD) */
-#if defined(RT_USING_NEWLIB)
-#define RT_USING_DFS_DEVFS
-#endif /* defined(RT_USING_NEWLIB) */
+#define DFS_USING_WORKDIR
+#define DFS_FILESYSTEMS_MAX 3
+#define DFS_FILESYSTEM_TYPES_MAX 2
+#define DFS_FD_MAX 16
+#define RT_USING_DFS_UFFS
+#define RT_UFFS_ECC_MODE_3
+#define RT_UFFS_ECC_MODE 3
 
-/* SECTION: lwip, a lighwight TCP/IP protocol stack */
-#if defined(EFM32_USING_ETHERNET)
-#define EFM32_USING_ETH_HTTPD
-//#define EFM32_USING_ETH_UTILS
-//#define hostName 					"onelife.dyndns.org"
-//#define userPwdB64 					"dXNlcjpwYXNzd2Q="
+/* Device Drivers */
 
-//#define RT_USING_LWIP
-//#define RT_USING_NETUTILS
-//#define RT_LWIP_DHCP
-/* Enable ICMP protocol*/
-#define RT_LWIP_ICMP
-/* Enable ICMP protocol*/
-//#define RT_LWIP_IGMP
-/* Enable UDP protocol*/
-#define RT_LWIP_UDP
-/* Enable TCP protocol*/
-#define RT_LWIP_TCP
-/* Enable DHCP */
-//#define RT_LWIP_DHCP
-/* Enable DNS */
-//#define RT_LWIP_DNS
+#define RT_USING_DEVICE_IPC
+#define RT_PIPE_BUFSZ 512
+#define RT_USING_SYSTEM_WORKQUEUE
+#define RT_SYSTEM_WORKQUEUE_STACKSIZE 2048
+#define RT_SYSTEM_WORKQUEUE_PRIORITY 23
+#define RT_USING_SERIAL
+#define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_HWTIMER
+#define RT_USING_I2C
+#define RT_USING_PIN
+#define RT_USING_MTD_NAND
+#define RT_USING_PM
+#define RT_USING_RTC
+#define RT_USING_SPI
+#define RT_USING_SENSOR
+#define RT_USING_SENSOR_CMD
 
-/* the number of simulatenously active TCP connections*/
-#define RT_LWIP_TCP_PCB_NUM			(2)
+/* Using Hardware Crypto drivers */
 
-/* ip address of target*/
-#define RT_LWIP_IPADDR0				(192)
-#define RT_LWIP_IPADDR1				(168)
-#define RT_LWIP_IPADDR2				(1)
-#define RT_LWIP_IPADDR3				(118)
-/* gateway address of target*/
-#define RT_LWIP_GWADDR0				(192)
-#define RT_LWIP_GWADDR1				(168)
-#define RT_LWIP_GWADDR2				(1)
-#define RT_LWIP_GWADDR3				(1)
-/* mask address of target*/
-#define RT_LWIP_MSKADDR0 			(255)
-#define RT_LWIP_MSKADDR1 			(255)
-#define RT_LWIP_MSKADDR2 			(255)
-#define RT_LWIP_MSKADDR3 			(0)
 
-/* tcp thread options */
-#define RT_LWIP_TCPTHREAD_PRIORITY	(12)
-#define RT_LWIP_TCPTHREAD_MBOX_SIZE	(4)
-#define RT_LWIP_TCPTHREAD_STACKSIZE	(1024)
-/* ethernet if thread options */
-#define RT_LWIP_ETHTHREAD_PRIORITY 	(15)
-#define RT_LWIP_ETHTHREAD_MBOX_SIZE	(4)
-#define RT_LWIP_ETHTHREAD_STACKSIZE	(512)
-#endif /* defined(EFM32_USING_ETHERNET) */
+/* Using WiFi */
 
-/* SECTION: RTGUI support */
-#if defined(EFM32_USING_LCD)
-#define LCD_USING_DEVICE_NAME 	    RT_USART1_NAME
-#define LCD_DEVICE_NAME             "lcd"
-/* using RTGUI support */
-// #define RT_USING_RTGUI
 
-/* name length of RTGUI object */
-#define RTGUI_NAME_MAX              (16)
-/* support 16 weight font */
-#define RTGUI_USING_FONT16
-/* support 12 weight font */
-#define RTGUI_USING_FONT12
-/* support Chinese font */
-#define RTGUI_USING_FONTHZ
-/* use DFS as file interface */
-#define RTGUI_USING_DFS_FILERW
-/* use font file as Chinese font */
-/* #define RTGUI_USING_HZ_FILE */
-/* use Chinese bitmap font */
-#define RTGUI_USING_HZ_BMP
-/* use small size in RTGUI */
-/* #define RTGUI_USING_SMALL_SIZE */
-/* use mouse cursor */
-#define RTGUI_USING_MOUSE_CURSOR
-/* RTGUI image options */
-#define RTGUI_IMAGE_XPM
-//#define RTGUI_IMAGE_JPEG
-#define RTGUI_IMAGE_TJPGD
-//#define RTGUI_IMAGE_PNG
-#define RTGUI_IMAGE_BMP
-#endif /* defined(EFM32_USING_LCD) */
+/* Using USB */
 
-/* Exported functions ------------------------------------------------------- */
+#define RT_USING_USB_DEVICE
+#define RT_USBD_THREAD_STACK_SZ 4096
+#define USB_VENDOR_ID 0x2544
+#define USB_PRODUCT_ID 0xFFFF
+#define _RT_USB_DEVICE_CDC
+#define RT_USB_DEVICE_CDC
+#define RT_VCOM_TASK_STK_SIZE 512
+#define RT_VCOM_SERNO "32021919830108"
+#define RT_VCOM_SER_LEN 14
+#define RT_VCOM_TX_TIMEOUT 1000
 
-#endif /* __RTTHREAD_CFG_H__ */
+/* POSIX layer and C standard library */
+
+#define RT_USING_LIBC
+
+/* Network */
+
+/* Socket abstraction layer */
+
+
+/* Network interface device */
+
+
+/* light weight TCP/IP stack */
+
+
+/* Modbus master and slave stack */
+
+
+/* AT commands */
+
+#define RT_USING_AT
+#define AT_USING_CLIENT
+#define AT_CLIENT_NUM_MAX 1
+#define AT_USING_CLI
+#define AT_CMD_MAX_LEN 128
+#define AT_SW_VERSION_NUM 0x10300
+
+/* VBUS(Virtual Software BUS) */
+
+
+/* Utilities */
+
+#define RT_USING_RYM
+#define RT_USING_ULOG
+#define ULOG_OUTPUT_LVL_D
+#define ULOG_OUTPUT_LVL 7
+#define ULOG_ASSERT_ENABLE
+#define ULOG_LINE_BUF_SIZE 128
+
+/* log format */
+
+#define ULOG_USING_COLOR
+#define ULOG_OUTPUT_TIME
+#define ULOG_TIME_USING_TIMESTAMP
+#define ULOG_OUTPUT_LEVEL
+#define ULOG_OUTPUT_THREAD_NAME
+#define ULOG_BACKEND_USING_CONSOLE
+
+/* RT-Thread online packages */
+
+/* IoT - internet of things */
+
+
+/* Wi-Fi */
+
+/* Marvell WiFi */
+
+
+/* Wiced WiFi */
+
+
+/* IoT Cloud */
+
+
+/* security packages */
+
+
+/* language packages */
+
+
+/* multimedia packages */
+
+
+/* tools packages */
+
+
+/* system packages */
+
+#define PKG_USING_GUIENGINE
+#define PKG_USING_GUIENGINE_LATEST_VERSION
+#define PKG_USING_RGB888_PIXEL_BITS_32
+#define PKG_USING_RGB888_PIXEL_BITS 32
+#define GUIENGINE_CMD_STRING_MAX 16
+#define GUIENGINE_USING_FONT16
+#define GUIENGINE_USING_FONT12
+#define PKG_USING_LITTLEVGL2RTT
+#define PKG_USING_LITTLEVGL2RTT_LATEST_VERSION
+
+/* LittlevGL2RTT Options */
+
+#define LV_MEM_DYNAMIC
+#define LV_MEM_CUSTOM 1
+#define LV_COLOR_DEPTH_8
+#define LV_COLOR_DEPTH 8
+#define LV_HOR_RES 400
+#define LV_VER_RES 240
+#define LV_DPI 0
+#define LITTLEVGL2RTT_USING_DEMO
+
+/* peripheral libraries and drivers */
+
+
+/* miscellaneous packages */
+
+
+/* samples: kernel and components samples */
+
+
+/* EFM32 Using Bootloader Options */
+
+/* if using bootloader, remember modify efm32gg_rom.ld script. */
+
+#define EFM32_BOOT_WITH_BOOTLOADER
+#define EFM32_VECTOR_OFFSET 0x20000
+
+/* EFM32 EBI Driver */
+
+#define RT_USING_EBI
+#define RT_USING_EXT_NAND
+#define NAND_DFS_AUTO_MOUNT
+#define RT_USING_EXT_SRAM
+#define RT_USING_EXT_MALLOC
+
+/* Override rt_malloc with extended sram */
+
+/* please modify rtconfig.h that remove " " in #define */
+
+#define RT_KERNEL_MALLOC ext_sram_alloc
+#define RT_KERNEL_FREE ext_sram_free
+#define RT_KERNEL_REALLOC ext_sram_realloc
+
+/* EFM32 Serial Driver */
+
+#define RT_USING_LEUART0
+#define LEUART0_LOCATION 0x0
+#define RT_LEUART0_NAME "leuart0"
+#define RT_USING_UART0
+#define UART0_LOCATION 0x0
+#define RT_UART0_NAME "uart0"
+#define RT_USING_USART2
+#define USART2_LOCATION 0x0
+#define RT_USART2_NAME "usart2"
+
+/* EFM32 I2C Driver */
+
+#define RT_USING_I2C0
+#define I2C0_LOCATION 0x2
+#define RT_I2C0_NAME "i2c0"
+#define RT_USING_I2C1
+#define I2C1_LOCATION 0x1
+#define RT_I2C1_NAME "i2c1"
+
+/* EFM32 SPI Driver */
+
+#define SPI_USING_DMA
+#define RT_USING_SPI1
+#define SPI1_LOCATION 0x1
+#define RT_SPI1_NAME "spi1"
+
+/* EFM32 WDT */
+
+/* EFM32 TIMER */
+
+#define RT_USING_LETIMER0
+#define RT_LETIMER0_NAME "letimer0"
+
+/* EFM32 W25QXX Device support */
+
+
+/* EFM32 LS027B7DH Device support */
+
+#define RT_USING_LS027B7DH
+#define LS027B7DH_USING_SPI_NAME "spi1"
+
+/* EFM32 SI114X Device support */
+
+#define RT_USING_SI114X
+#define SI114X_USING_I2C_NAME "i2c1"
+
+/* EFM32 BlueMod_SR Device support */
+
+#define RT_USING_BLUEMOD_SR
+#define BLUEMOD_SR_USING_SERIAL_NAME "usart2"
+
+/* EFM32 RTC Device support */
+
+#define RT_USING_RX8025
+#define RX8025_RTC_NAME "rtc"
+#define RX8025_USING_I2C_NAME "i2c0"
+
+/* EFM32 Sensor support */
+
+#define RT_USING_ZSC31014
+
+#endif

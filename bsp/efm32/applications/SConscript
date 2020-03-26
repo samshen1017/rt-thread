@@ -1,0 +1,29 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd     = GetCurrentDir()
+
+# add the general drivers.
+src = Split("""
+   application.c
+   test.c
+   startup.c
+   delay.c
+   wdt.c
+   start_gcc.S
+""")
+
+# ulog
+if GetDepend(['RT_USING_ULOG']):
+	src +=['ulog_port.c']
+
+# Ymoden
+if GetDepend(['RT_USING_RYM']):
+	src +=['update.c']
+
+CPPPATH = [cwd]
+
+group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')

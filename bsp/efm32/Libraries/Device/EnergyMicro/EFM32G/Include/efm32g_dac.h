@@ -1,65 +1,73 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_dac Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_DAC register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_DAC
  * @{
  * @brief EFM32G_DAC Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;     /**< Control Register  */
-  __I uint32_t  STATUS;   /**< Status Register  */
-  __IO uint32_t CH0CTRL;  /**< Channel 0 Control Register  */
-  __IO uint32_t CH1CTRL;  /**< Channel 1 Control Register  */
-  __IO uint32_t IEN;      /**< Interrupt Enable Register  */
-  __I uint32_t  IF;       /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;      /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;      /**< Interrupt Flag Clear Register  */
-  __IO uint32_t CH0DATA;  /**< Channel 0 Data Register  */
-  __IO uint32_t CH1DATA;  /**< Channel 1 Data Register  */
-  __IO uint32_t COMBDATA; /**< Combined Data Register  */
-  __IO uint32_t CAL;      /**< Calibration Register  */
-  __IO uint32_t BIASPROG; /**< Bias Programming Register  */
-} DAC_TypeDef;            /** @} */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;     /**< Control Register  */
+  __IM uint32_t  STATUS;   /**< Status Register  */
+  __IOM uint32_t CH0CTRL;  /**< Channel 0 Control Register  */
+  __IOM uint32_t CH1CTRL;  /**< Channel 1 Control Register  */
+  __IOM uint32_t IEN;      /**< Interrupt Enable Register  */
+  __IM uint32_t  IF;       /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;      /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;      /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t CH0DATA;  /**< Channel 0 Data Register  */
+  __IOM uint32_t CH1DATA;  /**< Channel 1 Data Register  */
+  __IOM uint32_t COMBDATA; /**< Combined Data Register  */
+  __IOM uint32_t CAL;      /**< Calibration Register  */
+  __IOM uint32_t BIASPROG; /**< Bias Programming Register  */
+} DAC_TypeDef;             /**< DAC Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_DAC_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for DAC CTRL */
 #define _DAC_CTRL_RESETVALUE              0x00000010UL                         /**< Default value for DAC_CTRL */
-#define _DAC_CTRL_MASK                    0x0037D3FFUL                         /**< Mask for DAC_CTRL */
+#define _DAC_CTRL_MASK                    0x003703FFUL                         /**< Mask for DAC_CTRL */
 #define DAC_CTRL_DIFF                     (0x1UL << 0)                         /**< Differential Mode */
 #define _DAC_CTRL_DIFF_SHIFT              0                                    /**< Shift value for DAC_DIFF */
 #define _DAC_CTRL_DIFF_MASK               0x1UL                                /**< Bit mask for DAC_DIFF */
@@ -377,5 +385,4 @@ typedef struct
 #define DAC_BIASPROG_HALFBIAS_DEFAULT     (_DAC_BIASPROG_HALFBIAS_DEFAULT << 6) /**< Shifted mode DEFAULT for DAC_BIASPROG */
 
 /** @} End of group EFM32G_DAC */
-
-
+/** @} End of group Parts */

@@ -1,68 +1,58 @@
-/* ----------------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:        arm_mat_init_f32.c    
-*    
-* Description:	Floating-point matrix initialization.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-*    
-* Version 0.0.5  2010/04/26     
-*    incorporated review comments and updated with latest CMSIS layer    
-*    
-* Version 0.0.3  2010/03/10     
-*    Initial version    
-* -------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_mat_init_f32.c
+ * Description:  Floating-point matrix initialization
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupMatrix    
+/**
+ * @ingroup groupMatrix
  */
 
-/**    
- * @defgroup MatrixInit Matrix Initialization    
- *    
- * Initializes the underlying matrix data structure.    
- * The functions set the <code>numRows</code>,    
- * <code>numCols</code>, and <code>pData</code> fields    
- * of the matrix data structure.    
+/**
+ * @defgroup MatrixInit Matrix Initialization
+ *
+ * Initializes the underlying matrix data structure.
+ * The functions set the <code>numRows</code>,
+ * <code>numCols</code>, and <code>pData</code> fields
+ * of the matrix data structure.
  */
 
-/**    
- * @addtogroup MatrixInit    
- * @{    
+/**
+ * @addtogroup MatrixInit
+ * @{
  */
 
-/**    
-   * @brief  Floating-point matrix initialization.    
-   * @param[in,out] *S             points to an instance of the floating-point matrix structure.    
-   * @param[in]     nRows          number of rows in the matrix.    
-   * @param[in]     nColumns       number of columns in the matrix.    
-   * @param[in]     *pData	   points to the matrix data array.    
-   * @return        none    
+/**
+   * @brief  Floating-point matrix initialization.
+   * @param[in,out] *S             points to an instance of the floating-point matrix structure.
+   * @param[in]     nRows          number of rows in the matrix.
+   * @param[in]     nColumns       number of columns in the matrix.
+   * @param[in]     *pData	   points to the matrix data array.
+   * @return        none
    */
 
 void arm_mat_init_f32(
@@ -81,6 +71,6 @@ void arm_mat_init_f32(
   S->pData = pData;
 }
 
-/**    
- * @} end of MatrixInit group    
+/**
+ * @} end of MatrixInit group
  */

@@ -1,65 +1,60 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_std_q15.c    
-*    
-* Description:	Standard deviation of an array of Q15 type.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_std_q15.c
+ * Description:  Standard deviation of an array of Q15 vector
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupStats    
+/**
+ * @ingroup groupStats
  */
 
-/**    
- * @addtogroup STD    
- * @{    
+/**
+ * @addtogroup STD
+ * @{
  */
 
-/**    
- * @brief Standard deviation of the elements of a Q15 vector.    
- * @param[in]       *pSrc points to the input vector    
- * @param[in]       blockSize length of the input vector    
- * @param[out]      *pResult standard deviation value returned here    
- * @return none.    
- *    
- * @details    
- * <b>Scaling and Overflow Behavior:</b>    
- *    
- * \par    
- * The function is implemented using a 64-bit internal accumulator.    
- * The input is represented in 1.15 format.   
- * Intermediate multiplication yields a 2.30 format, and this    
- * result is added without saturation to a 64-bit accumulator in 34.30 format.    
- * With 33 guard bits in the accumulator, there is no risk of overflow, and the    
- * full precision of the intermediate multiplication is preserved.    
- * Finally, the 34.30 result is truncated to 34.15 format by discarding the lower     
- * 15 bits, and then saturated to yield a result in 1.15 format.    
+/**
+ * @brief Standard deviation of the elements of a Q15 vector.
+ * @param[in]       *pSrc points to the input vector
+ * @param[in]       blockSize length of the input vector
+ * @param[out]      *pResult standard deviation value returned here
+ * @return none.
+ * @details
+ * <b>Scaling and Overflow Behavior:</b>
+ *
+ * \par
+ * The function is implemented using a 64-bit internal accumulator.
+ * The input is represented in 1.15 format.
+ * Intermediate multiplication yields a 2.30 format, and this
+ * result is added without saturation to a 64-bit accumulator in 34.30 format.
+ * With 33 guard bits in the accumulator, there is no risk of overflow, and the
+ * full precision of the intermediate multiplication is preserved.
+ * Finally, the 34.30 result is truncated to 34.15 format by discarding the lower
+ * 15 bits, and then saturated to yield a result in 1.15 format.
  */
 
 void arm_std_q15(
@@ -69,49 +64,55 @@ void arm_std_q15(
 {
   q31_t sum = 0;                                 /* Accumulator */
   q31_t meanOfSquares, squareOfMean;             /* square of mean and mean of square */
-  q15_t mean;                                    /* mean */
   uint32_t blkCnt;                               /* loop counter */
-  q15_t t;                                       /* Temporary variable */
   q63_t sumOfSquares = 0;                        /* Accumulator */
-
-#ifndef ARM_MATH_CM0
-
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
-
+#if defined (ARM_MATH_DSP)
   q31_t in;                                      /* input value */
   q15_t in1;                                     /* input value */
+#else
+  q15_t in;                                      /* input value */
+#endif
+
+  if (blockSize == 1U)
+  {
+    *pResult = 0;
+    return;
+  }
+
+#if defined (ARM_MATH_DSP)
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
+  blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1])  */
-    /* Compute Sum of squares of the input samples    
+    /* Compute Sum of squares of the input samples
      * and then store the result in a temporary variable, sum. */
     in = *__SIMD32(pSrc)++;
-    sum += ((in << 16) >> 16);
-    sum += (in >> 16);
+    sum += ((in << 16U) >> 16U);
+    sum +=  (in >> 16U);
     sumOfSquares = __SMLALD(in, in, sumOfSquares);
     in = *__SIMD32(pSrc)++;
-    sum += ((in << 16) >> 16);
-    sum += (in >> 16);
+    sum += ((in << 16U) >> 16U);
+    sum +=  (in >> 16U);
     sumOfSquares = __SMLALD(in, in, sumOfSquares);
 
     /* Decrement the loop counter */
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.    
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
    ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
+  blkCnt = blockSize % 0x4U;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
-    /* Compute Sum of squares of the input samples    
+    /* Compute Sum of squares of the input samples
      * and then store the result in a temporary variable, sum. */
     in1 = *pSrc++;
     sumOfSquares = __SMLALD(in1, in1, sumOfSquares);
@@ -121,39 +122,27 @@ void arm_std_q15(
     blkCnt--;
   }
 
-  /* Compute Mean of squares of the input samples    
+  /* Compute Mean of squares of the input samples
    * and then store the result in a temporary variable, meanOfSquares. */
-  t = (q15_t) ((1.0 / (blockSize - 1)) * 16384LL);
-  sumOfSquares = __SSAT((sumOfSquares >> 15u), 16u);
-
-  meanOfSquares = (q31_t) ((sumOfSquares * t) >> 14u);
-
-  /* Compute mean of all input values */
-  t = (q15_t) ((1.0 / (blockSize * (blockSize - 1))) * 32768LL);
-  mean = (q15_t) __SSAT(sum, 16u);
+  meanOfSquares = (q31_t)(sumOfSquares / (q63_t)(blockSize - 1U));
 
   /* Compute square of mean */
-  squareOfMean = ((q31_t) mean * mean) >> 15;
-  squareOfMean = (q31_t) (((q63_t) squareOfMean * t) >> 15);
+  squareOfMean = (q31_t)((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1U)));
 
   /* mean of the squares minus the square of the mean. */
-  in1 = (q15_t) (meanOfSquares - squareOfMean);
-
   /* Compute standard deviation and store the result to the destination */
-  arm_sqrt_q15(in1, pResult);
+  arm_sqrt_q15(__SSAT((meanOfSquares - squareOfMean) >> 15U, 16U), pResult);
 
 #else
-
   /* Run the below code for Cortex-M0 */
-  q15_t in;                                      /* input value */
 
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
-    /* Compute Sum of squares of the input samples     
+    /* Compute Sum of squares of the input samples
      * and then store the result in a temporary variable, sumOfSquares. */
     in = *pSrc++;
     sumOfSquares += (in * in);
@@ -166,32 +155,20 @@ void arm_std_q15(
     blkCnt--;
   }
 
-  /* Compute Mean of squares of the input samples     
+  /* Compute Mean of squares of the input samples
    * and then store the result in a temporary variable, meanOfSquares. */
-  t = (q15_t) ((1.0 / (blockSize - 1)) * 16384LL);
-  sumOfSquares = __SSAT((sumOfSquares >> 15u), 16u);
-  meanOfSquares = (q31_t) ((sumOfSquares * t) >> 14u);
+  meanOfSquares = (q31_t)(sumOfSquares / (q63_t)(blockSize - 1U));
 
-  /* Compute mean of all input values */
-  mean = (q15_t) __SSAT(sum, 16u);
-
-  /* Compute square of mean of the input samples   
-   * and then store the result in a temporary variable, squareOfMean.*/
-  t = (q15_t) ((1.0 / (blockSize * (blockSize - 1))) * 32768LL);
-  squareOfMean = ((q31_t) mean * mean) >> 15;
-  squareOfMean = (q31_t) (((q63_t) squareOfMean * t) >> 15);
+  /* Compute square of mean */
+  squareOfMean = (q31_t)((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1U)));
 
   /* mean of the squares minus the square of the mean. */
-  in = (q15_t) (meanOfSquares - squareOfMean);
-
   /* Compute standard deviation and store the result to the destination */
-  arm_sqrt_q15(in, pResult);
+  arm_sqrt_q15(__SSAT((meanOfSquares - squareOfMean) >> 15U, 16U), pResult);
 
-#endif /* #ifndef ARM_MATH_CM0 */
-
-
+#endif /* #if defined (ARM_MATH_DSP) */
 }
 
-/**    
- * @} end of STD group    
+/**
+ * @} end of STD group
  */

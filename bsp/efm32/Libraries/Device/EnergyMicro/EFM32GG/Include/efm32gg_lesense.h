@@ -1,77 +1,86 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_lesense Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_LESENSE register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32GG_LESENSE
  * @{
  * @brief EFM32GG_LESENSE Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t       CTRL;           /**< Control Register  */
-  __IO uint32_t       TIMCTRL;        /**< Timing Control Register  */
-  __IO uint32_t       PERCTRL;        /**< Peripheral Control Register  */
-  __IO uint32_t       DECCTRL;        /**< Decoder control Register  */
-  __IO uint32_t       BIASCTRL;       /**< Bias Control Register  */
-  __IO uint32_t       CMD;            /**< Command Register  */
-  __IO uint32_t       CHEN;           /**< Channel enable Register  */
-  __I uint32_t        SCANRES;        /**< Scan result register  */
-  __I uint32_t        STATUS;         /**< Status Register  */
-  __I uint32_t        PTR;            /**< Result buffer pointers  */
-  __I uint32_t        BUFDATA;        /**< Result buffer data register  */
-  __I uint32_t        CURCH;          /**< Current channel index  */
-  __IO uint32_t       DECSTATE;       /**< Current decoder state  */
-  __IO uint32_t       SENSORSTATE;    /**< Decoder input register  */
-  __IO uint32_t       IDLECONF;       /**< GPIO Idlephase configuration  */
-  __IO uint32_t       ALTEXCONF;      /**< Alternative excite pin configuration  */
-  __I uint32_t        IF;             /**< Interrupt Flag Register  */
-  __IO uint32_t       IFC;            /**< Interrupt Flag Clear Register  */
-  __IO uint32_t       IFS;            /**< Interrupt Flag Set Register  */
-  __IO uint32_t       IEN;            /**< Interrupt Enable Register  */
-  __I uint32_t        SYNCBUSY;       /**< Synchronization Busy Register  */
-  __IO uint32_t       ROUTE;          /**< I/O Routing Register  */
-  __IO uint32_t       POWERDOWN;      /**< LESENSE RAM power-down resgister  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t      CTRL;            /**< Control Register  */
+  __IOM uint32_t      TIMCTRL;         /**< Timing Control Register  */
+  __IOM uint32_t      PERCTRL;         /**< Peripheral Control Register  */
+  __IOM uint32_t      DECCTRL;         /**< Decoder control Register  */
+  __IOM uint32_t      BIASCTRL;        /**< Bias Control Register  */
+  __IOM uint32_t      CMD;             /**< Command Register  */
+  __IOM uint32_t      CHEN;            /**< Channel enable Register  */
+  __IM uint32_t       SCANRES;         /**< Scan result register  */
+  __IM uint32_t       STATUS;          /**< Status Register  */
+  __IM uint32_t       PTR;             /**< Result buffer pointers  */
+  __IM uint32_t       BUFDATA;         /**< Result buffer data register  */
+  __IM uint32_t       CURCH;           /**< Current channel index  */
+  __IOM uint32_t      DECSTATE;        /**< Current decoder state  */
+  __IOM uint32_t      SENSORSTATE;     /**< Decoder input register  */
+  __IOM uint32_t      IDLECONF;        /**< GPIO Idle phase configuration  */
+  __IOM uint32_t      ALTEXCONF;       /**< Alternative excite pin configuration  */
+  __IM uint32_t       IF;              /**< Interrupt Flag Register  */
+  __IOM uint32_t      IFC;             /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t      IFS;             /**< Interrupt Flag Set Register  */
+  __IOM uint32_t      IEN;             /**< Interrupt Enable Register  */
+  __IM uint32_t       SYNCBUSY;        /**< Synchronization Busy Register  */
+  __IOM uint32_t      ROUTE;           /**< I/O Routing Register  */
+  __IOM uint32_t      POWERDOWN;       /**< LESENSE RAM power-down register  */
 
-  uint32_t            RESERVED0[105]; /**< Reserved registers */
+  uint32_t            RESERVED0[105U]; /**< Reserved registers */
+  LESENSE_ST_TypeDef  ST[16U];         /**< Decoding states */
 
-  LESENSE_ST_TypeDef  ST[16];         /**< Decoding states */
-  LESENSE_BUF_TypeDef BUF[16];        /**< Scanresult */
-  LESENSE_CH_TypeDef  CH[16];         /**< Scanconfig */
-} LESENSE_TypeDef;                    /** @} */
+  LESENSE_BUF_TypeDef BUF[16U];        /**< Scanresult */
 
-/**************************************************************************//**
+  LESENSE_CH_TypeDef  CH[16U];         /**< Scanconfig */
+} LESENSE_TypeDef;                     /**< LESENSE Register Declaration *//** @} */
+
+/***************************************************************************//**
  * @defgroup EFM32GG_LESENSE_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for LESENSE CTRL */
 #define _LESENSE_CTRL_RESETVALUE                       0x00000000UL                             /**< Default value for LESENSE_CTRL */
@@ -251,7 +260,7 @@ typedef struct
 
 /* Bit fields for LESENSE PERCTRL */
 #define _LESENSE_PERCTRL_RESETVALUE                    0x00000000UL                                        /**< Default value for LESENSE_PERCTRL */
-#define _LESENSE_PERCTRL_MASK                          0x0CF4FFFFUL                                        /**< Mask for LESENSE_PERCTRL */
+#define _LESENSE_PERCTRL_MASK                          0x0CF47FFFUL                                        /**< Mask for LESENSE_PERCTRL */
 #define LESENSE_PERCTRL_DACCH0DATA                     (0x1UL << 0)                                        /**< DAC CH0 data selection. */
 #define _LESENSE_PERCTRL_DACCH0DATA_SHIFT              0                                                   /**< Shift value for LESENSE_DACCH0DATA */
 #define _LESENSE_PERCTRL_DACCH0DATA_MASK               0x1UL                                               /**< Bit mask for LESENSE_DACCH0DATA */
@@ -531,7 +540,7 @@ typedef struct
 
 /* Bit fields for LESENSE BIASCTRL */
 #define _LESENSE_BIASCTRL_RESETVALUE                   0x00000000UL                                /**< Default value for LESENSE_BIASCTRL */
-#define _LESENSE_BIASCTRL_MASK                         0x0000001FUL                                /**< Mask for LESENSE_BIASCTRL */
+#define _LESENSE_BIASCTRL_MASK                         0x00000003UL                                /**< Mask for LESENSE_BIASCTRL */
 #define _LESENSE_BIASCTRL_BIASMODE_SHIFT               0                                           /**< Shift value for LESENSE_BIASMODE */
 #define _LESENSE_BIASCTRL_BIASMODE_MASK                0x3UL                                       /**< Bit mask for LESENSE_BIASMODE */
 #define _LESENSE_BIASCTRL_BIASMODE_DEFAULT             0x00000000UL                                /**< Mode DEFAULT for LESENSE_BIASCTRL */
@@ -1443,7 +1452,7 @@ typedef struct
 
 /* Bit fields for LESENSE SYNCBUSY */
 #define _LESENSE_SYNCBUSY_RESETVALUE                   0x00000000UL                                  /**< Default value for LESENSE_SYNCBUSY */
-#define _LESENSE_SYNCBUSY_MASK                         0x07FFFFFFUL                                  /**< Mask for LESENSE_SYNCBUSY */
+#define _LESENSE_SYNCBUSY_MASK                         0x07E3FFFFUL                                  /**< Mask for LESENSE_SYNCBUSY */
 #define LESENSE_SYNCBUSY_CTRL                          (0x1UL << 0)                                  /**< LESENSE_CTRL Register Busy */
 #define _LESENSE_SYNCBUSY_CTRL_SHIFT                   0                                             /**< Shift value for LESENSE_CTRL */
 #define _LESENSE_SYNCBUSY_CTRL_MASK                    0x1UL                                         /**< Bit mask for LESENSE_CTRL */
@@ -1534,21 +1543,6 @@ typedef struct
 #define _LESENSE_SYNCBUSY_POWERDOWN_MASK               0x20000UL                                     /**< Bit mask for LESENSE_POWERDOWN */
 #define _LESENSE_SYNCBUSY_POWERDOWN_DEFAULT            0x00000000UL                                  /**< Mode DEFAULT for LESENSE_SYNCBUSY */
 #define LESENSE_SYNCBUSY_POWERDOWN_DEFAULT             (_LESENSE_SYNCBUSY_POWERDOWN_DEFAULT << 17)   /**< Shifted mode DEFAULT for LESENSE_SYNCBUSY */
-#define LESENSE_SYNCBUSY_FEATURECONF                   (0x1UL << 18)                                 /**< LESENSE_FEATURECONF Register Busy */
-#define _LESENSE_SYNCBUSY_FEATURECONF_SHIFT            18                                            /**< Shift value for LESENSE_FEATURECONF */
-#define _LESENSE_SYNCBUSY_FEATURECONF_MASK             0x40000UL                                     /**< Bit mask for LESENSE_FEATURECONF */
-#define _LESENSE_SYNCBUSY_FEATURECONF_DEFAULT          0x00000000UL                                  /**< Mode DEFAULT for LESENSE_SYNCBUSY */
-#define LESENSE_SYNCBUSY_FEATURECONF_DEFAULT           (_LESENSE_SYNCBUSY_FEATURECONF_DEFAULT << 18) /**< Shifted mode DEFAULT for LESENSE_SYNCBUSY */
-#define LESENSE_SYNCBUSY_TESTCTRL                      (0x1UL << 19)                                 /**< LESENSE_TESTCTRL Register Busy */
-#define _LESENSE_SYNCBUSY_TESTCTRL_SHIFT               19                                            /**< Shift value for LESENSE_TESTCTRL */
-#define _LESENSE_SYNCBUSY_TESTCTRL_MASK                0x80000UL                                     /**< Bit mask for LESENSE_TESTCTRL */
-#define _LESENSE_SYNCBUSY_TESTCTRL_DEFAULT             0x00000000UL                                  /**< Mode DEFAULT for LESENSE_SYNCBUSY */
-#define LESENSE_SYNCBUSY_TESTCTRL_DEFAULT              (_LESENSE_SYNCBUSY_TESTCTRL_DEFAULT << 19)    /**< Shifted mode DEFAULT for LESENSE_SYNCBUSY */
-#define LESENSE_SYNCBUSY_RIPCNT                        (0x1UL << 20)                                 /**< LESENSE_RIPCNT Register Busy */
-#define _LESENSE_SYNCBUSY_RIPCNT_SHIFT                 20                                            /**< Shift value for LESENSE_RIPCNT */
-#define _LESENSE_SYNCBUSY_RIPCNT_MASK                  0x100000UL                                    /**< Bit mask for LESENSE_RIPCNT */
-#define _LESENSE_SYNCBUSY_RIPCNT_DEFAULT               0x00000000UL                                  /**< Mode DEFAULT for LESENSE_SYNCBUSY */
-#define LESENSE_SYNCBUSY_RIPCNT_DEFAULT                (_LESENSE_SYNCBUSY_RIPCNT_DEFAULT << 20)      /**< Shifted mode DEFAULT for LESENSE_SYNCBUSY */
 #define LESENSE_SYNCBUSY_TCONFA                        (0x1UL << 21)                                 /**< LESENSE_STx_TCONFA Register Busy */
 #define _LESENSE_SYNCBUSY_TCONFA_SHIFT                 21                                            /**< Shift value for LESENSE_TCONFA */
 #define _LESENSE_SYNCBUSY_TCONFA_MASK                  0x200000UL                                    /**< Bit mask for LESENSE_TCONFA */
@@ -1937,5 +1931,4 @@ typedef struct
 #define LESENSE_CH_EVAL_SCANRESINV_DEFAULT             (_LESENSE_CH_EVAL_SCANRESINV_DEFAULT << 19) /**< Shifted mode DEFAULT for LESENSE_CH_EVAL */
 
 /** @} End of group EFM32GG_LESENSE */
-
-
+/** @} End of group Parts */

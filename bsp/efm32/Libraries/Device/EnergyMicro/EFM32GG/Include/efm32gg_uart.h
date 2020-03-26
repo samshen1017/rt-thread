@@ -1,40 +1,49 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_uart Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_UART register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+
+/***************************************************************************//**
  * @defgroup EFM32GG_UART_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for UART CTRL */
 #define _UART_CTRL_RESETVALUE                0x00000000UL                            /**< Default value for UART_CTRL */
@@ -984,42 +993,44 @@
 #define UART_IRCTRL_IRPRSEN_DEFAULT          (_UART_IRCTRL_IRPRSEN_DEFAULT << 7)  /**< Shifted mode DEFAULT for UART_IRCTRL */
 
 /* Bit fields for UART ROUTE */
-#define _UART_ROUTE_RESETVALUE               0x00000000UL                      /**< Default value for UART_ROUTE */
-#define _UART_ROUTE_MASK                     0x0000070FUL                      /**< Mask for UART_ROUTE */
-#define UART_ROUTE_RXPEN                     (0x1UL << 0)                      /**< RX Pin Enable */
-#define _UART_ROUTE_RXPEN_SHIFT              0                                 /**< Shift value for USART_RXPEN */
-#define _UART_ROUTE_RXPEN_MASK               0x1UL                             /**< Bit mask for USART_RXPEN */
-#define _UART_ROUTE_RXPEN_DEFAULT            0x00000000UL                      /**< Mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_RXPEN_DEFAULT             (_UART_ROUTE_RXPEN_DEFAULT << 0)  /**< Shifted mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_TXPEN                     (0x1UL << 1)                      /**< TX Pin Enable */
-#define _UART_ROUTE_TXPEN_SHIFT              1                                 /**< Shift value for USART_TXPEN */
-#define _UART_ROUTE_TXPEN_MASK               0x2UL                             /**< Bit mask for USART_TXPEN */
-#define _UART_ROUTE_TXPEN_DEFAULT            0x00000000UL                      /**< Mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_TXPEN_DEFAULT             (_UART_ROUTE_TXPEN_DEFAULT << 1)  /**< Shifted mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_CSPEN                     (0x1UL << 2)                      /**< CS Pin Enable */
-#define _UART_ROUTE_CSPEN_SHIFT              2                                 /**< Shift value for USART_CSPEN */
-#define _UART_ROUTE_CSPEN_MASK               0x4UL                             /**< Bit mask for USART_CSPEN */
-#define _UART_ROUTE_CSPEN_DEFAULT            0x00000000UL                      /**< Mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_CSPEN_DEFAULT             (_UART_ROUTE_CSPEN_DEFAULT << 2)  /**< Shifted mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_CLKPEN                    (0x1UL << 3)                      /**< CLK Pin Enable */
-#define _UART_ROUTE_CLKPEN_SHIFT             3                                 /**< Shift value for USART_CLKPEN */
-#define _UART_ROUTE_CLKPEN_MASK              0x8UL                             /**< Bit mask for USART_CLKPEN */
-#define _UART_ROUTE_CLKPEN_DEFAULT           0x00000000UL                      /**< Mode DEFAULT for UART_ROUTE */
-#define UART_ROUTE_CLKPEN_DEFAULT            (_UART_ROUTE_CLKPEN_DEFAULT << 3) /**< Shifted mode DEFAULT for UART_ROUTE */
-#define _UART_ROUTE_LOCATION_SHIFT           8                                 /**< Shift value for USART_LOCATION */
-#define _UART_ROUTE_LOCATION_MASK            0x700UL                           /**< Bit mask for USART_LOCATION */
-#define _UART_ROUTE_LOCATION_LOC0            0x00000000UL                      /**< Mode LOC0 for UART_ROUTE */
-#define _UART_ROUTE_LOCATION_LOC1            0x00000001UL                      /**< Mode LOC1 for UART_ROUTE */
-#define _UART_ROUTE_LOCATION_LOC2            0x00000002UL                      /**< Mode LOC2 for UART_ROUTE */
-#define _UART_ROUTE_LOCATION_LOC3            0x00000003UL                      /**< Mode LOC3 for UART_ROUTE */
-#define _UART_ROUTE_LOCATION_LOC4            0x00000004UL                      /**< Mode LOC4 for UART_ROUTE */
-#define _UART_ROUTE_LOCATION_LOC5            0x00000005UL                      /**< Mode LOC5 for UART_ROUTE */
-#define UART_ROUTE_LOCATION_LOC0             (_UART_ROUTE_LOCATION_LOC0 << 8)  /**< Shifted mode LOC0 for UART_ROUTE */
-#define UART_ROUTE_LOCATION_LOC1             (_UART_ROUTE_LOCATION_LOC1 << 8)  /**< Shifted mode LOC1 for UART_ROUTE */
-#define UART_ROUTE_LOCATION_LOC2             (_UART_ROUTE_LOCATION_LOC2 << 8)  /**< Shifted mode LOC2 for UART_ROUTE */
-#define UART_ROUTE_LOCATION_LOC3             (_UART_ROUTE_LOCATION_LOC3 << 8)  /**< Shifted mode LOC3 for UART_ROUTE */
-#define UART_ROUTE_LOCATION_LOC4             (_UART_ROUTE_LOCATION_LOC4 << 8)  /**< Shifted mode LOC4 for UART_ROUTE */
-#define UART_ROUTE_LOCATION_LOC5             (_UART_ROUTE_LOCATION_LOC5 << 8)  /**< Shifted mode LOC5 for UART_ROUTE */
+#define _UART_ROUTE_RESETVALUE               0x00000000UL                        /**< Default value for UART_ROUTE */
+#define _UART_ROUTE_MASK                     0x0000070FUL                        /**< Mask for UART_ROUTE */
+#define UART_ROUTE_RXPEN                     (0x1UL << 0)                        /**< RX Pin Enable */
+#define _UART_ROUTE_RXPEN_SHIFT              0                                   /**< Shift value for USART_RXPEN */
+#define _UART_ROUTE_RXPEN_MASK               0x1UL                               /**< Bit mask for USART_RXPEN */
+#define _UART_ROUTE_RXPEN_DEFAULT            0x00000000UL                        /**< Mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_RXPEN_DEFAULT             (_UART_ROUTE_RXPEN_DEFAULT << 0)    /**< Shifted mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_TXPEN                     (0x1UL << 1)                        /**< TX Pin Enable */
+#define _UART_ROUTE_TXPEN_SHIFT              1                                   /**< Shift value for USART_TXPEN */
+#define _UART_ROUTE_TXPEN_MASK               0x2UL                               /**< Bit mask for USART_TXPEN */
+#define _UART_ROUTE_TXPEN_DEFAULT            0x00000000UL                        /**< Mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_TXPEN_DEFAULT             (_UART_ROUTE_TXPEN_DEFAULT << 1)    /**< Shifted mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_CSPEN                     (0x1UL << 2)                        /**< CS Pin Enable */
+#define _UART_ROUTE_CSPEN_SHIFT              2                                   /**< Shift value for USART_CSPEN */
+#define _UART_ROUTE_CSPEN_MASK               0x4UL                               /**< Bit mask for USART_CSPEN */
+#define _UART_ROUTE_CSPEN_DEFAULT            0x00000000UL                        /**< Mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_CSPEN_DEFAULT             (_UART_ROUTE_CSPEN_DEFAULT << 2)    /**< Shifted mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_CLKPEN                    (0x1UL << 3)                        /**< CLK Pin Enable */
+#define _UART_ROUTE_CLKPEN_SHIFT             3                                   /**< Shift value for USART_CLKPEN */
+#define _UART_ROUTE_CLKPEN_MASK              0x8UL                               /**< Bit mask for USART_CLKPEN */
+#define _UART_ROUTE_CLKPEN_DEFAULT           0x00000000UL                        /**< Mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_CLKPEN_DEFAULT            (_UART_ROUTE_CLKPEN_DEFAULT << 3)   /**< Shifted mode DEFAULT for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_SHIFT           8                                   /**< Shift value for USART_LOCATION */
+#define _UART_ROUTE_LOCATION_MASK            0x700UL                             /**< Bit mask for USART_LOCATION */
+#define _UART_ROUTE_LOCATION_LOC0            0x00000000UL                        /**< Mode LOC0 for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_DEFAULT         0x00000000UL                        /**< Mode DEFAULT for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_LOC1            0x00000001UL                        /**< Mode LOC1 for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_LOC2            0x00000002UL                        /**< Mode LOC2 for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_LOC3            0x00000003UL                        /**< Mode LOC3 for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_LOC4            0x00000004UL                        /**< Mode LOC4 for UART_ROUTE */
+#define _UART_ROUTE_LOCATION_LOC5            0x00000005UL                        /**< Mode LOC5 for UART_ROUTE */
+#define UART_ROUTE_LOCATION_LOC0             (_UART_ROUTE_LOCATION_LOC0 << 8)    /**< Shifted mode LOC0 for UART_ROUTE */
+#define UART_ROUTE_LOCATION_DEFAULT          (_UART_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for UART_ROUTE */
+#define UART_ROUTE_LOCATION_LOC1             (_UART_ROUTE_LOCATION_LOC1 << 8)    /**< Shifted mode LOC1 for UART_ROUTE */
+#define UART_ROUTE_LOCATION_LOC2             (_UART_ROUTE_LOCATION_LOC2 << 8)    /**< Shifted mode LOC2 for UART_ROUTE */
+#define UART_ROUTE_LOCATION_LOC3             (_UART_ROUTE_LOCATION_LOC3 << 8)    /**< Shifted mode LOC3 for UART_ROUTE */
+#define UART_ROUTE_LOCATION_LOC4             (_UART_ROUTE_LOCATION_LOC4 << 8)    /**< Shifted mode LOC4 for UART_ROUTE */
+#define UART_ROUTE_LOCATION_LOC5             (_UART_ROUTE_LOCATION_LOC5 << 8)    /**< Shifted mode LOC5 for UART_ROUTE */
 
 /* Bit fields for UART INPUT */
 #define _UART_INPUT_RESETVALUE               0x00000000UL                        /**< Default value for UART_INPUT */
@@ -1112,5 +1123,4 @@
 #define UART_I2SCTRL_FORMAT_W8D8             (_UART_I2SCTRL_FORMAT_W8D8 << 8)      /**< Shifted mode W8D8 for UART_I2SCTRL */
 
 /** @} End of group EFM32GG_UART */
-
-
+/** @} End of group Parts */

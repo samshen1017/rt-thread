@@ -1,310 +1,338 @@
-/* ----------------------------------------------------------------------   
-* Copyright (C) 2010 ARM Limited. All rights reserved.   
-*   
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*   
-* Project: 	    CMSIS DSP Library   
-* Title:	    arm_cfft_radix2_q31.c   
-*   
-* Description:	Radix-2 Decimation in Frequency CFFT & CIFFT Fixed point processing function   
-*   
-*   
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 0.0.3  2010/03/10    
-*    Initial version   
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_cfft_radix2_q31.c
+ * Description:  Radix-2 Decimation in Frequency CFFT & CIFFT Fixed point processing function
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
-
-/**   
- * @ingroup groupTransforms   
- */
-
-/**   
- * @defgroup Radix2_CFFT_CIFFT Radix-2 Complex FFT Functions   
- *   
- * \par   
- * Complex Fast Fourier Transform(CFFT) and Complex Inverse Fast Fourier Transform(CIFFT) is an efficient algorithm to compute Discrete Fourier Transform(DFT) and Inverse Discrete Fourier Transform(IDFT).   
- * Computational complexity of CFFT reduces drastically when compared to DFT.    
- */
-
-
-/**   
- * @addtogroup Radix2_CFFT_CIFFT   
- * @{   
- */
-
-/**   
- * @details   
- * @brief Processing function for the fixed-point CFFT/CIFFT.  
- * @param[in]      *S    points to an instance of the fixed-point CFFT/CIFFT structure.  
- * @param[in, out] *pSrc points to the complex data buffer of size <code>2*fftLen</code>. Processing occurs in-place.  
- * @return none.  
- */
-
-void arm_cfft_radix2_q31(
-  const arm_cfft_radix2_instance_q31 * S,
-  q31_t * pSrc)
-{
-
-  if(S->ifftFlag == 1u)
-  {
-    arm_radix2_butterfly_inverse_q31(pSrc, S->fftLen,
-                                     S->pTwiddle, S->twidCoefModifier);
-  }
-  else
-  {
-    arm_radix2_butterfly_q31(pSrc, S->fftLen,
-                             S->pTwiddle, S->twidCoefModifier);
-  }
-
-  arm_bitreversal_q31(pSrc, S->fftLen, S->bitRevFactor, S->pBitRevTable);
-}
-
-/**   
- * @} end of Radix2_CFFT_CIFFT group   
- */
 
 void arm_radix2_butterfly_q31(
   q31_t * pSrc,
   uint32_t fftLen,
   q31_t * pCoef,
-  uint16_t twidCoefModifier)
-{
-
-  int i, j, k, l;
-  int n1, n2, ia;
-  q31_t xt, yt, cosVal, sinVal;
-
-  //N = fftLen; 
-  n2 = fftLen;
-
-  n1 = n2;
-  n2 = n2 >> 1;
-  ia = 0;
-
-  // loop for groups 
-  for (i = 0; i < n2; i++)
-  {
-    cosVal = pCoef[ia * 2];
-    sinVal = pCoef[(ia * 2) + 1];
-    ia = ia + twidCoefModifier;
-
-    l = i + n2;
-    xt = (pSrc[2 * i] >> 2u) - (pSrc[2 * l] >> 2u);
-    pSrc[2 * i] = ((pSrc[2 * i] >> 2u) + (pSrc[2 * l] >> 2u)) >> 1u;
-
-    yt = (pSrc[2 * i + 1] >> 2u) - (pSrc[2 * l + 1] >> 2u);
-    pSrc[2 * i + 1] =
-      ((pSrc[2 * l + 1] >> 2u) + (pSrc[2 * i + 1] >> 2u)) >> 1u;
-
-    pSrc[2u * l] = (((int32_t) (((q63_t) xt * cosVal) >> 32)) +
-                    ((int32_t) (((q63_t) yt * sinVal) >> 32)));
-
-    pSrc[2u * l + 1u] = (((int32_t) (((q63_t) yt * cosVal) >> 32)) -
-                         ((int32_t) (((q63_t) xt * sinVal) >> 32)));
-
-  }                             // groups loop end 
-
-  twidCoefModifier = twidCoefModifier << 1u;
-
-  // loop for stage 
-  for (k = fftLen / 2; k > 2; k = k >> 1)
-  {
-    n1 = n2;
-    n2 = n2 >> 1;
-    ia = 0;
-
-    // loop for groups 
-    for (j = 0; j < n2; j++)
-    {
-      cosVal = pCoef[ia * 2];
-      sinVal = pCoef[(ia * 2) + 1];
-      ia = ia + twidCoefModifier;
-
-      // loop for butterfly 
-      for (i = j; i < fftLen; i += n1)
-      {
-        l = i + n2;
-        xt = pSrc[2 * i] - pSrc[2 * l];
-        pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]) >> 1u;
-
-        yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
-        pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]) >> 1u;
-
-        pSrc[2u * l] = (((int32_t) (((q63_t) xt * cosVal) >> 32)) +
-                        ((int32_t) (((q63_t) yt * sinVal) >> 32)));
-
-        pSrc[2u * l + 1u] = (((int32_t) (((q63_t) yt * cosVal) >> 32)) -
-                             ((int32_t) (((q63_t) xt * sinVal) >> 32)));
-
-      }                         // butterfly loop end 
-
-    }                           // groups loop end 
-
-    twidCoefModifier = twidCoefModifier << 1u;
-  }                             // stages loop end 
-
-  n1 = n2;
-  n2 = n2 >> 1;
-  ia = 0;
-
-  cosVal = pCoef[ia * 2];
-  sinVal = pCoef[(ia * 2) + 1];
-  ia = ia + twidCoefModifier;
-
-  // loop for butterfly 
-  for (i = 0; i < fftLen; i += n1)
-  {
-    l = i + n2;
-    xt = pSrc[2 * i] - pSrc[2 * l];
-    pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
-
-    yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
-    pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
-
-    pSrc[2u * l] = xt;
-
-    pSrc[2u * l + 1u] = yt;
-
-    i += n1;
-    l = i + n2;
-
-    xt = pSrc[2 * i] - pSrc[2 * l];
-    pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
-
-    yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
-    pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
-
-    pSrc[2u * l] = xt;
-
-    pSrc[2u * l + 1u] = yt;
-
-  }                             // butterfly loop end 
-
-}
-
+  uint16_t twidCoefModifier);
 
 void arm_radix2_butterfly_inverse_q31(
   q31_t * pSrc,
   uint32_t fftLen,
   q31_t * pCoef,
-  uint16_t twidCoefModifier)
+  uint16_t twidCoefModifier);
+
+void arm_bitreversal_q31(
+  q31_t * pSrc,
+  uint32_t fftLen,
+  uint16_t bitRevFactor,
+  uint16_t * pBitRevTab);
+
+/**
+* @ingroup groupTransforms
+*/
+
+/**
+* @addtogroup ComplexFFT
+* @{
+*/
+
+/**
+* @details
+* @brief Processing function for the fixed-point CFFT/CIFFT.
+* @deprecated Do not use this function.  It has been superseded by \ref arm_cfft_q31 and will be removed
+* @param[in]      *S    points to an instance of the fixed-point CFFT/CIFFT structure.
+* @param[in, out] *pSrc points to the complex data buffer of size <code>2*fftLen</code>. Processing occurs in-place.
+* @return none.
+*/
+
+void arm_cfft_radix2_q31(
+const arm_cfft_radix2_instance_q31 * S,
+q31_t * pSrc)
 {
 
-  int i, j, k, l;
-  int n1, n2, ia;
-  q31_t xt, yt, cosVal, sinVal;
+   if (S->ifftFlag == 1U)
+   {
+      arm_radix2_butterfly_inverse_q31(pSrc, S->fftLen,
+      S->pTwiddle, S->twidCoefModifier);
+   }
+   else
+   {
+      arm_radix2_butterfly_q31(pSrc, S->fftLen,
+      S->pTwiddle, S->twidCoefModifier);
+   }
 
-  //N = fftLen; 
-  n2 = fftLen;
+   arm_bitreversal_q31(pSrc, S->fftLen, S->bitRevFactor, S->pBitRevTable);
+}
 
-  n1 = n2;
-  n2 = n2 >> 1;
-  ia = 0;
+/**
+* @} end of ComplexFFT group
+*/
 
-  // loop for groups 
-  for (i = 0; i < n2; i++)
-  {
-    cosVal = pCoef[ia * 2];
-    sinVal = pCoef[(ia * 2) + 1];
-    ia = ia + twidCoefModifier;
+void arm_radix2_butterfly_q31(
+q31_t * pSrc,
+uint32_t fftLen,
+q31_t * pCoef,
+uint16_t twidCoefModifier)
+{
 
-    l = i + n2;
-    xt = (pSrc[2 * i] >> 2u) - (pSrc[2 * l] >> 2u);
-    pSrc[2 * i] = ((pSrc[2 * i] >> 2u) + (pSrc[2 * l] >> 2u)) >> 1u;
+   unsigned i, j, k, l, m;
+   unsigned n1, n2, ia;
+   q31_t xt, yt, cosVal, sinVal;
+   q31_t p0, p1;
 
-    yt = (pSrc[2 * i + 1] >> 2u) - (pSrc[2 * l + 1] >> 2u);
-    pSrc[2 * i + 1] =
-      ((pSrc[2 * l + 1] >> 2u) + (pSrc[2 * i + 1] >> 2u)) >> 1u;
+   //N = fftLen;
+   n2 = fftLen;
 
-    pSrc[2u * l] = (((int32_t) (((q63_t) xt * cosVal) >> 32)) -
-                    ((int32_t) (((q63_t) yt * sinVal) >> 32)));
+   n1 = n2;
+   n2 = n2 >> 1;
+   ia = 0;
 
-    pSrc[2u * l + 1u] = (((int32_t) (((q63_t) yt * cosVal) >> 32)) +
-                         ((int32_t) (((q63_t) xt * sinVal) >> 32)));
-
-  }                             // groups loop end 
-
-  twidCoefModifier = twidCoefModifier << 1u;
-
-  // loop for stage 
-  for (k = fftLen / 2; k > 2; k = k >> 1)
-  {
-    n1 = n2;
-    n2 = n2 >> 1;
-    ia = 0;
-
-    // loop for groups 
-    for (j = 0; j < n2; j++)
-    {
+   // loop for groups
+   for (i = 0; i < n2; i++)
+   {
       cosVal = pCoef[ia * 2];
       sinVal = pCoef[(ia * 2) + 1];
       ia = ia + twidCoefModifier;
 
-      // loop for butterfly 
-      for (i = j; i < fftLen; i += n1)
+      l = i + n2;
+      xt = (pSrc[2 * i] >> 1U) - (pSrc[2 * l] >> 1U);
+      pSrc[2 * i] = ((pSrc[2 * i] >> 1U) + (pSrc[2 * l] >> 1U)) >> 1U;
+
+      yt = (pSrc[2 * i + 1] >> 1U) - (pSrc[2 * l + 1] >> 1U);
+      pSrc[2 * i + 1] =
+        ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
+
+      mult_32x32_keep32_R(p0, xt, cosVal);
+      mult_32x32_keep32_R(p1, yt, cosVal);
+      multAcc_32x32_keep32_R(p0, yt, sinVal);
+      multSub_32x32_keep32_R(p1, xt, sinVal);
+
+      pSrc[2U * l] = p0;
+      pSrc[2U * l + 1U] = p1;
+
+   }                             // groups loop end
+
+   twidCoefModifier <<= 1U;
+
+   // loop for stage
+   for (k = fftLen / 2; k > 2; k = k >> 1)
+   {
+      n1 = n2;
+      n2 = n2 >> 1;
+      ia = 0;
+
+      // loop for groups
+      for (j = 0; j < n2; j++)
       {
-        l = i + n2;
-        xt = pSrc[2 * i] - pSrc[2 * l];
-        pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]) >> 1u;
+         cosVal = pCoef[ia * 2];
+         sinVal = pCoef[(ia * 2) + 1];
+         ia = ia + twidCoefModifier;
 
-        yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
-        pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]) >> 1u;
+         // loop for butterfly
+         i = j;
+         m = fftLen / n1;
+         do
+         {
+            l = i + n2;
+            xt = pSrc[2 * i] - pSrc[2 * l];
+            pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]) >> 1U;
 
-        pSrc[2u * l] = (((int32_t) (((q63_t) xt * cosVal) >> 32)) -
-                        ((int32_t) (((q63_t) yt * sinVal) >> 32)));
+            yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+            pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]) >> 1U;
 
-        pSrc[2u * l + 1u] = (((int32_t) (((q63_t) yt * cosVal) >> 32)) +
-                             ((int32_t) (((q63_t) xt * sinVal) >> 32)));
+            mult_32x32_keep32_R(p0, xt, cosVal);
+            mult_32x32_keep32_R(p1, yt, cosVal);
+            multAcc_32x32_keep32_R(p0, yt, sinVal);
+            multSub_32x32_keep32_R(p1, xt, sinVal);
 
-      }                         // butterfly loop end 
+            pSrc[2U * l] = p0;
+            pSrc[2U * l + 1U] = p1;
+            i += n1;
+            m--;
+         } while ( m > 0);                   // butterfly loop end
 
-    }                           // groups loop end 
+      }                           // groups loop end
 
-    twidCoefModifier = twidCoefModifier << 1u;
-  }                             // stages loop end 
+      twidCoefModifier <<= 1U;
+   }                             // stages loop end
 
-  n1 = n2;
-  n2 = n2 >> 1;
-  ia = 0;
+   n1 = n2;
+   n2 = n2 >> 1;
+   ia = 0;
 
-  cosVal = pCoef[ia * 2];
-  sinVal = pCoef[(ia * 2) + 1];
-  ia = ia + twidCoefModifier;
+   cosVal = pCoef[ia * 2];
+   sinVal = pCoef[(ia * 2) + 1];
+   ia = ia + twidCoefModifier;
 
-  // loop for butterfly 
-  for (i = 0; i < fftLen; i += n1)
-  {
-    l = i + n2;
-    xt = pSrc[2 * i] - pSrc[2 * l];
-    pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+   // loop for butterfly
+   for (i = 0; i < fftLen; i += n1)
+   {
+      l = i + n2;
+      xt = pSrc[2 * i] - pSrc[2 * l];
+      pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
 
-    yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
-    pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+      yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+      pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
 
-    pSrc[2u * l] = xt;
+      pSrc[2U * l] = xt;
 
-    pSrc[2u * l + 1u] = yt;
+      pSrc[2U * l + 1U] = yt;
 
-    i += n1;
-    l = i + n2;
+      i += n1;
+      l = i + n2;
 
-    xt = pSrc[2 * i] - pSrc[2 * l];
-    pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+      xt = pSrc[2 * i] - pSrc[2 * l];
+      pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
 
-    yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
-    pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+      yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+      pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
 
-    pSrc[2u * l] = xt;
+      pSrc[2U * l] = xt;
 
-    pSrc[2u * l + 1u] = yt;
+      pSrc[2U * l + 1U] = yt;
 
-  }                             // butterfly loop end 
+   }                             // butterfly loop end
+
+}
+
+
+void arm_radix2_butterfly_inverse_q31(
+q31_t * pSrc,
+uint32_t fftLen,
+q31_t * pCoef,
+uint16_t twidCoefModifier)
+{
+
+   unsigned i, j, k, l;
+   unsigned n1, n2, ia;
+   q31_t xt, yt, cosVal, sinVal;
+   q31_t p0, p1;
+
+   //N = fftLen;
+   n2 = fftLen;
+
+   n1 = n2;
+   n2 = n2 >> 1;
+   ia = 0;
+
+   // loop for groups
+   for (i = 0; i < n2; i++)
+   {
+      cosVal = pCoef[ia * 2];
+      sinVal = pCoef[(ia * 2) + 1];
+      ia = ia + twidCoefModifier;
+
+      l = i + n2;
+      xt = (pSrc[2 * i] >> 1U) - (pSrc[2 * l] >> 1U);
+      pSrc[2 * i] = ((pSrc[2 * i] >> 1U) + (pSrc[2 * l] >> 1U)) >> 1U;
+
+      yt = (pSrc[2 * i + 1] >> 1U) - (pSrc[2 * l + 1] >> 1U);
+      pSrc[2 * i + 1] =
+        ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
+
+      mult_32x32_keep32_R(p0, xt, cosVal);
+      mult_32x32_keep32_R(p1, yt, cosVal);
+      multSub_32x32_keep32_R(p0, yt, sinVal);
+      multAcc_32x32_keep32_R(p1, xt, sinVal);
+
+      pSrc[2U * l] = p0;
+      pSrc[2U * l + 1U] = p1;
+   }                             // groups loop end
+
+   twidCoefModifier = twidCoefModifier << 1U;
+
+   // loop for stage
+   for (k = fftLen / 2; k > 2; k = k >> 1)
+   {
+      n1 = n2;
+      n2 = n2 >> 1;
+      ia = 0;
+
+      // loop for groups
+      for (j = 0; j < n2; j++)
+      {
+         cosVal = pCoef[ia * 2];
+         sinVal = pCoef[(ia * 2) + 1];
+         ia = ia + twidCoefModifier;
+
+         // loop for butterfly
+         for (i = j; i < fftLen; i += n1)
+         {
+            l = i + n2;
+            xt = pSrc[2 * i] - pSrc[2 * l];
+            pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]) >> 1U;
+
+            yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+            pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]) >> 1U;
+
+            mult_32x32_keep32_R(p0, xt, cosVal);
+            mult_32x32_keep32_R(p1, yt, cosVal);
+            multSub_32x32_keep32_R(p0, yt, sinVal);
+            multAcc_32x32_keep32_R(p1, xt, sinVal);
+
+            pSrc[2U * l] = p0;
+            pSrc[2U * l + 1U] = p1;
+         }                         // butterfly loop end
+
+      }                           // groups loop end
+
+      twidCoefModifier = twidCoefModifier << 1U;
+   }                             // stages loop end
+
+   n1 = n2;
+   n2 = n2 >> 1;
+   ia = 0;
+
+   cosVal = pCoef[ia * 2];
+   sinVal = pCoef[(ia * 2) + 1];
+   ia = ia + twidCoefModifier;
+
+   // loop for butterfly
+   for (i = 0; i < fftLen; i += n1)
+   {
+      l = i + n2;
+      xt = pSrc[2 * i] - pSrc[2 * l];
+      pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+
+      yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+      pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+
+      pSrc[2U * l] = xt;
+
+      pSrc[2U * l + 1U] = yt;
+
+      i += n1;
+      l = i + n2;
+
+      xt = pSrc[2 * i] - pSrc[2 * l];
+      pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+
+      yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+      pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+
+      pSrc[2U * l] = xt;
+
+      pSrc[2U * l + 1U] = yt;
+
+   }                             // butterfly loop end
 
 }

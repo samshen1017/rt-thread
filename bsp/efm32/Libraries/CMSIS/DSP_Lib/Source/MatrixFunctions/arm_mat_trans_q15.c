@@ -1,58 +1,48 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:	    arm_mat_trans_q15.c    
-*    
-* Description:	Q15 matrix transpose.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-*    
-* Version 0.0.5  2010/04/26     
-*    incorporated review comments and updated with latest CMSIS layer    
-*    
-* Version 0.0.3  2010/03/10     
-*    Initial version    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_mat_trans_q15.c
+ * Description:  Q15 matrix transpose
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupMatrix    
+/**
+ * @ingroup groupMatrix
  */
 
-/**    
- * @addtogroup MatrixTrans    
- * @{    
+/**
+ * @addtogroup MatrixTrans
+ * @{
  */
 
-/*    
- * @brief Q15 matrix transpose.    
- * @param[in]  *pSrc points to the input matrix    
- * @param[out] *pDst points to the output matrix    
- * @return 	The function returns either  <code>ARM_MATH_SIZE_MISMATCH</code>    
- * or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.    
+/*
+ * @brief Q15 matrix transpose.
+ * @param[in]  *pSrc points to the input matrix
+ * @param[out] *pDst points to the output matrix
+ * @return 	The function returns either  <code>ARM_MATH_SIZE_MISMATCH</code>
+ * or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
  */
 
 arm_status arm_mat_trans_q15(
@@ -63,10 +53,10 @@ arm_status arm_mat_trans_q15(
   q15_t *pOut = pDst->pData;                     /* output data matrix pointer */
   uint16_t nRows = pSrc->numRows;                /* number of nRows */
   uint16_t nColumns = pSrc->numCols;             /* number of nColumns */
-  uint16_t col, row = nRows, i = 0u;             /* row and column loop counters */
+  uint16_t col, row = nRows, i = 0U;             /* row and column loop counters */
   arm_status status;                             /* status of matrix transpose */
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 #ifndef UNALIGNED_SUPPORT_DISABLE
@@ -83,7 +73,7 @@ arm_status arm_mat_trans_q15(
 
 
   /* Check for matrix mismatch condition */
-  if((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
+  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -98,14 +88,14 @@ arm_status arm_mat_trans_q15(
     {
 
       /* Apply loop unrolling and exchange the columns with row elements */
-      col = nColumns >> 2u;
+      col = nColumns >> 2U;
 
       /* The pointer pOut is set to starting address of the column being processed */
       pOut = pDst->pData + i;
 
-      /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+      /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
        ** a second loop below computes the remaining 1 to 3 samples. */
-      while(col > 0u)
+      while (col > 0U)
       {
 #ifndef UNALIGNED_SUPPORT_DISABLE
 
@@ -177,13 +167,13 @@ arm_status arm_mat_trans_q15(
 
 #endif /*    #ifndef ARM_MATH_BIG_ENDIAN    */
 
-#else	 
+#else
         /* Read one element from the row */
         in = *pSrcA++;
 
         /* Store one element in the destination */
         *pOut = in;
- 
+
         /* Update the pointer px to point to the next row of the transposed matrix */
         pOut += nRows;
 
@@ -192,7 +182,7 @@ arm_status arm_mat_trans_q15(
 
         /* Store one element in the destination */
         *pOut = in;
- 
+
         /* Update the pointer px to point to the next row of the transposed matrix */
         pOut += nRows;
 
@@ -201,7 +191,7 @@ arm_status arm_mat_trans_q15(
 
         /* Store one element in the destination */
         *pOut = in;
- 
+
         /* Update the pointer px to point to the next row of the transposed matrix */
         pOut += nRows;
 
@@ -221,7 +211,7 @@ arm_status arm_mat_trans_q15(
       }
 
       /* Perform matrix transpose for last 3 samples here. */
-      col = nColumns % 0x4u;
+      col = nColumns % 0x4U;
 
 #else
 
@@ -230,7 +220,7 @@ arm_status arm_mat_trans_q15(
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
-  if((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
+  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -249,9 +239,9 @@ arm_status arm_mat_trans_q15(
       /* Initialize column loop counter */
       col = nColumns;
 
-#endif /* #ifndef ARM_MATH_CM0 */
+#endif /* #if defined (ARM_MATH_DSP) */
 
-      while(col > 0u)
+      while (col > 0U)
       {
         /* Read and store the input element in the destination */
         *pOut = *pSrcA++;
@@ -268,7 +258,7 @@ arm_status arm_mat_trans_q15(
       /* Decrement the row loop counter */
       row--;
 
-    } while(row > 0u);
+    } while (row > 0U);
 
     /* set status as ARM_MATH_SUCCESS */
     status = ARM_MATH_SUCCESS;
@@ -277,6 +267,6 @@ arm_status arm_mat_trans_q15(
   return (status);
 }
 
-/**    
- * @} end of MatrixTrans group    
+/**
+ * @} end of MatrixTrans group
  */

@@ -1,51 +1,59 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_rmu Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_RMU register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32GG_RMU
  * @{
  * @brief EFM32GG_RMU Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;     /**< Control Register  */
-  __I uint32_t  RSTCAUSE; /**< Reset Cause Register  */
-  __O uint32_t  CMD;      /**< Command Register  */
-} RMU_TypeDef;            /** @} */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;     /**< Control Register  */
+  __IM uint32_t  RSTCAUSE; /**< Reset Cause Register  */
+  __OM uint32_t  CMD;      /**< Command Register  */
+} RMU_TypeDef;             /**< RMU Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG_RMU_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for RMU CTRL */
 #define _RMU_CTRL_RESETVALUE                  0x00000002UL                        /**< Default value for RMU_CTRL */
@@ -55,7 +63,7 @@ typedef struct
 #define _RMU_CTRL_LOCKUPRDIS_MASK             0x1UL                               /**< Bit mask for RMU_LOCKUPRDIS */
 #define _RMU_CTRL_LOCKUPRDIS_DEFAULT          0x00000000UL                        /**< Mode DEFAULT for RMU_CTRL */
 #define RMU_CTRL_LOCKUPRDIS_DEFAULT           (_RMU_CTRL_LOCKUPRDIS_DEFAULT << 0) /**< Shifted mode DEFAULT for RMU_CTRL */
-#define RMU_CTRL_BURSTEN                      (0x1UL << 1)                        /**< Backup domain reset enable. */
+#define RMU_CTRL_BURSTEN                      (0x1UL << 1)                        /**< Backup domain reset enable */
 #define _RMU_CTRL_BURSTEN_SHIFT               1                                   /**< Shift value for RMU_BURSTEN */
 #define _RMU_CTRL_BURSTEN_MASK                0x2UL                               /**< Bit mask for RMU_BURSTEN */
 #define _RMU_CTRL_BURSTEN_DEFAULT             0x00000001UL                        /**< Mode DEFAULT for RMU_CTRL */
@@ -109,12 +117,12 @@ typedef struct
 #define _RMU_RSTCAUSE_EM4WURST_MASK           0x100UL                                    /**< Bit mask for RMU_EM4WURST */
 #define _RMU_RSTCAUSE_EM4WURST_DEFAULT        0x00000000UL                               /**< Mode DEFAULT for RMU_RSTCAUSE */
 #define RMU_RSTCAUSE_EM4WURST_DEFAULT         (_RMU_RSTCAUSE_EM4WURST_DEFAULT << 8)      /**< Shifted mode DEFAULT for RMU_RSTCAUSE */
-#define RMU_RSTCAUSE_BODAVDD0                 (0x1UL << 9)                               /**< AVDD0 Bod Reset. */
+#define RMU_RSTCAUSE_BODAVDD0                 (0x1UL << 9)                               /**< AVDD0 Bod Reset */
 #define _RMU_RSTCAUSE_BODAVDD0_SHIFT          9                                          /**< Shift value for RMU_BODAVDD0 */
 #define _RMU_RSTCAUSE_BODAVDD0_MASK           0x200UL                                    /**< Bit mask for RMU_BODAVDD0 */
 #define _RMU_RSTCAUSE_BODAVDD0_DEFAULT        0x00000000UL                               /**< Mode DEFAULT for RMU_RSTCAUSE */
 #define RMU_RSTCAUSE_BODAVDD0_DEFAULT         (_RMU_RSTCAUSE_BODAVDD0_DEFAULT << 9)      /**< Shifted mode DEFAULT for RMU_RSTCAUSE */
-#define RMU_RSTCAUSE_BODAVDD1                 (0x1UL << 10)                              /**< AVDD1 Bod Reset. */
+#define RMU_RSTCAUSE_BODAVDD1                 (0x1UL << 10)                              /**< AVDD1 Bod Reset */
 #define _RMU_RSTCAUSE_BODAVDD1_SHIFT          10                                         /**< Shift value for RMU_BODAVDD1 */
 #define _RMU_RSTCAUSE_BODAVDD1_MASK           0x400UL                                    /**< Bit mask for RMU_BODAVDD1 */
 #define _RMU_RSTCAUSE_BODAVDD1_DEFAULT        0x00000000UL                               /**< Mode DEFAULT for RMU_RSTCAUSE */
@@ -155,5 +163,4 @@ typedef struct
 #define RMU_CMD_RCCLR_DEFAULT                 (_RMU_CMD_RCCLR_DEFAULT << 0) /**< Shifted mode DEFAULT for RMU_CMD */
 
 /** @} End of group EFM32GG_RMU */
-
-
+/** @} End of group Parts */

@@ -1,69 +1,76 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_burtc Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_BURTC register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32GG_BURTC
  * @{
  * @brief EFM32GG_BURTC Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t     CTRL;          /**< Control Register  */
-  __IO uint32_t     LPMODE;        /**< Low power mode configuration  */
-  __I uint32_t      CNT;           /**< Counter Value Register  */
-  __IO uint32_t     COMP0;         /**< Counter Compare Value  */
-  __I uint32_t      TIMESTAMP;     /**< Backup mode timestamp  */
-  __IO uint32_t     LFXOFDET;      /**< LFXO   */
-  __I uint32_t      STATUS;        /**< Backup domain status  */
-  __IO uint32_t     CMD;           /**< Command Register  */
-  __IO uint32_t     POWERDOWN;     /**< Retention RAM power-down resgister  */
-  __IO uint32_t     LOCK;          /**< Configuration Lock Register  */
-  __I uint32_t      IF;            /**< Interrupt Flag Register  */
-  __IO uint32_t     IFS;           /**< Interrupt Flag Set Register  */
-  __IO uint32_t     IFC;           /**< Interrupt Flag Clear Register  */
-  __IO uint32_t     IEN;           /**< Interrupt Enable Register  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t    CTRL;           /**< Control Register  */
+  __IOM uint32_t    LPMODE;         /**< Low power mode configuration  */
+  __IM uint32_t     CNT;            /**< Counter Value Register  */
+  __IOM uint32_t    COMP0;          /**< Counter Compare Value  */
+  __IM uint32_t     TIMESTAMP;      /**< Backup mode timestamp  */
+  __IOM uint32_t    LFXOFDET;       /**< LFXO   */
+  __IM uint32_t     STATUS;         /**< Status Register  */
+  __IOM uint32_t    CMD;            /**< Command Register  */
+  __IOM uint32_t    POWERDOWN;      /**< Retention RAM power-down Register  */
+  __IOM uint32_t    LOCK;           /**< Configuration Lock Register  */
+  __IM uint32_t     IF;             /**< Interrupt Flag Register  */
+  __IOM uint32_t    IFS;            /**< Interrupt Flag Set Register  */
+  __IOM uint32_t    IFC;            /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t    IEN;            /**< Interrupt Enable Register  */
 
-  __IO uint32_t     FREEZE;        /**< Freeze Register  */
-  __I uint32_t      SYNCBUSY;      /**< Synchronization Busy Register  */
+  __IOM uint32_t    FREEZE;         /**< Freeze Register  */
+  __IM uint32_t     SYNCBUSY;       /**< Synchronization Busy Register  */
 
-  uint32_t          RESERVED0[48]; /**< Reserved registers */
+  uint32_t          RESERVED0[48U]; /**< Reserved registers */
+  BURTC_RET_TypeDef RET[128U];      /**< RetentionReg */
+} BURTC_TypeDef;                    /**< BURTC Register Declaration *//** @} */
 
-  BURTC_RET_TypeDef RET[128];      /**< RetentionReg */
-} BURTC_TypeDef;                   /** @} */
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG_BURTC_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for BURTC CTRL */
 #define _BURTC_CTRL_RESETVALUE                0x00000008UL                           /**< Default value for BURTC_CTRL */
@@ -354,12 +361,12 @@ typedef struct
 /* Bit fields for BURTC SYNCBUSY */
 #define _BURTC_SYNCBUSY_RESETVALUE            0x00000000UL                          /**< Default value for BURTC_SYNCBUSY */
 #define _BURTC_SYNCBUSY_MASK                  0x00000003UL                          /**< Mask for BURTC_SYNCBUSY */
-#define BURTC_SYNCBUSY_LPMODE                 (0x1UL << 0)                          /**< BURTC_LPMODE Register Busy */
+#define BURTC_SYNCBUSY_LPMODE                 (0x1UL << 0)                          /**< LPMODE Register Busy */
 #define _BURTC_SYNCBUSY_LPMODE_SHIFT          0                                     /**< Shift value for BURTC_LPMODE */
 #define _BURTC_SYNCBUSY_LPMODE_MASK           0x1UL                                 /**< Bit mask for BURTC_LPMODE */
 #define _BURTC_SYNCBUSY_LPMODE_DEFAULT        0x00000000UL                          /**< Mode DEFAULT for BURTC_SYNCBUSY */
 #define BURTC_SYNCBUSY_LPMODE_DEFAULT         (_BURTC_SYNCBUSY_LPMODE_DEFAULT << 0) /**< Shifted mode DEFAULT for BURTC_SYNCBUSY */
-#define BURTC_SYNCBUSY_COMP0                  (0x1UL << 1)                          /**< BURTC_COMP0 Register Busy */
+#define BURTC_SYNCBUSY_COMP0                  (0x1UL << 1)                          /**< COMP0 Register Busy */
 #define _BURTC_SYNCBUSY_COMP0_SHIFT           1                                     /**< Shift value for BURTC_COMP0 */
 #define _BURTC_SYNCBUSY_COMP0_MASK            0x2UL                                 /**< Bit mask for BURTC_COMP0 */
 #define _BURTC_SYNCBUSY_COMP0_DEFAULT         0x00000000UL                          /**< Mode DEFAULT for BURTC_SYNCBUSY */
@@ -374,5 +381,4 @@ typedef struct
 #define BURTC_RET_REG_REG_DEFAULT             (_BURTC_RET_REG_REG_DEFAULT << 0) /**< Shifted mode DEFAULT for BURTC_RET_REG */
 
 /** @} End of group EFM32GG_BURTC */
-
-
+/** @} End of group Parts */

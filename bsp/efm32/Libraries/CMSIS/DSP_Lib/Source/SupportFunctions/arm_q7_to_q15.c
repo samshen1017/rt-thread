@@ -1,64 +1,60 @@
-/* ----------------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_q7_to_q15.c    
-*    
-* Description:	Converts the elements of the Q7 vector to Q15 vector.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-* ---------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_q7_to_q15.c
+ * Description:  Converts the elements of the Q7 vector to Q15 vector
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupSupport    
+/**
+ * @ingroup groupSupport
  */
 
-/**    
- * @addtogroup q7_to_x    
- * @{    
+/**
+ * @addtogroup q7_to_x
+ * @{
  */
 
 
 
 
-/**    
- * @brief Converts the elements of the Q7 vector to Q15 vector.    
- * @param[in]       *pSrc points to the Q7 input vector    
- * @param[out]      *pDst points to the Q15 output vector   
- * @param[in]       blockSize length of the input vector    
- * @return none.    
- *    
- * \par Description:    
- *    
- * The equation used for the conversion process is:    
- *   
- * <pre>    
- * 	pDst[n] = (q15_t) pSrc[n] << 8;   0 <= n < blockSize.    
- * </pre>    
- *   
+/**
+ * @brief Converts the elements of the Q7 vector to Q15 vector.
+ * @param[in]       *pSrc points to the Q7 input vector
+ * @param[out]      *pDst points to the Q15 output vector
+ * @param[in]       blockSize length of the input vector
+ * @return none.
+ *
+ * \par Description:
+ *
+ * The equation used for the conversion process is:
+ *
+ * <pre>
+ * 	pDst[n] = (q15_t) pSrc[n] << 8;   0 <= n < blockSize.
+ * </pre>
+ *
  */
 
 
@@ -70,7 +66,7 @@ void arm_q7_to_q15(
   q7_t *pIn = pSrc;                              /* Src pointer */
   uint32_t blkCnt;                               /* loop counter */
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
   q31_t in;
   q31_t in1, in2;
   q31_t out1, out2;
@@ -78,11 +74,11 @@ void arm_q7_to_q15(
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
+  blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = (q15_t) A << 8 */
     /* convert from q7 to q15 and then store the results in the destination buffer */
@@ -94,8 +90,8 @@ void arm_q7_to_q15(
     /* extend remainig two q7_t values to q15_t values */
     in2 = __SXTB16(in);
 
-    in1 = in1 << 8u;
-    in2 = in2 << 8u;
+    in1 = in1 << 8U;
+    in2 = in2 << 8U;
 
     in1 = in1 & 0xFF00FF00;
     in2 = in2 & 0xFF00FF00;
@@ -119,9 +115,9 @@ void arm_q7_to_q15(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.    
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
    ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
+  blkCnt = blockSize % 0x4U;
 
 #else
 
@@ -130,9 +126,9 @@ void arm_q7_to_q15(
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
-#endif /* #ifndef ARM_MATH_CM0 */
+#endif /* #if defined (ARM_MATH_DSP) */
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = (q15_t) A << 8 */
     /* convert from q7 to q15 and then store the results in the destination buffer */
@@ -144,6 +140,6 @@ void arm_q7_to_q15(
 
 }
 
-/**    
- * @} end of q7_to_x group    
+/**
+ * @} end of q7_to_x group
  */

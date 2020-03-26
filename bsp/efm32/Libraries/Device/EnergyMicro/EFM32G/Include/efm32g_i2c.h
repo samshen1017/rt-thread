@@ -1,63 +1,71 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_i2c Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_I2C register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_I2C
  * @{
  * @brief EFM32G_I2C Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;      /**< Control Register  */
-  __IO uint32_t CMD;       /**< Command Register  */
-  __I uint32_t  STATE;     /**< State Register  */
-  __I uint32_t  STATUS;    /**< Status Register  */
-  __IO uint32_t CLKDIV;    /**< Clock Division Register  */
-  __IO uint32_t SADDR;     /**< Slave Address Register  */
-  __IO uint32_t SADDRMASK; /**< Slave Address Mask Register  */
-  __I uint32_t  RXDATA;    /**< Receive Buffer Data Register  */
-  __I uint32_t  RXDATAP;   /**< Receive Buffer Data Peek Register  */
-  __IO uint32_t TXDATA;    /**< Transmit Buffer Data Register  */
-  __I uint32_t  IF;        /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;       /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;       /**< Interrupt Flag Clear Register  */
-  __IO uint32_t IEN;       /**< Interrupt Enable Register  */
-  __IO uint32_t ROUTE;     /**< I/O Routing Register  */
-} I2C_TypeDef;             /** @} */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;      /**< Control Register  */
+  __IOM uint32_t CMD;       /**< Command Register  */
+  __IM uint32_t  STATE;     /**< State Register  */
+  __IM uint32_t  STATUS;    /**< Status Register  */
+  __IOM uint32_t CLKDIV;    /**< Clock Division Register  */
+  __IOM uint32_t SADDR;     /**< Slave Address Register  */
+  __IOM uint32_t SADDRMASK; /**< Slave Address Mask Register  */
+  __IM uint32_t  RXDATA;    /**< Receive Buffer Data Register  */
+  __IM uint32_t  RXDATAP;   /**< Receive Buffer Data Peek Register  */
+  __IOM uint32_t TXDATA;    /**< Transmit Buffer Data Register  */
+  __IM uint32_t  IF;        /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;       /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;       /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;       /**< Interrupt Enable Register  */
+  __IOM uint32_t ROUTE;     /**< I/O Routing Register  */
+} I2C_TypeDef;              /**< I2C Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_I2C_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for I2C CTRL */
 #define _I2C_CTRL_RESETVALUE              0x00000000UL                     /**< Default value for I2C_CTRL */
@@ -420,7 +428,7 @@ typedef struct
 
 /* Bit fields for I2C IFS */
 #define _I2C_IFS_RESETVALUE               0x00000000UL                     /**< Default value for I2C_IFS */
-#define _I2C_IFS_MASK                     0x0001FFFFUL                     /**< Mask for I2C_IFS */
+#define _I2C_IFS_MASK                     0x0001FFCFUL                     /**< Mask for I2C_IFS */
 #define I2C_IFS_START                     (0x1UL << 0)                     /**< Set START Interrupt Flag */
 #define _I2C_IFS_START_SHIFT              0                                /**< Shift value for I2C_START */
 #define _I2C_IFS_START_MASK               0x1UL                            /**< Bit mask for I2C_START */
@@ -499,7 +507,7 @@ typedef struct
 
 /* Bit fields for I2C IFC */
 #define _I2C_IFC_RESETVALUE               0x00000000UL                     /**< Default value for I2C_IFC */
-#define _I2C_IFC_MASK                     0x0001FFFFUL                     /**< Mask for I2C_IFC */
+#define _I2C_IFC_MASK                     0x0001FFCFUL                     /**< Mask for I2C_IFC */
 #define I2C_IFC_START                     (0x1UL << 0)                     /**< Clear START Interrupt Flag */
 #define _I2C_IFC_START_SHIFT              0                                /**< Shift value for I2C_START */
 #define _I2C_IFC_START_MASK               0x1UL                            /**< Bit mask for I2C_START */
@@ -680,17 +688,16 @@ typedef struct
 #define I2C_ROUTE_SCLPEN_DEFAULT          (_I2C_ROUTE_SCLPEN_DEFAULT << 1)   /**< Shifted mode DEFAULT for I2C_ROUTE */
 #define _I2C_ROUTE_LOCATION_SHIFT         8                                  /**< Shift value for I2C_LOCATION */
 #define _I2C_ROUTE_LOCATION_MASK          0x300UL                            /**< Bit mask for I2C_LOCATION */
-#define _I2C_ROUTE_LOCATION_DEFAULT       0x00000000UL                       /**< Mode DEFAULT for I2C_ROUTE */
 #define _I2C_ROUTE_LOCATION_LOC0          0x00000000UL                       /**< Mode LOC0 for I2C_ROUTE */
+#define _I2C_ROUTE_LOCATION_DEFAULT       0x00000000UL                       /**< Mode DEFAULT for I2C_ROUTE */
 #define _I2C_ROUTE_LOCATION_LOC1          0x00000001UL                       /**< Mode LOC1 for I2C_ROUTE */
 #define _I2C_ROUTE_LOCATION_LOC2          0x00000002UL                       /**< Mode LOC2 for I2C_ROUTE */
 #define _I2C_ROUTE_LOCATION_LOC3          0x00000003UL                       /**< Mode LOC3 for I2C_ROUTE */
-#define I2C_ROUTE_LOCATION_DEFAULT        (_I2C_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for I2C_ROUTE */
 #define I2C_ROUTE_LOCATION_LOC0           (_I2C_ROUTE_LOCATION_LOC0 << 8)    /**< Shifted mode LOC0 for I2C_ROUTE */
+#define I2C_ROUTE_LOCATION_DEFAULT        (_I2C_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for I2C_ROUTE */
 #define I2C_ROUTE_LOCATION_LOC1           (_I2C_ROUTE_LOCATION_LOC1 << 8)    /**< Shifted mode LOC1 for I2C_ROUTE */
 #define I2C_ROUTE_LOCATION_LOC2           (_I2C_ROUTE_LOCATION_LOC2 << 8)    /**< Shifted mode LOC2 for I2C_ROUTE */
 #define I2C_ROUTE_LOCATION_LOC3           (_I2C_ROUTE_LOCATION_LOC3 << 8)    /**< Shifted mode LOC3 for I2C_ROUTE */
 
 /** @} End of group EFM32G_I2C */
-
-
+/** @} End of group Parts */

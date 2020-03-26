@@ -1,55 +1,63 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_vcmp Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_VCMP register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_VCMP
  * @{
  * @brief EFM32G_VCMP Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;     /**< Control Register  */
-  __IO uint32_t INPUTSEL; /**< Input Selection Register  */
-  __I uint32_t  STATUS;   /**< Status Register  */
-  __IO uint32_t IEN;      /**< Interrupt Enable Register  */
-  __I uint32_t  IF;       /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;      /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;      /**< Interrupt Flag Clear Register  */
-} VCMP_TypeDef;           /** @} */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;     /**< Control Register  */
+  __IOM uint32_t INPUTSEL; /**< Input Selection Register  */
+  __IM uint32_t  STATUS;   /**< Status Register  */
+  __IOM uint32_t IEN;      /**< Interrupt Enable Register  */
+  __IM uint32_t  IF;       /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;      /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;      /**< Interrupt Flag Clear Register  */
+} VCMP_TypeDef;            /**< VCMP Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_VCMP_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for VCMP CTRL */
 #define _VCMP_CTRL_RESETVALUE               0x47000000UL                         /**< Default value for VCMP_CTRL */
@@ -193,5 +201,4 @@ typedef struct
 #define VCMP_IFC_WARMUP_DEFAULT             (_VCMP_IFC_WARMUP_DEFAULT << 1) /**< Shifted mode DEFAULT for VCMP_IFC */
 
 /** @} End of group EFM32G_VCMP */
-
-
+/** @} End of group Parts */

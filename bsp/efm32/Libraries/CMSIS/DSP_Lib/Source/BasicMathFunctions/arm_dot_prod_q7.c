@@ -1,64 +1,57 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_dot_prod_q7.c    
-*    
-* Description:	Q7 dot product.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-*    
-* Version 0.0.7  2010/06/10     
-*    Misra-C changes done    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_dot_prod_q7.c
+ * Description:  Q7 dot product
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupMath    
+/**
+ * @ingroup groupMath
  */
 
-/**    
- * @addtogroup dot_prod    
- * @{    
+/**
+ * @addtogroup dot_prod
+ * @{
  */
 
-/**    
- * @brief Dot product of Q7 vectors.    
- * @param[in]       *pSrcA points to the first input vector    
- * @param[in]       *pSrcB points to the second input vector    
- * @param[in]       blockSize number of samples in each vector    
- * @param[out]      *result output result returned here    
- * @return none.    
- *    
- * <b>Scaling and Overflow Behavior:</b>    
- * \par    
- * The intermediate multiplications are in 1.7 x 1.7 = 2.14 format and these    
- * results are added to an accumulator in 18.14 format.    
- * Nonsaturating additions are used and there is no danger of wrap around as long as    
- * the vectors are less than 2^18 elements long.    
- * The return result is in 18.14 format.    
+/**
+ * @brief Dot product of Q7 vectors.
+ * @param[in]       *pSrcA points to the first input vector
+ * @param[in]       *pSrcB points to the second input vector
+ * @param[in]       blockSize number of samples in each vector
+ * @param[out]      *result output result returned here
+ * @return none.
+ *
+ * <b>Scaling and Overflow Behavior:</b>
+ * \par
+ * The intermediate multiplications are in 1.7 x 1.7 = 2.14 format and these
+ * results are added to an accumulator in 18.14 format.
+ * Nonsaturating additions are used and there is no danger of wrap around as long as
+ * the vectors are less than 2^18 elements long.
+ * The return result is in 18.14 format.
  */
 
 void arm_dot_prod_q7(
@@ -71,7 +64,7 @@ void arm_dot_prod_q7(
 
   q31_t sum = 0;                                 /* Temporary variables to store output */
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
 
 /* Run the below code for Cortex-M4 and Cortex-M3 */
 
@@ -81,11 +74,11 @@ void arm_dot_prod_q7(
 
 
   /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
+  blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* read 4 samples at a time from sourceA */
     input1 = *__SIMD32(pSrcA)++;
@@ -109,11 +102,11 @@ void arm_dot_prod_q7(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.    
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
    ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
+  blkCnt = blockSize % 0x4U;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
     /* Dot product and then store the results in a temporary buffer. */
@@ -132,7 +125,7 @@ void arm_dot_prod_q7(
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
     /* Dot product and then store the results in a temporary buffer. */
@@ -142,13 +135,13 @@ void arm_dot_prod_q7(
     blkCnt--;
   }
 
-#endif /* #ifndef ARM_MATH_CM0 */
+#endif /* #if defined (ARM_MATH_DSP) */
 
 
   /* Store the result in the destination buffer in 18.14 format */
   *result = sum;
 }
 
-/**    
- * @} end of dot_prod group    
+/**
+ * @} end of dot_prod group
  */

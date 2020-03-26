@@ -1,66 +1,56 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:	    arm_mat_trans_f32.c    
-*    
-* Description:	Floating-point matrix transpose.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-*    
-* Version 0.0.5  2010/04/26     
-*    incorporated review comments and updated with latest CMSIS layer    
-*    
-* Version 0.0.3  2010/03/10     
-*    Initial version    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_mat_trans_f32.c
+ * Description:  Floating-point matrix transpose
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-/**    
- * @defgroup MatrixTrans Matrix Transpose    
- *    
- * Tranposes a matrix.    
- * Transposing an <code>M x N</code> matrix flips it around the center diagonal and results in an <code>N x M</code> matrix.    
- * \image html MatrixTranspose.gif "Transpose of a 3 x 3 matrix"    
+/**
+ * @defgroup MatrixTrans Matrix Transpose
+ *
+ * Tranposes a matrix.
+ * Transposing an <code>M x N</code> matrix flips it around the center diagonal and results in an <code>N x M</code> matrix.
+ * \image html MatrixTranspose.gif "Transpose of a 3 x 3 matrix"
  */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupMatrix    
+/**
+ * @ingroup groupMatrix
  */
 
-/**    
- * @addtogroup MatrixTrans    
- * @{    
+/**
+ * @addtogroup MatrixTrans
+ * @{
  */
 
-/**    
-  * @brief Floating-point matrix transpose.    
-  * @param[in]  *pSrc points to the input matrix    
-  * @param[out] *pDst points to the output matrix    
-  * @return 	The function returns either  <code>ARM_MATH_SIZE_MISMATCH</code>    
-  * or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.    
+/**
+  * @brief Floating-point matrix transpose.
+  * @param[in]  *pSrc points to the input matrix
+  * @param[out] *pDst points to the output matrix
+  * @return 	The function returns either  <code>ARM_MATH_SIZE_MISMATCH</code>
+  * or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
   */
 
 
@@ -74,11 +64,11 @@ arm_status arm_mat_trans_f32(
   uint16_t nRows = pSrc->numRows;                /* number of rows */
   uint16_t nColumns = pSrc->numCols;             /* number of columns */
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  uint16_t blkCnt, i = 0u, row = nRows;          /* loop counters */
+  uint16_t blkCnt, i = 0U, row = nRows;          /* loop counters */
   arm_status status;                             /* status of matrix transpose  */
 
 
@@ -86,7 +76,7 @@ arm_status arm_mat_trans_f32(
 
 
   /* Check for matrix mismatch condition */
-  if((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
+  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -105,9 +95,9 @@ arm_status arm_mat_trans_f32(
       /* The pointer px is set to starting address of the column being processed */
       px = pOut + i;
 
-      /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+      /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
        ** a second loop below computes the remaining 1 to 3 samples. */
-      while(blkCnt > 0u)        /* column loop */
+      while (blkCnt > 0U)        /* column loop */
       {
         /* Read and store the input element in the destination */
         *px = *pIn++;
@@ -138,9 +128,9 @@ arm_status arm_mat_trans_f32(
       }
 
       /* Perform matrix transpose for last 3 samples here. */
-      blkCnt = nColumns % 0x4u;
+      blkCnt = nColumns % 0x4U;
 
-      while(blkCnt > 0u)
+      while (blkCnt > 0U)
       {
         /* Read and store the input element in the destination */
         *px = *pIn++;
@@ -156,14 +146,14 @@ arm_status arm_mat_trans_f32(
 
   /* Run the below code for Cortex-M0 */
 
-  uint16_t col, i = 0u, row = nRows;             /* loop counters */
+  uint16_t col, i = 0U, row = nRows;             /* loop counters */
   arm_status status;                             /* status of matrix transpose  */
 
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
-  if((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
+  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -182,7 +172,7 @@ arm_status arm_mat_trans_f32(
       /* Initialize column loop counter */
       col = nColumns;
 
-      while(col > 0u)
+      while (col > 0U)
       {
         /* Read and store the input element in the destination */
         *px = *pIn++;
@@ -194,14 +184,14 @@ arm_status arm_mat_trans_f32(
         col--;
       }
 
-#endif /* #ifndef ARM_MATH_CM0 */
+#endif /* #if defined (ARM_MATH_DSP) */
 
       i++;
 
       /* Decrement the row loop counter */
       row--;
 
-    } while(row > 0u);          /* row loop end  */
+    } while (row > 0U);          /* row loop end  */
 
     /* Set status as ARM_MATH_SUCCESS */
     status = ARM_MATH_SUCCESS;
@@ -211,6 +201,6 @@ arm_status arm_mat_trans_f32(
   return (status);
 }
 
-/**    
- * @} end of MatrixTrans group    
+/**
+ * @} end of MatrixTrans group
  */

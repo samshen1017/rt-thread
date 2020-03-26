@@ -1,70 +1,78 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_leuart Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_LEUART register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_LEUART
  * @{
  * @brief EFM32G_LEUART Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;         /**< Control Register  */
-  __IO uint32_t CMD;          /**< Command Register  */
-  __I uint32_t  STATUS;       /**< Status Register  */
-  __IO uint32_t CLKDIV;       /**< Clock Control Register  */
-  __IO uint32_t STARTFRAME;   /**< Start Frame Register  */
-  __IO uint32_t SIGFRAME;     /**< Signal Frame Register  */
-  __I uint32_t  RXDATAX;      /**< Receive Buffer Data Extended Register  */
-  __I uint32_t  RXDATA;       /**< Receive Buffer Data Register  */
-  __I uint32_t  RXDATAXP;     /**< Receive Buffer Data Extended Peek Register  */
-  __IO uint32_t TXDATAX;      /**< Transmit Buffer Data Extended Register  */
-  __IO uint32_t TXDATA;       /**< Transmit Buffer Data Register  */
-  __I uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IO uint32_t IEN;          /**< Interrupt Enable Register  */
-  __IO uint32_t PULSECTRL;    /**< Pulse Control Register  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;          /**< Control Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
+  __IOM uint32_t CLKDIV;        /**< Clock Control Register  */
+  __IOM uint32_t STARTFRAME;    /**< Start Frame Register  */
+  __IOM uint32_t SIGFRAME;      /**< Signal Frame Register  */
+  __IM uint32_t  RXDATAX;       /**< Receive Buffer Data Extended Register  */
+  __IM uint32_t  RXDATA;        /**< Receive Buffer Data Register  */
+  __IM uint32_t  RXDATAXP;      /**< Receive Buffer Data Extended Peek Register  */
+  __IOM uint32_t TXDATAX;       /**< Transmit Buffer Data Extended Register  */
+  __IOM uint32_t TXDATA;        /**< Transmit Buffer Data Register  */
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+  __IOM uint32_t PULSECTRL;     /**< Pulse Control Register  */
 
-  __IO uint32_t FREEZE;       /**< Freeze Register  */
-  __I uint32_t  SYNCBUSY;     /**< Synchronization Busy Register  */
+  __IOM uint32_t FREEZE;        /**< Freeze Register  */
+  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
 
-  uint32_t      RESERVED0[3]; /**< Reserved for future use **/
-  __IO uint32_t ROUTE;        /**< I/O Routing Register  */
-} LEUART_TypeDef;             /** @} */
+  uint32_t       RESERVED0[3U]; /**< Reserved for future use **/
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
+} LEUART_TypeDef;               /**< LEUART Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_LEUART_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for LEUART CTRL */
 #define _LEUART_CTRL_RESETVALUE                  0x00000000UL                         /**< Default value for LEUART_CTRL */
@@ -587,42 +595,42 @@ typedef struct
 /* Bit fields for LEUART SYNCBUSY */
 #define _LEUART_SYNCBUSY_RESETVALUE              0x00000000UL                               /**< Default value for LEUART_SYNCBUSY */
 #define _LEUART_SYNCBUSY_MASK                    0x000000FFUL                               /**< Mask for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_CTRL                     (0x1UL << 0)                               /**< LEUARTn_CTRL Register Busy */
+#define LEUART_SYNCBUSY_CTRL                     (0x1UL << 0)                               /**< CTRL Register Busy */
 #define _LEUART_SYNCBUSY_CTRL_SHIFT              0                                          /**< Shift value for LEUART_CTRL */
 #define _LEUART_SYNCBUSY_CTRL_MASK               0x1UL                                      /**< Bit mask for LEUART_CTRL */
 #define _LEUART_SYNCBUSY_CTRL_DEFAULT            0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_CTRL_DEFAULT             (_LEUART_SYNCBUSY_CTRL_DEFAULT << 0)       /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_CMD                      (0x1UL << 1)                               /**< LEUARTn_CMD Register Busy */
+#define LEUART_SYNCBUSY_CMD                      (0x1UL << 1)                               /**< CMD Register Busy */
 #define _LEUART_SYNCBUSY_CMD_SHIFT               1                                          /**< Shift value for LEUART_CMD */
 #define _LEUART_SYNCBUSY_CMD_MASK                0x2UL                                      /**< Bit mask for LEUART_CMD */
 #define _LEUART_SYNCBUSY_CMD_DEFAULT             0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_CMD_DEFAULT              (_LEUART_SYNCBUSY_CMD_DEFAULT << 1)        /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_CLKDIV                   (0x1UL << 2)                               /**< LEUARTn_CLKDIV Register Busy */
+#define LEUART_SYNCBUSY_CLKDIV                   (0x1UL << 2)                               /**< CLKDIV Register Busy */
 #define _LEUART_SYNCBUSY_CLKDIV_SHIFT            2                                          /**< Shift value for LEUART_CLKDIV */
 #define _LEUART_SYNCBUSY_CLKDIV_MASK             0x4UL                                      /**< Bit mask for LEUART_CLKDIV */
 #define _LEUART_SYNCBUSY_CLKDIV_DEFAULT          0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_CLKDIV_DEFAULT           (_LEUART_SYNCBUSY_CLKDIV_DEFAULT << 2)     /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_STARTFRAME               (0x1UL << 3)                               /**< LEUARTn_STARTFRAME Register Busy */
+#define LEUART_SYNCBUSY_STARTFRAME               (0x1UL << 3)                               /**< STARTFRAME Register Busy */
 #define _LEUART_SYNCBUSY_STARTFRAME_SHIFT        3                                          /**< Shift value for LEUART_STARTFRAME */
 #define _LEUART_SYNCBUSY_STARTFRAME_MASK         0x8UL                                      /**< Bit mask for LEUART_STARTFRAME */
 #define _LEUART_SYNCBUSY_STARTFRAME_DEFAULT      0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_STARTFRAME_DEFAULT       (_LEUART_SYNCBUSY_STARTFRAME_DEFAULT << 3) /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_SIGFRAME                 (0x1UL << 4)                               /**< LEUARTn_SIGFRAME Register Busy */
+#define LEUART_SYNCBUSY_SIGFRAME                 (0x1UL << 4)                               /**< SIGFRAME Register Busy */
 #define _LEUART_SYNCBUSY_SIGFRAME_SHIFT          4                                          /**< Shift value for LEUART_SIGFRAME */
 #define _LEUART_SYNCBUSY_SIGFRAME_MASK           0x10UL                                     /**< Bit mask for LEUART_SIGFRAME */
 #define _LEUART_SYNCBUSY_SIGFRAME_DEFAULT        0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_SIGFRAME_DEFAULT         (_LEUART_SYNCBUSY_SIGFRAME_DEFAULT << 4)   /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_TXDATAX                  (0x1UL << 5)                               /**< LEUARTn_TXDATAX Register Busy */
+#define LEUART_SYNCBUSY_TXDATAX                  (0x1UL << 5)                               /**< TXDATAX Register Busy */
 #define _LEUART_SYNCBUSY_TXDATAX_SHIFT           5                                          /**< Shift value for LEUART_TXDATAX */
 #define _LEUART_SYNCBUSY_TXDATAX_MASK            0x20UL                                     /**< Bit mask for LEUART_TXDATAX */
 #define _LEUART_SYNCBUSY_TXDATAX_DEFAULT         0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_TXDATAX_DEFAULT          (_LEUART_SYNCBUSY_TXDATAX_DEFAULT << 5)    /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_TXDATA                   (0x1UL << 6)                               /**< LEUARTn_TXDATA Register Busy */
+#define LEUART_SYNCBUSY_TXDATA                   (0x1UL << 6)                               /**< TXDATA Register Busy */
 #define _LEUART_SYNCBUSY_TXDATA_SHIFT            6                                          /**< Shift value for LEUART_TXDATA */
 #define _LEUART_SYNCBUSY_TXDATA_MASK             0x40UL                                     /**< Bit mask for LEUART_TXDATA */
 #define _LEUART_SYNCBUSY_TXDATA_DEFAULT          0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
 #define LEUART_SYNCBUSY_TXDATA_DEFAULT           (_LEUART_SYNCBUSY_TXDATA_DEFAULT << 6)     /**< Shifted mode DEFAULT for LEUART_SYNCBUSY */
-#define LEUART_SYNCBUSY_PULSECTRL                (0x1UL << 7)                               /**< LEUARTn_PULSECTRL Register Busy */
+#define LEUART_SYNCBUSY_PULSECTRL                (0x1UL << 7)                               /**< PULSECTRL Register Busy */
 #define _LEUART_SYNCBUSY_PULSECTRL_SHIFT         7                                          /**< Shift value for LEUART_PULSECTRL */
 #define _LEUART_SYNCBUSY_PULSECTRL_MASK          0x80UL                                     /**< Bit mask for LEUART_PULSECTRL */
 #define _LEUART_SYNCBUSY_PULSECTRL_DEFAULT       0x00000000UL                               /**< Mode DEFAULT for LEUART_SYNCBUSY */
@@ -643,17 +651,14 @@ typedef struct
 #define LEUART_ROUTE_TXPEN_DEFAULT               (_LEUART_ROUTE_TXPEN_DEFAULT << 1)    /**< Shifted mode DEFAULT for LEUART_ROUTE */
 #define _LEUART_ROUTE_LOCATION_SHIFT             8                                     /**< Shift value for LEUART_LOCATION */
 #define _LEUART_ROUTE_LOCATION_MASK              0x300UL                               /**< Bit mask for LEUART_LOCATION */
-#define _LEUART_ROUTE_LOCATION_DEFAULT           0x00000000UL                          /**< Mode DEFAULT for LEUART_ROUTE */
 #define _LEUART_ROUTE_LOCATION_LOC0              0x00000000UL                          /**< Mode LOC0 for LEUART_ROUTE */
+#define _LEUART_ROUTE_LOCATION_DEFAULT           0x00000000UL                          /**< Mode DEFAULT for LEUART_ROUTE */
 #define _LEUART_ROUTE_LOCATION_LOC1              0x00000001UL                          /**< Mode LOC1 for LEUART_ROUTE */
 #define _LEUART_ROUTE_LOCATION_LOC2              0x00000002UL                          /**< Mode LOC2 for LEUART_ROUTE */
-#define _LEUART_ROUTE_LOCATION_LOC3              0x00000003UL                          /**< Mode LOC3 for LEUART_ROUTE */
-#define LEUART_ROUTE_LOCATION_DEFAULT            (_LEUART_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for LEUART_ROUTE */
 #define LEUART_ROUTE_LOCATION_LOC0               (_LEUART_ROUTE_LOCATION_LOC0 << 8)    /**< Shifted mode LOC0 for LEUART_ROUTE */
+#define LEUART_ROUTE_LOCATION_DEFAULT            (_LEUART_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for LEUART_ROUTE */
 #define LEUART_ROUTE_LOCATION_LOC1               (_LEUART_ROUTE_LOCATION_LOC1 << 8)    /**< Shifted mode LOC1 for LEUART_ROUTE */
 #define LEUART_ROUTE_LOCATION_LOC2               (_LEUART_ROUTE_LOCATION_LOC2 << 8)    /**< Shifted mode LOC2 for LEUART_ROUTE */
-#define LEUART_ROUTE_LOCATION_LOC3               (_LEUART_ROUTE_LOCATION_LOC3 << 8)    /**< Shifted mode LOC3 for LEUART_ROUTE */
 
 /** @} End of group EFM32G_LEUART */
-
-
+/** @} End of group Parts */

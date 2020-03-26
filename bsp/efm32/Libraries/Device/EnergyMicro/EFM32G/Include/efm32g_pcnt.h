@@ -1,62 +1,70 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_pcnt Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_PCNT register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_PCNT
  * @{
  * @brief EFM32G_PCNT Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;     /**< Control Register  */
-  __IO uint32_t CMD;      /**< Command Register  */
-  __I uint32_t  STATUS;   /**< Status Register  */
-  __I uint32_t  CNT;      /**< Counter Value Register  */
-  __I uint32_t  TOP;      /**< Top Value Register  */
-  __IO uint32_t TOPB;     /**< Top Value Buffer Register  */
-  __I uint32_t  IF;       /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;      /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;      /**< Interrupt Flag Clear Register  */
-  __IO uint32_t IEN;      /**< Interrupt Enable Register  */
-  __IO uint32_t ROUTE;    /**< I/O Routing Register  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;     /**< Control Register  */
+  __IOM uint32_t CMD;      /**< Command Register  */
+  __IM uint32_t  STATUS;   /**< Status Register  */
+  __IM uint32_t  CNT;      /**< Counter Value Register  */
+  __IM uint32_t  TOP;      /**< Top Value Register  */
+  __IOM uint32_t TOPB;     /**< Top Value Buffer Register  */
+  __IM uint32_t  IF;       /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;      /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;      /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;      /**< Interrupt Enable Register  */
+  __IOM uint32_t ROUTE;    /**< I/O Routing Register  */
 
-  __IO uint32_t FREEZE;   /**< Freeze Register  */
-  __I uint32_t  SYNCBUSY; /**< Synchronization Busy Register  */
-} PCNT_TypeDef;           /** @} */
+  __IOM uint32_t FREEZE;   /**< Freeze Register  */
+  __IM uint32_t  SYNCBUSY; /**< Synchronization Busy Register  */
+} PCNT_TypeDef;            /**< PCNT Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_PCNT_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PCNT CTRL */
 #define _PCNT_CTRL_RESETVALUE             0x00000000UL                        /**< Default value for PCNT_CTRL */
@@ -131,25 +139,25 @@ typedef struct
 
 /* Bit fields for PCNT CNT */
 #define _PCNT_CNT_RESETVALUE              0x00000000UL                 /**< Default value for PCNT_CNT */
-#define _PCNT_CNT_MASK                    0x000000FFUL                 /**< Mask for PCNT_CNT */
+#define _PCNT_CNT_MASK                    0x0000FFFFUL                 /**< Mask for PCNT_CNT */
 #define _PCNT_CNT_CNT_SHIFT               0                            /**< Shift value for PCNT_CNT */
-#define _PCNT_CNT_CNT_MASK                0xFFUL                       /**< Bit mask for PCNT_CNT */
+#define _PCNT_CNT_CNT_MASK                0xFFFFUL                     /**< Bit mask for PCNT_CNT */
 #define _PCNT_CNT_CNT_DEFAULT             0x00000000UL                 /**< Mode DEFAULT for PCNT_CNT */
 #define PCNT_CNT_CNT_DEFAULT              (_PCNT_CNT_CNT_DEFAULT << 0) /**< Shifted mode DEFAULT for PCNT_CNT */
 
 /* Bit fields for PCNT TOP */
 #define _PCNT_TOP_RESETVALUE              0x000000FFUL                 /**< Default value for PCNT_TOP */
-#define _PCNT_TOP_MASK                    0x000000FFUL                 /**< Mask for PCNT_TOP */
+#define _PCNT_TOP_MASK                    0x0000FFFFUL                 /**< Mask for PCNT_TOP */
 #define _PCNT_TOP_TOP_SHIFT               0                            /**< Shift value for PCNT_TOP */
-#define _PCNT_TOP_TOP_MASK                0xFFUL                       /**< Bit mask for PCNT_TOP */
+#define _PCNT_TOP_TOP_MASK                0xFFFFUL                     /**< Bit mask for PCNT_TOP */
 #define _PCNT_TOP_TOP_DEFAULT             0x000000FFUL                 /**< Mode DEFAULT for PCNT_TOP */
 #define PCNT_TOP_TOP_DEFAULT              (_PCNT_TOP_TOP_DEFAULT << 0) /**< Shifted mode DEFAULT for PCNT_TOP */
 
 /* Bit fields for PCNT TOPB */
 #define _PCNT_TOPB_RESETVALUE             0x000000FFUL                   /**< Default value for PCNT_TOPB */
-#define _PCNT_TOPB_MASK                   0x000000FFUL                   /**< Mask for PCNT_TOPB */
+#define _PCNT_TOPB_MASK                   0x0000FFFFUL                   /**< Mask for PCNT_TOPB */
 #define _PCNT_TOPB_TOPB_SHIFT             0                              /**< Shift value for PCNT_TOPB */
-#define _PCNT_TOPB_TOPB_MASK              0xFFUL                         /**< Bit mask for PCNT_TOPB */
+#define _PCNT_TOPB_TOPB_MASK              0xFFFFUL                       /**< Bit mask for PCNT_TOPB */
 #define _PCNT_TOPB_TOPB_DEFAULT           0x000000FFUL                   /**< Mode DEFAULT for PCNT_TOPB */
 #define PCNT_TOPB_TOPB_DEFAULT            (_PCNT_TOPB_TOPB_DEFAULT << 0) /**< Shifted mode DEFAULT for PCNT_TOPB */
 
@@ -234,12 +242,12 @@ typedef struct
 #define _PCNT_ROUTE_MASK                  0x00000300UL                        /**< Mask for PCNT_ROUTE */
 #define _PCNT_ROUTE_LOCATION_SHIFT        8                                   /**< Shift value for PCNT_LOCATION */
 #define _PCNT_ROUTE_LOCATION_MASK         0x300UL                             /**< Bit mask for PCNT_LOCATION */
-#define _PCNT_ROUTE_LOCATION_DEFAULT      0x00000000UL                        /**< Mode DEFAULT for PCNT_ROUTE */
 #define _PCNT_ROUTE_LOCATION_LOC0         0x00000000UL                        /**< Mode LOC0 for PCNT_ROUTE */
+#define _PCNT_ROUTE_LOCATION_DEFAULT      0x00000000UL                        /**< Mode DEFAULT for PCNT_ROUTE */
 #define _PCNT_ROUTE_LOCATION_LOC1         0x00000001UL                        /**< Mode LOC1 for PCNT_ROUTE */
 #define _PCNT_ROUTE_LOCATION_LOC2         0x00000002UL                        /**< Mode LOC2 for PCNT_ROUTE */
-#define PCNT_ROUTE_LOCATION_DEFAULT       (_PCNT_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for PCNT_ROUTE */
 #define PCNT_ROUTE_LOCATION_LOC0          (_PCNT_ROUTE_LOCATION_LOC0 << 8)    /**< Shifted mode LOC0 for PCNT_ROUTE */
+#define PCNT_ROUTE_LOCATION_DEFAULT       (_PCNT_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for PCNT_ROUTE */
 #define PCNT_ROUTE_LOCATION_LOC1          (_PCNT_ROUTE_LOCATION_LOC1 << 8)    /**< Shifted mode LOC1 for PCNT_ROUTE */
 #define PCNT_ROUTE_LOCATION_LOC2          (_PCNT_ROUTE_LOCATION_LOC2 << 8)    /**< Shifted mode LOC2 for PCNT_ROUTE */
 
@@ -259,22 +267,21 @@ typedef struct
 /* Bit fields for PCNT SYNCBUSY */
 #define _PCNT_SYNCBUSY_RESETVALUE         0x00000000UL                       /**< Default value for PCNT_SYNCBUSY */
 #define _PCNT_SYNCBUSY_MASK               0x00000007UL                       /**< Mask for PCNT_SYNCBUSY */
-#define PCNT_SYNCBUSY_CTRL                (0x1UL << 0)                       /**< PCNTn_CTRL Register Busy */
+#define PCNT_SYNCBUSY_CTRL                (0x1UL << 0)                       /**< CTRL Register Busy */
 #define _PCNT_SYNCBUSY_CTRL_SHIFT         0                                  /**< Shift value for PCNT_CTRL */
 #define _PCNT_SYNCBUSY_CTRL_MASK          0x1UL                              /**< Bit mask for PCNT_CTRL */
 #define _PCNT_SYNCBUSY_CTRL_DEFAULT       0x00000000UL                       /**< Mode DEFAULT for PCNT_SYNCBUSY */
 #define PCNT_SYNCBUSY_CTRL_DEFAULT        (_PCNT_SYNCBUSY_CTRL_DEFAULT << 0) /**< Shifted mode DEFAULT for PCNT_SYNCBUSY */
-#define PCNT_SYNCBUSY_CMD                 (0x1UL << 1)                       /**< PCNTn_CMD Register Busy */
+#define PCNT_SYNCBUSY_CMD                 (0x1UL << 1)                       /**< CMD Register Busy */
 #define _PCNT_SYNCBUSY_CMD_SHIFT          1                                  /**< Shift value for PCNT_CMD */
 #define _PCNT_SYNCBUSY_CMD_MASK           0x2UL                              /**< Bit mask for PCNT_CMD */
 #define _PCNT_SYNCBUSY_CMD_DEFAULT        0x00000000UL                       /**< Mode DEFAULT for PCNT_SYNCBUSY */
 #define PCNT_SYNCBUSY_CMD_DEFAULT         (_PCNT_SYNCBUSY_CMD_DEFAULT << 1)  /**< Shifted mode DEFAULT for PCNT_SYNCBUSY */
-#define PCNT_SYNCBUSY_TOPB                (0x1UL << 2)                       /**< PCNTn_TOPB Register Busy */
+#define PCNT_SYNCBUSY_TOPB                (0x1UL << 2)                       /**< TOPB Register Busy */
 #define _PCNT_SYNCBUSY_TOPB_SHIFT         2                                  /**< Shift value for PCNT_TOPB */
 #define _PCNT_SYNCBUSY_TOPB_MASK          0x4UL                              /**< Bit mask for PCNT_TOPB */
 #define _PCNT_SYNCBUSY_TOPB_DEFAULT       0x00000000UL                       /**< Mode DEFAULT for PCNT_SYNCBUSY */
 #define PCNT_SYNCBUSY_TOPB_DEFAULT        (_PCNT_SYNCBUSY_TOPB_DEFAULT << 2) /**< Shifted mode DEFAULT for PCNT_SYNCBUSY */
 
 /** @} End of group EFM32G_PCNT */
-
-
+/** @} End of group Parts */

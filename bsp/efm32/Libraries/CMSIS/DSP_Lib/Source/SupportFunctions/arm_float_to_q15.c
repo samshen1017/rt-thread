@@ -1,67 +1,63 @@
-/* ----------------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_float_to_q15.c    
-*    
-* Description:	Converts the elements of the floating-point vector to Q15 vector.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-* ---------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_float_to_q15.c
+ * Description:  Converts the elements of the floating-point vector to Q15 vector
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupSupport    
+/**
+ * @ingroup groupSupport
  */
 
-/**    
- * @addtogroup float_to_x    
- * @{    
+/**
+ * @addtogroup float_to_x
+ * @{
  */
 
-/**    
- * @brief Converts the elements of the floating-point vector to Q15 vector.    
- * @param[in]       *pSrc points to the floating-point input vector    
- * @param[out]      *pDst points to the Q15 output vector   
- * @param[in]       blockSize length of the input vector    
- * @return none.    
- *    
- * \par Description:    
- * \par   
- * The equation used for the conversion process is:    
- * <pre>    
- * 	pDst[n] = (q15_t)(pSrc[n] * 32768);   0 <= n < blockSize.    
- * </pre>    
- * \par Scaling and Overflow Behavior:    
- * \par    
- * The function uses saturating arithmetic.    
- * Results outside of the allowable Q15 range [0x8000 0x7FFF] will be saturated.    
- * \note   
- * In order to apply rounding, the library should be rebuilt with the ROUNDING macro     
- * defined in the preprocessor section of project options.     
- *    
+/**
+ * @brief Converts the elements of the floating-point vector to Q15 vector.
+ * @param[in]       *pSrc points to the floating-point input vector
+ * @param[out]      *pDst points to the Q15 output vector
+ * @param[in]       blockSize length of the input vector
+ * @return none.
+ *
+ * \par Description:
+ * \par
+ * The equation used for the conversion process is:
+ * <pre>
+ * 	pDst[n] = (q15_t)(pSrc[n] * 32768);   0 <= n < blockSize.
+ * </pre>
+ * \par Scaling and Overflow Behavior:
+ * \par
+ * The function uses saturating arithmetic.
+ * Results outside of the allowable Q15 range [0x8000 0x7FFF] will be saturated.
+ * \note
+ * In order to apply rounding, the library should be rebuilt with the ROUNDING macro
+ * defined in the preprocessor section of project options.
+ *
  */
 
 
@@ -79,16 +75,16 @@ void arm_float_to_q15(
 
 #endif /*      #ifdef ARM_MATH_ROUNDING        */
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
+  blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
 
 #ifdef ARM_MATH_ROUNDING
@@ -96,22 +92,22 @@ void arm_float_to_q15(
     /* convert from float to q15 and then store the results in the destination buffer */
     in = *pIn++;
     in = (in * 32768.0f);
-    in += in > 0 ? 0.5 : -0.5;
+    in += in > 0.0f ? 0.5f : -0.5f;
     *pDst++ = (q15_t) (__SSAT((q31_t) (in), 16));
 
     in = *pIn++;
     in = (in * 32768.0f);
-    in += in > 0 ? 0.5 : -0.5;
+    in += in > 0.0f ? 0.5f : -0.5f;
     *pDst++ = (q15_t) (__SSAT((q31_t) (in), 16));
 
     in = *pIn++;
     in = (in * 32768.0f);
-    in += in > 0 ? 0.5 : -0.5;
+    in += in > 0.0f ? 0.5f : -0.5f;
     *pDst++ = (q15_t) (__SSAT((q31_t) (in), 16));
 
     in = *pIn++;
     in = (in * 32768.0f);
-    in += in > 0 ? 0.5 : -0.5;
+    in += in > 0.0f ? 0.5f : -0.5f;
     *pDst++ = (q15_t) (__SSAT((q31_t) (in), 16));
 
 #else
@@ -129,11 +125,11 @@ void arm_float_to_q15(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.    
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
    ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
+  blkCnt = blockSize % 0x4U;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
 
 #ifdef ARM_MATH_ROUNDING
@@ -141,7 +137,7 @@ void arm_float_to_q15(
     /* convert from float to q15 and then store the results in the destination buffer */
     in = *pIn++;
     in = (in * 32768.0f);
-    in += in > 0 ? 0.5 : -0.5;
+    in += in > 0.0f ? 0.5f : -0.5f;
     *pDst++ = (q15_t) (__SSAT((q31_t) (in), 16));
 
 #else
@@ -164,7 +160,7 @@ void arm_float_to_q15(
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
 
 #ifdef ARM_MATH_ROUNDING
@@ -187,10 +183,10 @@ void arm_float_to_q15(
     blkCnt--;
   }
 
-#endif /* #ifndef ARM_MATH_CM0 */
+#endif /* #if defined (ARM_MATH_DSP) */
 
 }
 
-/**    
- * @} end of float_to_x group    
+/**
+ * @} end of float_to_x group
  */

@@ -6,6 +6,8 @@ cwd = GetCurrentDir()
 
 if rtconfig.CROSS_TOOL == 'gcc':
     compiler = 'GCC'
+elif rtconfig.CROSS_TOOL == 'keil':
+	compiler = 'ARM'
 
 # The set of source files associated with this SConscript file.
 src = Split("""
@@ -14,6 +16,7 @@ emlib/src/em_adc.c
 emlib/src/em_aes.c
 emlib/src/em_assert.c
 emlib/src/em_cmu.c
+emlib/src/em_core.c
 emlib/src/em_dac.c
 emlib/src/em_dbg.c
 emlib/src/em_dma.c
@@ -36,6 +39,15 @@ emlib/src/em_usart.c
 emlib/src/em_vcmp.c
 emlib/src/em_wdog.c
 """)
+
+# USB driver
+if GetDepend(['RT_USING_USB_DEVICE']):
+    src += ['usb_gecko/src/em_usbd.c', 'usb_gecko/src/em_usbdch9.c', 'usb_gecko/src/em_usbdep.c', 'usb_gecko/src/em_usbdint.c', 'usb_gecko/src/em_usbhal.c', 'usb_gecko/src/em_usbtimer.c']
+
+# usb host file
+# usb_gecko/src/em_usbh.c
+# usb_gecko/src/em_usbhep.c
+# usb_gecko/src/em_usbhint.c
 
 # system code for each EFM32 family
 system_codes = {}
@@ -68,7 +80,8 @@ src = src + [system_codes[rtconfig.EFM32_FAMILY]] + [startup_scripts[rtconfig.EF
 
 path = [cwd + '/emlib/inc',
     cwd + '/CMSIS/Include',
-    cwd + '/Device/EnergyMicro/' + header_path[rtconfig.EFM32_FAMILY] + '/Include']
+    cwd + '/Device/EnergyMicro/' + header_path[rtconfig.EFM32_FAMILY] + '/Include',
+    cwd + '/usb_gecko/inc']
 
 CPPDEFINES = [rtconfig.EFM32_TYPE]
 #group = DefineGroup('EFM32_StdPeriph', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES, LINKFLAGS = linker_scripts[rtconfig.EFM32_FAMILY])

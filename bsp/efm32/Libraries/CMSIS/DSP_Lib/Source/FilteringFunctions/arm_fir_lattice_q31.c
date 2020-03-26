@@ -1,64 +1,57 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:	    arm_fir_lattice_q31.c    
-*    
-* Description:	Q31 FIR lattice filter processing function.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated    
-*    
-* Version 0.0.7  2010/06/10     
-*    Misra-C changes done    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_fir_lattice_q31.c
+ * Description:  Q31 FIR lattice filter processing function
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupFilters    
+/**
+ * @ingroup groupFilters
  */
 
-/**    
- * @addtogroup FIR_Lattice    
- * @{    
+/**
+ * @addtogroup FIR_Lattice
+ * @{
  */
 
 
-/**    
- * @brief Processing function for the Q31 FIR lattice filter.    
- * @param[in]  *S        points to an instance of the Q31 FIR lattice structure.    
- * @param[in]  *pSrc     points to the block of input data.    
- * @param[out] *pDst     points to the block of output data    
- * @param[in]  blockSize number of samples to process.    
- * @return none.    
- *    
- * @details    
- * <b>Scaling and Overflow Behavior:</b>    
- * In order to avoid overflows the input signal must be scaled down by 2*log2(numStages) bits.    
+/**
+ * @brief Processing function for the Q31 FIR lattice filter.
+ * @param[in]  *S        points to an instance of the Q31 FIR lattice structure.
+ * @param[in]  *pSrc     points to the block of input data.
+ * @param[out] *pDst     points to the block of output data
+ * @param[in]  blockSize number of samples to process.
+ * @return none.
+ *
+ * @details
+ * <b>Scaling and Overflow Behavior:</b>
+ * In order to avoid overflows the input signal must be scaled down by 2*log2(numStages) bits.
  */
 
-#ifndef ARM_MATH_CM0
+#if defined (ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
@@ -80,11 +73,11 @@ void arm_fir_lattice_q31(
 
   pState = &S->pState[0];
 
-  blkCnt = blockSize >> 1u;
+  blkCnt = blockSize >> 1U;
 
-  /* First part of the processing with loop unrolling.  Compute 2 outputs at a time.        
+  /* First part of the processing with loop unrolling.  Compute 2 outputs at a time.
      a second loop below computes the remaining 1 sample. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* f0(n) = x(n) */
     fcurr1 = *pSrc++;
@@ -110,8 +103,8 @@ void arm_fir_lattice_q31(
 
     /* g1(n) = f0(n) * K1  +  g0(n-1) */
     gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-    fnext1 = fcurr1 + (fnext1 << 1u);
-    gnext1 = gcurr1 + (gnext1 << 1u);
+    fnext1 = fcurr1 + (fnext1 << 1U);
+    gnext1 = gcurr1 + (gnext1 << 1U);
 
     /* for sample 1 processing */
     /* f1(n) = f0(n) +  K1 * g0(n-1) */
@@ -119,21 +112,21 @@ void arm_fir_lattice_q31(
 
     /* g1(n) = f0(n) * K1  +  g0(n-1) */
     gnext2 = (q31_t) (((q63_t) fcurr2 * (k)) >> 32);
-    fnext2 = fcurr2 + (fnext2 << 1u);
-    gnext2 = fcurr1 + (gnext2 << 1u);
+    fnext2 = fcurr2 + (fnext2 << 1U);
+    gnext2 = fcurr1 + (gnext2 << 1U);
 
     /* save g1(n) in state buffer */
     *px++ = fcurr2;
 
-    /* f1(n) is saved in fcurr1        
+    /* f1(n) is saved in fcurr1
        for next stage processing */
     fcurr1 = fnext1;
     fcurr2 = fnext2;
 
-    stageCnt = (numStages - 1u);
+    stageCnt = (numStages - 1U);
 
     /* stage loop */
-    while(stageCnt > 0u)
+    while (stageCnt > 0U)
     {
 
       /* Read the reflection coefficient */
@@ -150,18 +143,18 @@ void arm_fir_lattice_q31(
       fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
       fnext2 = (q31_t) (((q63_t) gnext1 * k) >> 32);
 
-      fnext1 = fcurr1 + (fnext1 << 1u);
-      fnext2 = fcurr2 + (fnext2 << 1u);
+      fnext1 = fcurr1 + (fnext1 << 1U);
+      fnext2 = fcurr2 + (fnext2 << 1U);
 
       /* g2(n) = f1(n) * K2  +  g1(n-1) */
       gnext2 = (q31_t) (((q63_t) fcurr2 * (k)) >> 32);
-      gnext2 = gnext1 + (gnext2 << 1u);
+      gnext2 = gnext1 + (gnext2 << 1U);
 
       /* g2(n) = f1(n) * K2  +  g1(n-1) */
       gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-      gnext1 = gcurr1 + (gnext1 << 1u);
+      gnext1 = gcurr1 + (gnext1 << 1U);
 
-      /* f1(n) is saved in fcurr1        
+      /* f1(n) is saved in fcurr1
          for next stage processing */
       fcurr1 = fnext1;
       fcurr2 = fnext2;
@@ -178,11 +171,11 @@ void arm_fir_lattice_q31(
 
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.        
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
    ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x2u;
+  blkCnt = blockSize % 0x2U;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* f0(n) = x(n) */
     fcurr1 = *pSrc++;
@@ -202,23 +195,23 @@ void arm_fir_lattice_q31(
     /* for sample 1 processing */
     /* f1(n) = f0(n) +  K1 * g0(n-1) */
     fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
-    fnext1 = fcurr1 + (fnext1 << 1u);
+    fnext1 = fcurr1 + (fnext1 << 1U);
 
     /* g1(n) = f0(n) * K1  +  g0(n-1) */
     gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-    gnext1 = gcurr1 + (gnext1 << 1u);
+    gnext1 = gcurr1 + (gnext1 << 1U);
 
     /* save g1(n) in state buffer */
     *px++ = fcurr1;
 
-    /* f1(n) is saved in fcurr1        
+    /* f1(n) is saved in fcurr1
        for next stage processing */
     fcurr1 = fnext1;
 
-    stageCnt = (numStages - 1u);
+    stageCnt = (numStages - 1U);
 
     /* stage loop */
-    while(stageCnt > 0u)
+    while (stageCnt > 0U)
     {
       /* Read the reflection coefficient */
       k = *pk++;
@@ -232,13 +225,13 @@ void arm_fir_lattice_q31(
       /* Sample processing for K2, K3.... */
       /* f2(n) = f1(n) +  K2 * g1(n-1) */
       fnext1 = (q31_t) (((q63_t) gcurr1 * k) >> 32);
-      fnext1 = fcurr1 + (fnext1 << 1u);
+      fnext1 = fcurr1 + (fnext1 << 1U);
 
       /* g2(n) = f1(n) * K2  +  g1(n-1) */
       gnext1 = (q31_t) (((q63_t) fcurr1 * (k)) >> 32);
-      gnext1 = gcurr1 + (gnext1 << 1u);
+      gnext1 = gcurr1 + (gnext1 << 1U);
 
-      /* f1(n) is saved in fcurr1        
+      /* f1(n) is saved in fcurr1
          for next stage processing */
       fcurr1 = fnext1;
 
@@ -280,7 +273,7 @@ void arm_fir_lattice_q31(
 
   blkCnt = blockSize;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* f0(n) = x(n) */
     fcurr = *pSrc++;
@@ -302,14 +295,14 @@ void arm_fir_lattice_q31(
     /* save g1(n) in state buffer */
     *px++ = fcurr;
 
-    /* f1(n) is saved in fcurr1            
+    /* f1(n) is saved in fcurr1
        for next stage processing */
     fcurr = fnext;
 
-    stageCnt = (numStages - 1u);
+    stageCnt = (numStages - 1U);
 
     /* stage loop */
-    while(stageCnt > 0u)
+    while (stageCnt > 0U)
     {
       /* read g2(n) from state buffer */
       gcurr = *px;
@@ -323,7 +316,7 @@ void arm_fir_lattice_q31(
       /* g2(n) = f1(n) * K2  +  g1(n-1) */
       gnext = (q31_t) (((q63_t) fcurr * (*pk++)) >> 31) + gcurr;
 
-      /* f1(n) is saved in fcurr1            
+      /* f1(n) is saved in fcurr1
          for next stage processing */
       fcurr = fnext;
 
@@ -340,9 +333,9 @@ void arm_fir_lattice_q31(
 
 }
 
-#endif /*   #ifndef ARM_MATH_CM0 */
+#endif /*   #if defined (ARM_MATH_DSP) */
 
 
-/**    
- * @} end of FIR_Lattice group    
+/**
+ * @} end of FIR_Lattice group
  */

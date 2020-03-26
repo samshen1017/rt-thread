@@ -1,70 +1,78 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_msc Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_MSC register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32GG_MSC
  * @{
  * @brief EFM32GG_MSC Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;         /**< Memory System Control Register  */
-  __IO uint32_t READCTRL;     /**< Read Control Register  */
-  __IO uint32_t WRITECTRL;    /**< Write Control Register  */
-  __IO uint32_t WRITECMD;     /**< Write Command Register  */
-  __IO uint32_t ADDRB;        /**< Page Erase/Write Address Buffer  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;          /**< Memory System Control Register  */
+  __IOM uint32_t READCTRL;      /**< Read Control Register  */
+  __IOM uint32_t WRITECTRL;     /**< Write Control Register  */
+  __IOM uint32_t WRITECMD;      /**< Write Command Register  */
+  __IOM uint32_t ADDRB;         /**< Page Erase/Write Address Buffer  */
 
-  uint32_t      RESERVED0[1]; /**< Reserved for future use **/
-  __IO uint32_t WDATA;        /**< Write Data Register  */
-  __I uint32_t  STATUS;       /**< Status Register  */
+  uint32_t       RESERVED0[1U]; /**< Reserved for future use **/
+  __IOM uint32_t WDATA;         /**< Write Data Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
 
-  uint32_t      RESERVED1[3]; /**< Reserved for future use **/
-  __I uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IO uint32_t IEN;          /**< Interrupt Enable Register  */
-  __IO uint32_t LOCK;         /**< Configuration Lock Register  */
-  __IO uint32_t CMD;          /**< Command Register  */
-  __I uint32_t  CACHEHITS;    /**< Cache Hits Performance Counter  */
-  __I uint32_t  CACHEMISSES;  /**< Cache Misses Performance Counter  */
-  uint32_t      RESERVED2[1]; /**< Reserved for future use **/
-  __IO uint32_t TIMEBASE;     /**< Flash Write and Erase Timebase  */
-  __IO uint32_t MASSLOCK;     /**< Mass Erase Lock Register  */
-} MSC_TypeDef;                /** @} */
+  uint32_t       RESERVED1[3U]; /**< Reserved for future use **/
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+  __IOM uint32_t LOCK;          /**< Configuration Lock Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IM uint32_t  CACHEHITS;     /**< Cache Hits Performance Counter  */
+  __IM uint32_t  CACHEMISSES;   /**< Cache Misses Performance Counter  */
+  uint32_t       RESERVED2[1U]; /**< Reserved for future use **/
+  __IOM uint32_t TIMEBASE;      /**< Flash Write and Erase Timebase  */
+  __IOM uint32_t MASSLOCK;      /**< Mass Erase Lock Register  */
+} MSC_TypeDef;                  /**< MSC Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG_MSC_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for MSC CTRL */
 #define _MSC_CTRL_RESETVALUE                    0x00000001UL                       /**< Default value for MSC_CTRL */
@@ -177,7 +185,7 @@ typedef struct
 
 /* Bit fields for MSC WRITECMD */
 #define _MSC_WRITECMD_RESETVALUE                0x00000000UL                             /**< Default value for MSC_WRITECMD */
-#define _MSC_WRITECMD_MASK                      0x0000933FUL                             /**< Mask for MSC_WRITECMD */
+#define _MSC_WRITECMD_MASK                      0x0000133FUL                             /**< Mask for MSC_WRITECMD */
 #define MSC_WRITECMD_LADDRIM                    (0x1UL << 0)                             /**< Load MSC_ADDRB into ADDR */
 #define _MSC_WRITECMD_LADDRIM_SHIFT             0                                        /**< Shift value for MSC_LADDRIM */
 #define _MSC_WRITECMD_LADDRIM_MASK              0x1UL                                    /**< Bit mask for MSC_LADDRIM */
@@ -460,5 +468,4 @@ typedef struct
 #define MSC_MASSLOCK_LOCKKEY_UNLOCK             (_MSC_MASSLOCK_LOCKKEY_UNLOCK << 0)   /**< Shifted mode UNLOCK for MSC_MASSLOCK */
 
 /** @} End of group EFM32GG_MSC */
-
-
+/** @} End of group Parts */

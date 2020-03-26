@@ -1,72 +1,80 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_timer Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_TIMER register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_TIMER
  * @{
  * @brief EFM32G_TIMER Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t    CTRL;         /**< Control Register  */
-  __IO uint32_t    CMD;          /**< Command Register  */
-  __I uint32_t     STATUS;       /**< Status Register  */
-  __IO uint32_t    IEN;          /**< Interrupt Enable Register  */
-  __I uint32_t     IF;           /**< Interrupt Flag Register  */
-  __IO uint32_t    IFS;          /**< Interrupt Flag Set Register  */
-  __IO uint32_t    IFC;          /**< Interrupt Flag Clear Register  */
-  __IO uint32_t    TOP;          /**< Counter Top Value Register  */
-  __IO uint32_t    TOPB;         /**< Counter Top Value Buffer Register  */
-  __IO uint32_t    CNT;          /**< Counter Value Register  */
-  __IO uint32_t    ROUTE;        /**< I/O Routing Register  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t   CTRL;          /**< Control Register  */
+  __IOM uint32_t   CMD;           /**< Command Register  */
+  __IM uint32_t    STATUS;        /**< Status Register  */
+  __IOM uint32_t   IEN;           /**< Interrupt Enable Register  */
+  __IM uint32_t    IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t   IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t   IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t   TOP;           /**< Counter Top Value Register  */
+  __IOM uint32_t   TOPB;          /**< Counter Top Value Buffer Register  */
+  __IOM uint32_t   CNT;           /**< Counter Value Register  */
+  __IOM uint32_t   ROUTE;         /**< I/O Routing Register  */
 
-  uint32_t         RESERVED0[1]; /**< Reserved registers */
+  uint32_t         RESERVED0[1U]; /**< Reserved registers */
 
-  TIMER_CC_TypeDef CC[3];        /**< Compare/Capture Channel */
+  TIMER_CC_TypeDef CC[3U];        /**< Compare/Capture Channel */
 
-  uint32_t         RESERVED1[4]; /**< Reserved for future use **/
-  __IO uint32_t    DTCTRL;       /**< DTI Control Register  */
-  __IO uint32_t    DTTIME;       /**< DTI Time Control Register  */
-  __IO uint32_t    DTFC;         /**< DTI Fault Configuration Register  */
-  __IO uint32_t    DTOGEN;       /**< DTI Output Generation Enable Register  */
-  __I uint32_t     DTFAULT;      /**< DTI Fault Register  */
-  __O uint32_t     DTFAULTC;     /**< DTI Fault Clear Register  */
-  __IO uint32_t    DTLOCK;       /**< DTI Configuration Lock Register  */
-} TIMER_TypeDef;                 /** @} */
+  uint32_t         RESERVED1[4U]; /**< Reserved for future use **/
+  __IOM uint32_t   DTCTRL;        /**< DTI Control Register  */
+  __IOM uint32_t   DTTIME;        /**< DTI Time Control Register  */
+  __IOM uint32_t   DTFC;          /**< DTI Fault Configuration Register  */
+  __IOM uint32_t   DTOGEN;        /**< DTI Output Generation Enable Register  */
+  __IM uint32_t    DTFAULT;       /**< DTI Fault Register  */
+  __OM uint32_t    DTFAULTC;      /**< DTI Fault Clear Register  */
+  __IOM uint32_t   DTLOCK;        /**< DTI Configuration Lock Register  */
+} TIMER_TypeDef;                  /**< TIMER Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_TIMER_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for TIMER CTRL */
 #define _TIMER_CTRL_RESETVALUE                     0x00000000UL                             /**< Default value for TIMER_CTRL */
@@ -502,13 +510,13 @@ typedef struct
 #define TIMER_ROUTE_CDTI2PEN_DEFAULT               (_TIMER_ROUTE_CDTI2PEN_DEFAULT << 10) /**< Shifted mode DEFAULT for TIMER_ROUTE */
 #define _TIMER_ROUTE_LOCATION_SHIFT                16                                    /**< Shift value for TIMER_LOCATION */
 #define _TIMER_ROUTE_LOCATION_MASK                 0x30000UL                             /**< Bit mask for TIMER_LOCATION */
-#define _TIMER_ROUTE_LOCATION_DEFAULT              0x00000000UL                          /**< Mode DEFAULT for TIMER_ROUTE */
 #define _TIMER_ROUTE_LOCATION_LOC0                 0x00000000UL                          /**< Mode LOC0 for TIMER_ROUTE */
+#define _TIMER_ROUTE_LOCATION_DEFAULT              0x00000000UL                          /**< Mode DEFAULT for TIMER_ROUTE */
 #define _TIMER_ROUTE_LOCATION_LOC1                 0x00000001UL                          /**< Mode LOC1 for TIMER_ROUTE */
 #define _TIMER_ROUTE_LOCATION_LOC2                 0x00000002UL                          /**< Mode LOC2 for TIMER_ROUTE */
 #define _TIMER_ROUTE_LOCATION_LOC3                 0x00000003UL                          /**< Mode LOC3 for TIMER_ROUTE */
-#define TIMER_ROUTE_LOCATION_DEFAULT               (_TIMER_ROUTE_LOCATION_DEFAULT << 16) /**< Shifted mode DEFAULT for TIMER_ROUTE */
 #define TIMER_ROUTE_LOCATION_LOC0                  (_TIMER_ROUTE_LOCATION_LOC0 << 16)    /**< Shifted mode LOC0 for TIMER_ROUTE */
+#define TIMER_ROUTE_LOCATION_DEFAULT               (_TIMER_ROUTE_LOCATION_DEFAULT << 16) /**< Shifted mode DEFAULT for TIMER_ROUTE */
 #define TIMER_ROUTE_LOCATION_LOC1                  (_TIMER_ROUTE_LOCATION_LOC1 << 16)    /**< Shifted mode LOC1 for TIMER_ROUTE */
 #define TIMER_ROUTE_LOCATION_LOC2                  (_TIMER_ROUTE_LOCATION_LOC2 << 16)    /**< Shifted mode LOC2 for TIMER_ROUTE */
 #define TIMER_ROUTE_LOCATION_LOC3                  (_TIMER_ROUTE_LOCATION_LOC3 << 16)    /**< Shifted mode LOC3 for TIMER_ROUTE */
@@ -927,5 +935,4 @@ typedef struct
 #define TIMER_DTLOCK_LOCKKEY_UNLOCK                (_TIMER_DTLOCK_LOCKKEY_UNLOCK << 0)   /**< Shifted mode UNLOCK for TIMER_DTLOCK */
 
 /** @} End of group EFM32G_TIMER */
-
-
+/** @} End of group Parts */

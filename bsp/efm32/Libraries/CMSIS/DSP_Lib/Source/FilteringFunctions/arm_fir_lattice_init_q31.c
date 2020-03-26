@@ -1,56 +1,49 @@
-/*-----------------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:        arm_fir_lattice_init_q31.c    
-*    
-* Description:  Q31 FIR lattice filter initialization function.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated    
-*    
-* Version 0.0.7  2010/06/10     
-*    Misra-C changes done    
-* ---------------------------------------------------------------------------*/
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_fir_lattice_init_q31.c
+ * Description:  Q31 FIR lattice filter initialization function
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupFilters    
+/**
+ * @ingroup groupFilters
  */
 
-/**    
- * @addtogroup FIR_Lattice    
- * @{    
+/**
+ * @addtogroup FIR_Lattice
+ * @{
  */
 
-  /**    
-   * @brief Initialization function for the Q31 FIR lattice filter.    
-   * @param[in] *S points to an instance of the Q31 FIR lattice structure.    
-   * @param[in] numStages  number of filter stages.    
-   * @param[in] *pCoeffs points to the coefficient buffer.  The array is of length numStages.    
-   * @param[in] *pState points to the state buffer.   The array is of length numStages.    
-   * @return none.    
+  /**
+   * @brief Initialization function for the Q31 FIR lattice filter.
+   * @param[in] *S points to an instance of the Q31 FIR lattice structure.
+   * @param[in] numStages  number of filter stages.
+   * @param[in] *pCoeffs points to the coefficient buffer.  The array is of length numStages.
+   * @param[in] *pState points to the state buffer.   The array is of length numStages.
+   * @return none.
    */
 
 void arm_fir_lattice_init_q31(
@@ -73,6 +66,6 @@ void arm_fir_lattice_init_q31(
 
 }
 
-/**    
- * @} end of FIR_Lattice group    
+/**
+ * @} end of FIR_Lattice group
  */

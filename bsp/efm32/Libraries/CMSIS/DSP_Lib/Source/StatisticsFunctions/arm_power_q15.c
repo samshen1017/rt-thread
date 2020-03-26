@@ -1,65 +1,61 @@
-/* ----------------------------------------------------------------------    
-* Copyright (C) 2010 ARM Limited. All rights reserved.    
-*    
-* $Date:        15. February 2012  
-* $Revision: 	V1.1.0  
-*    
-* Project: 	    CMSIS DSP Library    
-* Title:		arm_power_q15.c    
-*    
-* Description:	Sum of the squares of the elements of a Q15 vector.    
-*    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-*  
-* Version 1.1.0 2012/02/15 
-*    Updated with more optimizations, bug fixes and minor API changes.  
-*   
-* Version 1.0.10 2011/7/15  
-*    Big Endian support added and Merged M0 and M3/M4 Source code.   
-*    
-* Version 1.0.3 2010/11/29   
-*    Re-organized the CMSIS folders and updated documentation.    
-*     
-* Version 1.0.2 2010/11/11    
-*    Documentation updated.     
-*    
-* Version 1.0.1 2010/10/05     
-*    Production release and review comments incorporated.    
-*    
-* Version 1.0.0 2010/09/20     
-*    Production release and review comments incorporated.    
-* -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------
+ * Project:      CMSIS DSP Library
+ * Title:        arm_power_q15.c
+ * Description:  Sum of the squares of the elements of a Q15 vector
+ *
+ * $Date:        27. January 2017
+ * $Revision:    V.1.5.1
+ *
+ * Target Processor: Cortex-M cores
+ * -------------------------------------------------------------------- */
+/*
+ * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "arm_math.h"
 
-/**    
- * @ingroup groupStats    
+/**
+ * @ingroup groupStats
  */
 
-/**    
- * @addtogroup power    
- * @{    
+/**
+ * @addtogroup power
+ * @{
  */
 
-/**    
- * @brief Sum of the squares of the elements of a Q15 vector.    
- * @param[in]       *pSrc points to the input vector    
- * @param[in]       blockSize length of the input vector    
- * @param[out]      *pResult sum of the squares value returned here    
- * @return none.    
- *    
- * @details    
- * <b>Scaling and Overflow Behavior:</b>    
- *    
- * \par    
- * The function is implemented using a 64-bit internal accumulator.     
- * The input is represented in 1.15 format.   
- * Intermediate multiplication yields a 2.30 format, and this    
- * result is added without saturation to a 64-bit accumulator in 34.30 format.    
- * With 33 guard bits in the accumulator, there is no risk of overflow, and the    
- * full precision of the intermediate multiplication is preserved.    
- * Finally, the return result is in 34.30 format.     
- *    
+/**
+ * @brief Sum of the squares of the elements of a Q15 vector.
+ * @param[in]       *pSrc points to the input vector
+ * @param[in]       blockSize length of the input vector
+ * @param[out]      *pResult sum of the squares value returned here
+ * @return none.
+ *
+ * @details
+ * <b>Scaling and Overflow Behavior:</b>
+ *
+ * \par
+ * The function is implemented using a 64-bit internal accumulator.
+ * The input is represented in 1.15 format.
+ * Intermediate multiplication yields a 2.30 format, and this
+ * result is added without saturation to a 64-bit accumulator in 34.30 format.
+ * With 33 guard bits in the accumulator, there is no risk of overflow, and the
+ * full precision of the intermediate multiplication is preserved.
+ * Finally, the return result is in 34.30 format.
+ *
  */
 
 void arm_power_q15(
@@ -69,8 +65,7 @@ void arm_power_q15(
 {
   q63_t sum = 0;                                 /* Temporary result storage */
 
-#ifndef ARM_MATH_CM0
-
+#if defined (ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   q31_t in32;                                    /* Temporary variable to store input value */
@@ -79,11 +74,11 @@ void arm_power_q15(
 
 
   /* loop Unrolling */
-  blkCnt = blockSize >> 2u;
+  blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.    
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
     /* Compute Power and then store the result in a temporary variable, sum. */
@@ -96,11 +91,11 @@ void arm_power_q15(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.    
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
    ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
+  blkCnt = blockSize % 0x4U;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
     /* Compute Power and then store the result in a temporary variable, sum. */
@@ -112,7 +107,6 @@ void arm_power_q15(
   }
 
 #else
-
   /* Run the below code for Cortex-M0 */
 
   q15_t in;                                      /* Temporary variable to store input value */
@@ -122,7 +116,7 @@ void arm_power_q15(
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
-  while(blkCnt > 0u)
+  while (blkCnt > 0U)
   {
     /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
     /* Compute Power and then store the result in a temporary variable, sum. */
@@ -133,12 +127,12 @@ void arm_power_q15(
     blkCnt--;
   }
 
-#endif /* #ifndef ARM_MATH_CM0 */
+#endif /* #if defined (ARM_MATH_DSP) */
 
   /* Store the results in 34.30 format  */
   *pResult = sum;
 }
 
-/**    
- * @} end of power group    
+/**
+ * @} end of power group
  */

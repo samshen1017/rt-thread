@@ -1,55 +1,62 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32gg_prs Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32GG_PRS register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32GG_PRS
  * @{
  * @brief EFM32GG_PRS Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t  SWPULSE;      /**< Software Pulse Register  */
-  __IO uint32_t  SWLEVEL;      /**< Software Level Register  */
-  __IO uint32_t  ROUTE;        /**< I/O Routing Register  */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
+  __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
 
-  uint32_t       RESERVED0[1]; /**< Reserved registers */
+  uint32_t       RESERVED0[1U]; /**< Reserved registers */
+  PRS_CH_TypeDef CH[12U];       /**< Channel registers */
+} PRS_TypeDef;                  /**< PRS Register Declaration *//** @} */
 
-  PRS_CH_TypeDef CH[12];       /**< Channel registers */
-} PRS_TypeDef;                 /** @} */
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG_PRS_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE                 0x00000000UL                           /**< Default value for PRS_SWPULSE */
@@ -180,34 +187,36 @@ typedef struct
 #define PRS_SWLEVEL_CH11LEVEL_DEFAULT           (_PRS_SWLEVEL_CH11LEVEL_DEFAULT << 11) /**< Shifted mode DEFAULT for PRS_SWLEVEL */
 
 /* Bit fields for PRS ROUTE */
-#define _PRS_ROUTE_RESETVALUE                   0x00000000UL                     /**< Default value for PRS_ROUTE */
-#define _PRS_ROUTE_MASK                         0x0000070FUL                     /**< Mask for PRS_ROUTE */
-#define PRS_ROUTE_CH0PEN                        (0x1UL << 0)                     /**< CH0 Pin Enable */
-#define _PRS_ROUTE_CH0PEN_SHIFT                 0                                /**< Shift value for PRS_CH0PEN */
-#define _PRS_ROUTE_CH0PEN_MASK                  0x1UL                            /**< Bit mask for PRS_CH0PEN */
-#define _PRS_ROUTE_CH0PEN_DEFAULT               0x00000000UL                     /**< Mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH0PEN_DEFAULT                (_PRS_ROUTE_CH0PEN_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH1PEN                        (0x1UL << 1)                     /**< CH1 Pin Enable */
-#define _PRS_ROUTE_CH1PEN_SHIFT                 1                                /**< Shift value for PRS_CH1PEN */
-#define _PRS_ROUTE_CH1PEN_MASK                  0x2UL                            /**< Bit mask for PRS_CH1PEN */
-#define _PRS_ROUTE_CH1PEN_DEFAULT               0x00000000UL                     /**< Mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH1PEN_DEFAULT                (_PRS_ROUTE_CH1PEN_DEFAULT << 1) /**< Shifted mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH2PEN                        (0x1UL << 2)                     /**< CH2 Pin Enable */
-#define _PRS_ROUTE_CH2PEN_SHIFT                 2                                /**< Shift value for PRS_CH2PEN */
-#define _PRS_ROUTE_CH2PEN_MASK                  0x4UL                            /**< Bit mask for PRS_CH2PEN */
-#define _PRS_ROUTE_CH2PEN_DEFAULT               0x00000000UL                     /**< Mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH2PEN_DEFAULT                (_PRS_ROUTE_CH2PEN_DEFAULT << 2) /**< Shifted mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH3PEN                        (0x1UL << 3)                     /**< CH3 Pin Enable */
-#define _PRS_ROUTE_CH3PEN_SHIFT                 3                                /**< Shift value for PRS_CH3PEN */
-#define _PRS_ROUTE_CH3PEN_MASK                  0x8UL                            /**< Bit mask for PRS_CH3PEN */
-#define _PRS_ROUTE_CH3PEN_DEFAULT               0x00000000UL                     /**< Mode DEFAULT for PRS_ROUTE */
-#define PRS_ROUTE_CH3PEN_DEFAULT                (_PRS_ROUTE_CH3PEN_DEFAULT << 3) /**< Shifted mode DEFAULT for PRS_ROUTE */
-#define _PRS_ROUTE_LOCATION_SHIFT               8                                /**< Shift value for PRS_LOCATION */
-#define _PRS_ROUTE_LOCATION_MASK                0x700UL                          /**< Bit mask for PRS_LOCATION */
-#define _PRS_ROUTE_LOCATION_LOC0                0x00000000UL                     /**< Mode LOC0 for PRS_ROUTE */
-#define _PRS_ROUTE_LOCATION_LOC1                0x00000001UL                     /**< Mode LOC1 for PRS_ROUTE */
-#define PRS_ROUTE_LOCATION_LOC0                 (_PRS_ROUTE_LOCATION_LOC0 << 8)  /**< Shifted mode LOC0 for PRS_ROUTE */
-#define PRS_ROUTE_LOCATION_LOC1                 (_PRS_ROUTE_LOCATION_LOC1 << 8)  /**< Shifted mode LOC1 for PRS_ROUTE */
+#define _PRS_ROUTE_RESETVALUE                   0x00000000UL                       /**< Default value for PRS_ROUTE */
+#define _PRS_ROUTE_MASK                         0x0000070FUL                       /**< Mask for PRS_ROUTE */
+#define PRS_ROUTE_CH0PEN                        (0x1UL << 0)                       /**< CH0 Pin Enable */
+#define _PRS_ROUTE_CH0PEN_SHIFT                 0                                  /**< Shift value for PRS_CH0PEN */
+#define _PRS_ROUTE_CH0PEN_MASK                  0x1UL                              /**< Bit mask for PRS_CH0PEN */
+#define _PRS_ROUTE_CH0PEN_DEFAULT               0x00000000UL                       /**< Mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH0PEN_DEFAULT                (_PRS_ROUTE_CH0PEN_DEFAULT << 0)   /**< Shifted mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH1PEN                        (0x1UL << 1)                       /**< CH1 Pin Enable */
+#define _PRS_ROUTE_CH1PEN_SHIFT                 1                                  /**< Shift value for PRS_CH1PEN */
+#define _PRS_ROUTE_CH1PEN_MASK                  0x2UL                              /**< Bit mask for PRS_CH1PEN */
+#define _PRS_ROUTE_CH1PEN_DEFAULT               0x00000000UL                       /**< Mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH1PEN_DEFAULT                (_PRS_ROUTE_CH1PEN_DEFAULT << 1)   /**< Shifted mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH2PEN                        (0x1UL << 2)                       /**< CH2 Pin Enable */
+#define _PRS_ROUTE_CH2PEN_SHIFT                 2                                  /**< Shift value for PRS_CH2PEN */
+#define _PRS_ROUTE_CH2PEN_MASK                  0x4UL                              /**< Bit mask for PRS_CH2PEN */
+#define _PRS_ROUTE_CH2PEN_DEFAULT               0x00000000UL                       /**< Mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH2PEN_DEFAULT                (_PRS_ROUTE_CH2PEN_DEFAULT << 2)   /**< Shifted mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH3PEN                        (0x1UL << 3)                       /**< CH3 Pin Enable */
+#define _PRS_ROUTE_CH3PEN_SHIFT                 3                                  /**< Shift value for PRS_CH3PEN */
+#define _PRS_ROUTE_CH3PEN_MASK                  0x8UL                              /**< Bit mask for PRS_CH3PEN */
+#define _PRS_ROUTE_CH3PEN_DEFAULT               0x00000000UL                       /**< Mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_CH3PEN_DEFAULT                (_PRS_ROUTE_CH3PEN_DEFAULT << 3)   /**< Shifted mode DEFAULT for PRS_ROUTE */
+#define _PRS_ROUTE_LOCATION_SHIFT               8                                  /**< Shift value for PRS_LOCATION */
+#define _PRS_ROUTE_LOCATION_MASK                0x700UL                            /**< Bit mask for PRS_LOCATION */
+#define _PRS_ROUTE_LOCATION_LOC0                0x00000000UL                       /**< Mode LOC0 for PRS_ROUTE */
+#define _PRS_ROUTE_LOCATION_DEFAULT             0x00000000UL                       /**< Mode DEFAULT for PRS_ROUTE */
+#define _PRS_ROUTE_LOCATION_LOC1                0x00000001UL                       /**< Mode LOC1 for PRS_ROUTE */
+#define PRS_ROUTE_LOCATION_LOC0                 (_PRS_ROUTE_LOCATION_LOC0 << 8)    /**< Shifted mode LOC0 for PRS_ROUTE */
+#define PRS_ROUTE_LOCATION_DEFAULT              (_PRS_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for PRS_ROUTE */
+#define PRS_ROUTE_LOCATION_LOC1                 (_PRS_ROUTE_LOCATION_LOC1 << 8)    /**< Shifted mode LOC1 for PRS_ROUTE */
 
 /* Bit fields for PRS CH_CTRL */
 #define _PRS_CH_CTRL_RESETVALUE                 0x00000000UL                                /**< Default value for PRS_CH_CTRL */
@@ -447,5 +456,4 @@ typedef struct
 #define PRS_CH_CTRL_ASYNC_DEFAULT               (_PRS_CH_CTRL_ASYNC_DEFAULT << 28)          /**< Shifted mode DEFAULT for PRS_CH_CTRL */
 
 /** @} End of group EFM32GG_PRS */
-
-
+/** @} End of group Parts */

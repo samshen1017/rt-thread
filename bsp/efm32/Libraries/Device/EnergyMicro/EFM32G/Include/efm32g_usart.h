@@ -1,70 +1,78 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
- * @brief efm32g_usart Register and Bit Field definitions
- * @author Energy Micro AS
- * @version 3.0.0
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
- ******************************************************************************
+ * @brief EFM32G_USART register and bit field definitions
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Energy Micro AS has no
- * obligation to support this Software. Energy Micro AS is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Energy Micro AS will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- *****************************************************************************/
-/**************************************************************************//**
+ ******************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
+/***************************************************************************//**
+ * @addtogroup Parts
+ * @{
+ ******************************************************************************/
+/***************************************************************************//**
  * @defgroup EFM32G_USART
  * @{
  * @brief EFM32G_USART Register Declaration
- *****************************************************************************/
-typedef struct
-{
-  __IO uint32_t CTRL;       /**< Control Register  */
-  __IO uint32_t FRAME;      /**< USART Frame Format Register  */
-  __IO uint32_t TRIGCTRL;   /**< USART Trigger Control register  */
-  __IO uint32_t CMD;        /**< Command Register  */
-  __I uint32_t  STATUS;     /**< USART Status Register  */
-  __IO uint32_t CLKDIV;     /**< Clock Control Register  */
-  __I uint32_t  RXDATAX;    /**< RX Buffer Data Extended Register  */
-  __I uint32_t  RXDATA;     /**< RX Buffer Data Register  */
-  __I uint32_t  RXDOUBLEX;  /**< RX Buffer Double Data Extended Register  */
-  __I uint32_t  RXDOUBLE;   /**< RX FIFO Double Data Register  */
-  __I uint32_t  RXDATAXP;   /**< RX Buffer Data Extended Peek Register  */
-  __I uint32_t  RXDOUBLEXP; /**< RX Buffer Double Data Extended Peek Register  */
-  __IO uint32_t TXDATAX;    /**< TX Buffer Data Extended Register  */
-  __IO uint32_t TXDATA;     /**< TX Buffer Data Register  */
-  __IO uint32_t TXDOUBLEX;  /**< TX Buffer Double Data Extended Register  */
-  __IO uint32_t TXDOUBLE;   /**< TX Buffer Double Data Register  */
-  __I uint32_t  IF;         /**< Interrupt Flag Register  */
-  __IO uint32_t IFS;        /**< Interrupt Flag Set Register  */
-  __IO uint32_t IFC;        /**< Interrupt Flag Clear Register  */
-  __IO uint32_t IEN;        /**< Interrupt Enable Register  */
-  __IO uint32_t IRCTRL;     /**< IrDA Control Register  */
-  __IO uint32_t ROUTE;      /**< I/O Routing Register  */
-} USART_TypeDef;            /** @} */
+ ******************************************************************************/
+typedef struct {
+  __IOM uint32_t CTRL;       /**< Control Register  */
+  __IOM uint32_t FRAME;      /**< USART Frame Format Register  */
+  __IOM uint32_t TRIGCTRL;   /**< USART Trigger Control register  */
+  __IOM uint32_t CMD;        /**< Command Register  */
+  __IM uint32_t  STATUS;     /**< USART Status Register  */
+  __IOM uint32_t CLKDIV;     /**< Clock Control Register  */
+  __IM uint32_t  RXDATAX;    /**< RX Buffer Data Extended Register  */
+  __IM uint32_t  RXDATA;     /**< RX Buffer Data Register  */
+  __IM uint32_t  RXDOUBLEX;  /**< RX Buffer Double Data Extended Register  */
+  __IM uint32_t  RXDOUBLE;   /**< RX FIFO Double Data Register  */
+  __IM uint32_t  RXDATAXP;   /**< RX Buffer Data Extended Peek Register  */
+  __IM uint32_t  RXDOUBLEXP; /**< RX Buffer Double Data Extended Peek Register  */
+  __IOM uint32_t TXDATAX;    /**< TX Buffer Data Extended Register  */
+  __IOM uint32_t TXDATA;     /**< TX Buffer Data Register  */
+  __IOM uint32_t TXDOUBLEX;  /**< TX Buffer Double Data Extended Register  */
+  __IOM uint32_t TXDOUBLE;   /**< TX Buffer Double Data Register  */
+  __IM uint32_t  IF;         /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;        /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;        /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;        /**< Interrupt Enable Register  */
+  __IOM uint32_t IRCTRL;     /**< IrDA Control Register  */
+  __IOM uint32_t ROUTE;      /**< I/O Routing Register  */
+} USART_TypeDef;             /**< USART Register Declaration *//** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G_USART_BitFields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for USART CTRL */
 #define _USART_CTRL_RESETVALUE                0x00000000UL                             /**< Default value for USART_CTRL */
@@ -1003,17 +1011,16 @@ typedef struct
 #define USART_ROUTE_CLKPEN_DEFAULT            (_USART_ROUTE_CLKPEN_DEFAULT << 3)   /**< Shifted mode DEFAULT for USART_ROUTE */
 #define _USART_ROUTE_LOCATION_SHIFT           8                                    /**< Shift value for USART_LOCATION */
 #define _USART_ROUTE_LOCATION_MASK            0x300UL                              /**< Bit mask for USART_LOCATION */
-#define _USART_ROUTE_LOCATION_DEFAULT         0x00000000UL                         /**< Mode DEFAULT for USART_ROUTE */
 #define _USART_ROUTE_LOCATION_LOC0            0x00000000UL                         /**< Mode LOC0 for USART_ROUTE */
+#define _USART_ROUTE_LOCATION_DEFAULT         0x00000000UL                         /**< Mode DEFAULT for USART_ROUTE */
 #define _USART_ROUTE_LOCATION_LOC1            0x00000001UL                         /**< Mode LOC1 for USART_ROUTE */
 #define _USART_ROUTE_LOCATION_LOC2            0x00000002UL                         /**< Mode LOC2 for USART_ROUTE */
 #define _USART_ROUTE_LOCATION_LOC3            0x00000003UL                         /**< Mode LOC3 for USART_ROUTE */
-#define USART_ROUTE_LOCATION_DEFAULT          (_USART_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for USART_ROUTE */
 #define USART_ROUTE_LOCATION_LOC0             (_USART_ROUTE_LOCATION_LOC0 << 8)    /**< Shifted mode LOC0 for USART_ROUTE */
+#define USART_ROUTE_LOCATION_DEFAULT          (_USART_ROUTE_LOCATION_DEFAULT << 8) /**< Shifted mode DEFAULT for USART_ROUTE */
 #define USART_ROUTE_LOCATION_LOC1             (_USART_ROUTE_LOCATION_LOC1 << 8)    /**< Shifted mode LOC1 for USART_ROUTE */
 #define USART_ROUTE_LOCATION_LOC2             (_USART_ROUTE_LOCATION_LOC2 << 8)    /**< Shifted mode LOC2 for USART_ROUTE */
 #define USART_ROUTE_LOCATION_LOC3             (_USART_ROUTE_LOCATION_LOC3 << 8)    /**< Shifted mode LOC3 for USART_ROUTE */
 
 /** @} End of group EFM32G_USART */
-
-
+/** @} End of group Parts */

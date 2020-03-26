@@ -1,0 +1,6 @@
+
+menu "EFM32 Sensor support"
+    config RT_USING_ZSC31014
+    bool "Enable ZSC31014 support"
+    default n
+endmenu
