@@ -14,7 +14,7 @@
 #define RT_USING_OVERFLOW_CHECK
 #define RT_USING_HOOK
 #define RT_USING_IDLE_HOOK
-#define RT_IDEL_HOOK_LIST_SIZE 4
+#define RT_IDLE_HOOK_LIST_SIZE 4
 #define IDLE_THREAD_STACK_SIZE 256
 #define RT_USING_TIMER_SOFT
 #define RT_TIMER_THREAD_PRIO 4
@@ -42,11 +42,10 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "leuart0"
-#define RT_VER_NUM 0x40002
+#define RT_VER_NUM 0x40003
 
 /* RT-Thread Components */
 
-#define RT_USING_COMPONENTS_INIT
 
 /* C++ features */
 
@@ -96,12 +95,6 @@
 #define RT_USING_SENSOR
 #define RT_USING_SENSOR_CMD
 
-/* Using Hardware Crypto drivers */
-
-
-/* Using WiFi */
-
-
 /* Using USB */
 
 #define RT_USING_USB_DEVICE
@@ -111,6 +104,7 @@
 #define _RT_USB_DEVICE_CDC
 #define RT_USB_DEVICE_CDC
 #define RT_VCOM_TASK_STK_SIZE 512
+#define RT_CDC_RX_BUFSIZE 128
 #define RT_VCOM_SERNO "32021919830108"
 #define RT_VCOM_SER_LEN 14
 #define RT_VCOM_TX_TIMEOUT 1000
@@ -128,9 +122,6 @@
 
 
 /* light weight TCP/IP stack */
-
-
-/* Modbus master and slave stack */
 
 
 /* AT commands */
