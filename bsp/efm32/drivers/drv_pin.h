@@ -13,12 +13,12 @@
 
 typedef enum
 {
-    GPIO_A_PORT = 1U,
-    GPIO_B_PORT = 2U,
-    GPIO_C_PORT = 3U,
-    GPIO_D_PORT = 4U,
-    GPIO_E_PORT = 5U,
-    GPIO_F_PORT = 6U
+    GPIO_A_PORT = 0U,
+    GPIO_B_PORT = 1U,
+    GPIO_C_PORT = 2U,
+    GPIO_D_PORT = 3U,
+    GPIO_E_PORT = 4U,
+    GPIO_F_PORT = 5U
 } GPIO_PIN_PORT;
 
 extern rt_uint16_t get_PinNumber(GPIO_PIN_PORT port, rt_uint8_t pin);

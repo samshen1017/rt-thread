@@ -7,6 +7,7 @@ cwd     = GetCurrentDir()
 # add the general drivers.
 src = Split("""
    application.c
+   cmu_cmd.c
    test.c
    startup.c
    delay.c
@@ -20,7 +21,11 @@ if GetDepend(['RT_USING_ULOG']):
 
 # Ymoden
 if GetDepend(['RT_USING_RYM']):
-	src +=['update.c']
+	src +=['ymodem_port.c']
+
+# USBD
+if GetDepend(['RT_USING_USB_DEVICE']):
+	src +=['ymodem4usb.c']
 
 CPPPATH = [cwd]
 

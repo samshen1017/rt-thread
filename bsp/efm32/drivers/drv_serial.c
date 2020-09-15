@@ -496,4 +496,78 @@ void rt_hw_serial_init(void)
 #endif /* RT_USING_USART2 */
 }
 
+#include <string.h>
+void rt_hw_serial_enable(const char *serialName, rt_bool_t enable)
+{
+#ifdef RT_USING_UART0
+    if (strncmp("uart0", serialName, RT_NAME_MAX) == 0)
+    {
+        if (enable)
+        {
+            uart_enable(&huart0);
+        }
+        else
+        {
+            uart_disable(&huart0);
+        }
+    }
+#endif /* RT_USING_UART0 */
+
+#ifdef RT_USING_UART1
+    if (strncmp("uart1", serialName, RT_NAME_MAX) == 0)
+    {
+        if (enable)
+        {
+            uart_enable(&huart1);
+        }
+        else
+        {
+            uart_disable(&huart1);
+        }
+    }
+#endif /* RT_USING_UART1 */
+
+#ifdef RT_USING_USART0
+    if (strncmp("usart0", serialName, RT_NAME_MAX) == 0)
+    {
+        if (enable)
+        {
+            uart_enable(&husart0);
+        }
+        else
+        {
+            uart_disable(&husart0);
+        }
+    }
+#endif /* RT_USING_USART0 */
+
+#ifdef RT_USING_USART1
+    if (strncmp("usart1", serialName, RT_NAME_MAX) == 0)
+    {
+        if (enable)
+        {
+            uart_enable(&husart1);
+        }
+        else
+        {
+            uart_disable(&husart1);
+        }
+    }
+#endif /* RT_USING_USART1 */
+
+#ifdef RT_USING_USART2
+    if (strncmp("usart2", serialName, RT_NAME_MAX) == 0)
+    {
+        if (enable)
+        {
+            uart_enable(&husart2);
+        }
+        else
+        {
+            uart_disable(&husart2);
+        }
+    }
+#endif /* RT_USING_USART2 */
+}
+
 #endif

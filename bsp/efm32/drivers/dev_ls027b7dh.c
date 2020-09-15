@@ -4,32 +4,62 @@
 #include <rthw.h>
 #include <drv_pin.h>
 #include <drv_spi.h>
+#include <rtconfig.h>
 
 #if defined(RT_USING_LS027B7DH)
+
+#if defined(RT_USING_PM)
+#define REQUEST_PM                               \
+    do                                           \
+    {                                            \
+        rt_pm_request(PM_SLEEP_MODE_NONE);       \
+        rt_pm_run_enter(PM_RUN_MODE_HIGH_SPEED); \
+    } while (0)
+
+#define RELEASE_PM                              \
+    do                                          \
+    {                                           \
+        rt_pm_release(PM_SLEEP_MODE_NONE);      \
+        rt_pm_run_enter(PM_RUN_MODE_LOW_SPEED); \
+    } while (0)
+#else
+#define REQUEST_PM
+#define RELEASE_PM
+#endif //RT_USING_PM
 
 #ifdef LS027B7DH_DEBUG
 #define lcd_debug(format, args...) rt_kprintf(format, ##args)
 #else
 #define lcd_debug(format, args...)
-#endif
+#endif //LS027B7DH_DEBUG
 
 #define LS027B7DH_NAME "ls027b7"
 #define LCD_DEVICE_NAME "memlcd"
+
+// IO
+#define LCD_POWER_PORT GPIO_C_PORT
+#define LCD_POWER_PIN 8
+#define LCD_CS_PORT GPIO_C_PORT
+#define LCD_CS_PIN 9
+
 #define REVERSE_SCREEN 1
+
 // Commands
 #define MLCD_WR 0x80 //MLCD write line command
 #define MLCD_CM 0x20 //MLCD clear memory command
 #define MLCD_NO 0x00 //MLCD NOP command (used to switch VCOM)
+
 //LCD resolution
 #define MLCD_X 400                   //pixels per horizontal line
 #define MLCD_Y 240                   //pixels per vertical line
 #define MLCD_BYTES_LINE (MLCD_X / 8) //number of bytes in a line
 #define MLCD_BUF_SIZE (MLCD_Y * MLCD_BYTES_LINE)
+
 //defines the VCOM bit in the command word that goes to the LCD
 #define VCOM_MASK 0x40
 static uint8_t vcom = 0;
 
-struct _memlcd_t
+typedef struct
 {
     struct rt_device parent;
     struct rt_device_graphic_info lcd_info;
@@ -37,15 +67,15 @@ struct _memlcd_t
     rt_uint8_t *buf;
     rt_uint16_t cs_pin;
     rt_uint16_t pwr_pin;
-};
+} MemLcd;
 
-typedef struct _memlcd_t memlcd_t;
-static memlcd_t mlcd_instance;
+static MemLcd mlcd_instance;
 
 //置1为白底，置0为黑点
-static void memlcd_clear(memlcd_t *mlcd)
+static void memlcd_clear(MemLcd *mlcd)
 {
     rt_size_t ret;
+    REQUEST_PM;
     vcom ^= VCOM_MASK;
     ret = rt_spi_transfer(mlcd->spi_dev, (rt_uint8_t[]){MLCD_CM | vcom, MLCD_NO}, RT_NULL, 2);
     if (ret != 2)
@@ -53,6 +83,7 @@ static void memlcd_clear(memlcd_t *mlcd)
         lcd_debug("memlcd clear failed.\n");
     }
     rt_memset(mlcd->buf, 0xff, MLCD_BUF_SIZE);
+    RELEASE_PM;
 }
 
 /** 
@@ -96,9 +127,10 @@ static inline rt_uint8_t lineToAddr(rt_uint8_t line)
 }
 
 #if REVERSE_SCREEN
-static rt_size_t memlcd_refresh(memlcd_t *mlcd, rt_uint8_t line)
+static rt_size_t memlcd_refresh(MemLcd *mlcd, rt_uint8_t line)
 {
     rt_size_t ret;
+    REQUEST_PM;
     vcom ^= VCOM_MASK;
     line = MLCD_Y - line - 1;
     rt_uint8_t buf[MLCD_BYTES_LINE + 4] = {0};
@@ -110,12 +142,13 @@ static rt_size_t memlcd_refresh(memlcd_t *mlcd, rt_uint8_t line)
     }
     //数组元素最后两个为0x0，具体查看memlcd通信协议
     ret = rt_spi_transfer(mlcd->spi_dev, &buf, RT_NULL, (sizeof(buf) / sizeof(rt_uint8_t)));
+    RELEASE_PM;
     return ret;
 }
 
-static void _drawpoint(memlcd_t *mlcd, uint16_t x, uint16_t y, bool bDraw)
+static void _drawpoint(MemLcd *mlcd, rt_uint16_t x, rt_uint16_t y, rt_bool_t bDraw)
 {
-    uint16_t pos, bx, tmp = 0;
+    rt_uint16_t pos, bx, tmp = 0;
     pos = ((MLCD_X - x - 1) / 8) + ((MLCD_Y - y - 1) * MLCD_BYTES_LINE);
     bx = (MLCD_X - x - 1) % 8;
     tmp |= 1 << (7 - bx);
@@ -125,9 +158,10 @@ static void _drawpoint(memlcd_t *mlcd, uint16_t x, uint16_t y, bool bDraw)
         (mlcd->buf)[pos] |= tmp;
 }
 #else
-static rt_size_t memlcd_refresh(memlcd_t *mlcd, rt_uint8_t line)
+static rt_size_t memlcd_refresh(MemLcd *mlcd, rt_uint8_t line)
 {
     rt_size_t ret;
+    REQUEST_PM;
     vcom ^= VCOM_MASK;
     rt_uint8_t buf[MLCD_BYTES_LINE + 4] = {0};
     buf[0] = MLCD_WR | vcom;   //command
@@ -138,12 +172,13 @@ static rt_size_t memlcd_refresh(memlcd_t *mlcd, rt_uint8_t line)
     }
     //数组元素最后两个为0x0，具体查看memlcd通信协议
     ret = rt_spi_transfer(mlcd->spi_dev, &buf, RT_NULL, (sizeof(buf) / sizeof(rt_uint8_t)));
+    RELEASE_PM;
     return ret;
 }
 
-static void _drawpoint(memlcd_t *mlcd, uint16_t x, uint16_t y, bool bDraw)
+static void _drawpoint(MemLcd *mlcd, rt_uint16_t x, rt_uint16_t y, rt_bool_t bDraw)
 {
-    uint16_t pos, bx, tmp = 0;
+    rt_uint16_t pos, bx, tmp = 0;
     pos = (x / 8) + (y * MLCD_BYTES_LINE);
     bx = x % 8;
     tmp |= 1 << (7 - bx);
@@ -152,17 +187,18 @@ static void _drawpoint(memlcd_t *mlcd, uint16_t x, uint16_t y, bool bDraw)
     else
         (mlcd->buf)[pos] |= tmp;
 }
-#endif
+#endif //REVERSE_SCREEN
 
-static void memlcd_drawpoint(memlcd_t *mlcd, uint16_t x, uint16_t y, bool bDraw)
+static void memlcd_drawpoint(MemLcd *mlcd, rt_uint16_t x, rt_uint16_t y, rt_bool_t bDraw)
 {
     _drawpoint(mlcd, x, y, bDraw);
     memlcd_refresh(mlcd, y);
 }
 
-static void memlcd_fillRect(memlcd_t *mlcd, uint16_t x, uint16_t y, uint16_t width, uint16_t height, bool bDraw)
+static void memlcd_fillRect(MemLcd *mlcd, rt_uint16_t x, rt_uint16_t y, rt_uint16_t width, rt_uint16_t height, rt_bool_t bDraw)
 {
-    uint16_t w, h;
+    rt_uint16_t w, h;
+    REQUEST_PM;
     for (h = 0; h < height; h++)
     {
         for (w = 0; w < width; w++)
@@ -171,18 +207,15 @@ static void memlcd_fillRect(memlcd_t *mlcd, uint16_t x, uint16_t y, uint16_t wid
         }
         memlcd_refresh(mlcd, y + h);
     }
+    RELEASE_PM;
 }
 
-#define LCD_POWER_ON() rt_pin_write(mlcd->pwr_pin, PIN_HIGH)
-#define LCD_POWER_OFF() rt_pin_write(mlcd->pwr_pin, PIN_LOW)
-static rt_err_t memlcd_unit_init(memlcd_t *mlcd)
+static rt_err_t memlcd_unit_init(MemLcd *mlcd)
 {
     lcd_debug("memlcd init.\n");
     rt_err_t ret;
-    // mlcd->cs_pin = get_PinNumber(GPIO_E_PORT, 14);
-    // mlcd->pwr_pin = get_PinNumber(GPIO_A_PORT, 5);
-    mlcd->cs_pin = get_PinNumber(GPIO_C_PORT, 9);
-    mlcd->pwr_pin = get_PinNumber(GPIO_C_PORT, 8);
+    mlcd->cs_pin = get_PinNumber(LCD_CS_PORT, LCD_CS_PIN);
+    mlcd->pwr_pin = get_PinNumber(LCD_POWER_PORT, LCD_POWER_PIN);
     rt_pin_mode(mlcd->pwr_pin, PIN_MODE_OUTPUT);
     ret = efm32_spi_bus_attach_device(mlcd->cs_pin, LS027B7DH_USING_SPI_NAME, LS027B7DH_NAME);
     if (ret != RT_EOK)
@@ -204,12 +237,27 @@ static rt_err_t memlcd_unit_init(memlcd_t *mlcd)
         lcd_debug("rt_spi_configure failed: %d\n", ret);
         return ret;
     }
-    LCD_POWER_ON();
+    rt_pin_write(mlcd->pwr_pin, PIN_HIGH);
     memlcd_clear(mlcd);
     return ret;
 }
 
+void rt_hw_memlcd_clearScreen(void)
+{
+    memlcd_fillRect(&mlcd_instance, 0, 0, 400, 240, RT_FALSE);
+}
+
+void rt_hw_memlcd_fillMemory(void *buf)
+{
+    rt_memcpy(mlcd_instance.buf, buf, MLCD_BUF_SIZE);
+    for (int i = 0; i < MLCD_Y; i++)
+    {
+        memlcd_refresh(&mlcd_instance, i);
+    }
+}
+
 #ifdef PKG_USING_GUIENGINE
+
 #include <rtgui/rtgui.h>
 #include <rtgui/rtgui_server.h>
 #include <rtgui/rtgui_system.h>
@@ -218,10 +266,11 @@ static rt_err_t memlcd_unit_init(memlcd_t *mlcd)
 #include <rtgui/widgets/window.h>
 #include <rtgui/widgets/box.h>
 #include <rtgui/image.h>
+
 static rt_err_t memlcd_init(rt_device_t dev)
 {
     rt_err_t ret;
-    memlcd_t *mlcd = (memlcd_t *)dev;
+    MemLcd *mlcd = (MemLcd *)dev;
     ret = memlcd_unit_init(mlcd);
     if (ret != RT_EOK)
     {
@@ -247,7 +296,7 @@ static rt_err_t memlcd_close(rt_device_t dev)
 
 static rt_err_t memlcd_control(rt_device_t dev, int cmd, void *args)
 {
-    memlcd_t *mlcd = (memlcd_t *)dev;
+    MemLcd *mlcd = (MemLcd *)dev;
     switch (cmd)
     {
     case RTGRAPHIC_CTRL_GET_INFO:
@@ -265,6 +314,18 @@ static rt_err_t memlcd_control(rt_device_t dev, int cmd, void *args)
     case RTGRAPHIC_CTRL_RECT_UPDATE:
         /* nothong to be done */
         break;
+    case RTGRAPHIC_CTRL_POWERON:
+    {
+        lcd_debug("MemLCD power on.\n");
+        rt_pin_write(mlcd->pwr_pin, PIN_HIGH);
+        break;
+    }
+    case RTGRAPHIC_CTRL_POWEROFF:
+    {
+        lcd_debug("MemLCD power off.\n");
+        rt_pin_write(mlcd->pwr_pin, PIN_LOW);
+        break;
+    }
     default:
         break;
     }
@@ -275,13 +336,14 @@ static void set_pixel(const char *pixel, int x, int y)
 {
     if (*pixel)
     {
-        memlcd_drawpoint(&mlcd_instance, x, y, false);
+        memlcd_drawpoint(&mlcd_instance, x, y, RT_FALSE);
     }
     else
     {
-        memlcd_drawpoint(&mlcd_instance, x, y, true);
+        memlcd_drawpoint(&mlcd_instance, x, y, RT_TRUE);
     }
 }
+
 //置1为白底，置0为黑点
 static void get_pixel(char *pixel, int x, int y)
 {
@@ -292,11 +354,12 @@ static void get_pixel(char *pixel, int x, int y)
     tmp |= 1 << (7 - bx);
     if ((buf[pos] & tmp) == 0)
     {
-        *pixel = rtgui_color_to_mono(BLACK);
+
+        *pixel = rtgui_color_to_mono(RTGUI_RGB(0x00, 0x00, 0x00));
     }
     else
     {
-        *pixel = rtgui_color_to_mono(WHITE);
+        *pixel = rtgui_color_to_mono(RTGUI_RGB(0xff, 0xff, 0xff));
     }
 }
 
@@ -304,11 +367,11 @@ static void draw_hline(const char *pixel, int x1, int x2, int y)
 {
     if (*pixel)
     {
-        memlcd_fillRect(&mlcd_instance, x1, y, x2 - x1 + 1, 1, false);
+        memlcd_fillRect(&mlcd_instance, x1, y, x2 - x1 + 1, 1, RT_FALSE);
     }
     else
     {
-        memlcd_fillRect(&mlcd_instance, x1, y, x2 - x1 + 1, 1, true);
+        memlcd_fillRect(&mlcd_instance, x1, y, x2 - x1 + 1, 1, RT_TRUE);
     }
 }
 
@@ -316,11 +379,11 @@ static void draw_vline(const char *pixel, int x, int y1, int y2)
 {
     if (*pixel)
     {
-        memlcd_fillRect(&mlcd_instance, x, y1, 1, y2 - y1 + 1, false);
+        memlcd_fillRect(&mlcd_instance, x, y1, 1, y2 - y1 + 1, RT_FALSE);
     }
     else
     {
-        memlcd_fillRect(&mlcd_instance, x, y1, 1, y2 - y1 + 1, true);
+        memlcd_fillRect(&mlcd_instance, x, y1, 1, y2 - y1 + 1, RT_TRUE);
     }
 }
 
@@ -330,11 +393,11 @@ static void blit_line(const char *pixel, int x, int y, rt_size_t size)
     {
         if (pixel[i])
         {
-            _drawpoint(&mlcd_instance, x + i, y, false);
+            _drawpoint(&mlcd_instance, x + i, y, RT_FALSE);
         }
         else
         {
-            _drawpoint(&mlcd_instance, x + i, y, true);
+            _drawpoint(&mlcd_instance, x + i, y, RT_TRUE);
         }
     }
     memlcd_refresh(&mlcd_instance, y);
@@ -352,11 +415,10 @@ static struct rt_device_ops mlcd_dev_ops =
     {
         .init = memlcd_init,
         .control = memlcd_control};
-#endif
+#endif //RT_USING_DEVICE_OPS
 
 int rt_hw_memlcd_init(void)
 {
-    rt_err_t ret;
     rt_device_t device = &mlcd_instance.parent;
     mlcd_instance.lcd_info.bits_per_pixel = 8;
     mlcd_instance.lcd_info.pixel_format = RTGRAPHIC_PIXEL_FORMAT_MONO;
@@ -370,14 +432,13 @@ int rt_hw_memlcd_init(void)
     device->control = memlcd_control;
     device->read = RT_NULL;
     device->write = RT_NULL;
-#endif
+#endif //RT_USING_DEVICE_OPS
     device->user_data = &mlcd_ops;
     /* register graphic device driver */
-    rt_device_register(device, LCD_DEVICE_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);
-    return ret;
+    return rt_device_register(device, LCD_DEVICE_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);
 }
 
-void lcd_test(void)
+static void lcd_test(void)
 {
     /* find lcd device */
     rt_device_t lcd = rt_device_find(LCD_DEVICE_NAME);
@@ -403,8 +464,6 @@ void lcd_test(void)
         return;
     }
     struct rtgui_rect rect1;
-    struct rtgui_win *win_info;
-    struct rtgui_container *container;
     struct rtgui_graphic_driver *gui_driver = rtgui_graphic_driver_get_default();
     if (gui_driver == NULL)
     {
@@ -417,31 +476,30 @@ void lcd_test(void)
 FINSH_FUNCTION_EXPORT(lcd_test, sharp memory lcd test);
 #ifdef FINSH_USING_MSH
 MSH_CMD_EXPORT(lcd_test, sharp memory lcd test);
-#endif
-#endif
+#endif //FINSH_USING_MSH
 
-void lcd_test2(void)
+#else
+int rt_hw_memlcd_init(void)
 {
-    memlcd_unit_init(&mlcd_instance);
-    // for (int y = 0; y < 240; y++)
-    // {
-    //     for (int x = 0; x < 400; x++)
-    //     {
-    //         memlcd_drawpoint(&mlcd_instance, x, y, true);
-    //         //rt_thread_mdelay(5);
-    //     }
-    // }
-    // rt_kprintf("lcd test finished.\n");
-    memlcd_fillRect(&mlcd_instance, 0, 0, 400, 240, true);
-    memlcd_fillRect(&mlcd_instance, 0, 0, 10, 10, false);
-    memlcd_fillRect(&mlcd_instance, 0, 0, 100, 5, false);
-    memlcd_drawpoint(&mlcd_instance, 0, 0, true);
-    memlcd_drawpoint(&mlcd_instance, 1, 0, true);
-    memlcd_drawpoint(&mlcd_instance, 0, 1, true);
-    memlcd_drawpoint(&mlcd_instance, 1, 1, true);
+    rt_err_t result = RT_EOK;
+    result = memlcd_unit_init(&mlcd_instance);
+    return result;
 }
-FINSH_FUNCTION_EXPORT(lcd_test2, sharp memory lcd test);
+
+static void lcd_test(void)
+{
+    memlcd_fillRect(&mlcd_instance, 0, 0, 400, 240, RT_TRUE);
+    memlcd_fillRect(&mlcd_instance, 0, 0, 10, 10, RT_FALSE);
+    memlcd_fillRect(&mlcd_instance, 0, 0, 100, 5, RT_FALSE);
+    memlcd_drawpoint(&mlcd_instance, 0, 0, RT_TRUE);
+    memlcd_drawpoint(&mlcd_instance, 1, 0, RT_TRUE);
+    memlcd_drawpoint(&mlcd_instance, 0, 1, RT_TRUE);
+    memlcd_drawpoint(&mlcd_instance, 1, 1, RT_TRUE);
+}
+FINSH_FUNCTION_EXPORT(lcd_test, sharp memory lcd test);
 #ifdef FINSH_USING_MSH
-MSH_CMD_EXPORT(lcd_test2, sharp memory lcd test);
-#endif
-#endif
+MSH_CMD_EXPORT(lcd_test, sharp memory lcd test);
+#endif //FINSH_USING_MSH
+
+#endif //PKG_USING_GUIENGINE
+#endif //RT_USING_LS027B7DH

@@ -79,7 +79,7 @@ static rt_size_t rx8025sa_write(rt_uint8_t reg,
     if (_rtc.device.user_data == RT_NULL)
         return (0);
     data_t[0] = reg;
-    memcpy(&data_t[1], data, size);
+    rt_memcpy(&data_t[1], data, size);
     msgs[0].addr = RX8025_ADDR;
     msgs[0].flags = RT_I2C_WR;
     msgs[0].buf = data_t;

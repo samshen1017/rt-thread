@@ -112,29 +112,27 @@ static struct ulog_backend flash;
 /* FLASH后端输出函数 */
 void ulog_flash_backend_output(struct ulog_backend *backend, rt_uint32_t level, const char *tag, rt_bool_t is_raw, const char *log, size_t len)
 {
-    rt_pm_request(PM_SLEEP_MODE_NONE);
     /* 输出日志到flash */
     int lines = read_line();
     if (lines >= LOG_MAX_LENTH)
     {
-        rt_kprintf("%d over lenth\n",lines);
+        rt_kprintf("%d over lenth\n", lines);
         change_over_file();
     }
     write_line(log, len);
-    rt_pm_release(PM_SLEEP_MODE_NONE);
 }
 
 /* 控制台后端初始化 */
 int ulog_flash_backend_init(void)
 {
     FILE *f = fopen(LOG_OLD_FILE_NAME, "r");
-    if(f == NULL)
+    if (f == NULL)
     {
-        f = fopen(LOG_OLD_FILE_NAME, "w");       
+        f = fopen(LOG_OLD_FILE_NAME, "w");
     }
     fclose(f);
     FILE *fp = fopen(LOG_NEW_FILE_NAME, "r");
-    if(fp == NULL)
+    if (fp == NULL)
     {
         fp = fopen(LOG_NEW_FILE_NAME, "w");
     }
@@ -145,4 +143,3 @@ int ulog_flash_backend_init(void)
     ulog_backend_register(&flash, "flash", RT_TRUE);
     return 0;
 }
-

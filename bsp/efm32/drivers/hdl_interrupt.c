@@ -1,150 +1,132 @@
-/***************************************************************************//**
- * @file    hdl_interrupt.c
- * @brief   Interrupt handler of RT-Thread RTOS for EFM32
- *  COPYRIGHT (C) 2012, RT-Thread Development Team
- * @author  onelife
- * @version 1.0
- *******************************************************************************
- * @section License
- * The license and distribution terms for this file may be found in the file
- * LICENSE in this distribution or at http://www.rt-thread.org/license/LICENSE
- *******************************************************************************
- * @section Change Logs
- * Date         Author      Notes
- * 2010-12-29   onelife     Initial creation for EFM32
- * 2011-07-12   onelife     Disable interrupts in GPIO handler
- * 2011-12-09	onelife		Add giant gecko support
- * 2011-12-09   onelife     Add UART module support
- * 2011-12-09   onelife     Add LEUART module support
- * 2011-12-27	onelife		Utilize "XXX_PRESENT" and "XXX_COUNT"
- ******************************************************************************/
-
 /* Includes ------------------------------------------------------------------*/
 #include "board.h"
 #include "hdl_interrupt.h"
 #include <rthw.h>
 
-/***************************************************************************//**
+/**
  * @addtogroup efm32
  * @{
- ******************************************************************************/
+*/
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 #ifdef RT_IRQHDL_DEBUG
-#define hdl_debug(format,args...) 			rt_kprintf(format, ##args)
+#define hdl_debug(format, args...) rt_kprintf(format, ##args)
 #else
-#define hdl_debug(format,args...)
+#define hdl_debug(format, args...)
 #endif
 
 /* Private variables ---------------------------------------------------------*/
-efm32_irq_hook_t dmaCbTable[DMA_CHAN_COUNT * 2]	= {RT_NULL};
-efm32_irq_hook_t timerCbTable[TIMER_COUNT] 		= {RT_NULL};
+efm32_irq_hook_t dmaCbTable[DMA_CHAN_COUNT * 2] = {RT_NULL};
+efm32_irq_hook_t timerCbTable[TIMER_COUNT] = {RT_NULL};
 #if defined(LETIMER_PRESENT)
-efm32_irq_hook_t letimerCbTable[LETIMER_COUNT]  = {RT_NULL};
+efm32_irq_hook_t letimerCbTable[LETIMER_COUNT] = {RT_NULL};
 #endif
-efm32_irq_hook_t rtcCbTable[RTC_COUNT] 			= {RT_NULL};
-efm32_irq_hook_t gpioCbTable[16] 				= {RT_NULL};
-efm32_irq_hook_t acmpCbTable[ACMP_COUNT] 		= {RT_NULL};
+efm32_irq_hook_t rtcCbTable[RTC_COUNT] = {RT_NULL};
+efm32_irq_hook_t gpioCbTable[16] = {RT_NULL};
+efm32_irq_hook_t acmpCbTable[ACMP_COUNT] = {RT_NULL};
 #if defined(USART_PRESENT)
-efm32_irq_hook_t usartCbTable[USART_COUNT * 2]  = {RT_NULL};
+efm32_irq_hook_t usartCbTable[USART_COUNT * 2] = {RT_NULL};
 #endif
 #if defined(UART_PRESENT)
-efm32_irq_hook_t uartCbTable[UART_COUNT * 2]  = {RT_NULL};
+efm32_irq_hook_t uartCbTable[UART_COUNT * 2] = {RT_NULL};
 #endif
 #if defined(LEUART_PRESENT)
-efm32_irq_hook_t leuartCbTable[LEUART_COUNT]    = {RT_NULL};
+efm32_irq_hook_t leuartCbTable[LEUART_COUNT] = {RT_NULL};
 #endif
 #if defined(I2C_PRESENT)
-efm32_irq_hook_t iicCbTable[I2C_COUNT] 			= {RT_NULL};
+efm32_irq_hook_t iicCbTable[I2C_COUNT] = {RT_NULL};
 #endif
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-/***************************************************************************//**
+/**
  * @brief
  *	NMI exception handler
  *
  * @details
  *
  * @note
- ******************************************************************************/
+*/
 void NMI_Handler(void)
 {
 	hdl_debug("[NMI_Handler: NOP]\n");
 }
 
-/***************************************************************************//**
+/**
  * @brief
  *	Memory manage exception handler
  *
  * @details
  *
  * @note
- ******************************************************************************/
+*/
 void MemManage_Handler(void)
 {
 	hdl_debug("[MemManage_Handler: infinite loop]\n");
-	while (1);
+	while (1)
+		;
 }
 
-/***************************************************************************//**
+/**
  * @brief
  *	Bus fault exception handler
  *
  * @details
  *
  * @note
- ******************************************************************************/
+*/
 void BusFault_Handler(void)
 {
 	hdl_debug("[BusFault_Handler: infinite loop]\n");
-	while (1);
+	while (1)
+		;
 }
 
-/***************************************************************************//**
+/**
  * @brief
  *	Usage fault exception handler
  *
  * @details
  *
  * @note
- ******************************************************************************/
+*/
 void UsageFault_Handler(void)
 {
 	hdl_debug("[UsageFault_Handler: infinite loop]\n");
-	while (1);
+	while (1)
+		;
 }
 
-/***************************************************************************//**
+/**
  * @brief
  *	Supervisor call exception handler
  *
  * @details
  *
  * @note
- ******************************************************************************/
+*/
 void SVC_Handler(void)
 {
 	hdl_debug("[SVC_Handler: NOP]\n");
 }
 
-/***************************************************************************//**
+/**
  * @brief
  *	 Debug monitor exception handler
  *
  * @details
  *
  * @note
- ******************************************************************************/
+*/
 void DebugMon_Handler(void)
 {
 	hdl_debug("[DebugMon_Handler: NOP]\n");
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	System tick timer interrupt handler
  *
@@ -152,7 +134,7 @@ void DebugMon_Handler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void SysTick_Handler(void)
 {
 	/* enter interrupt */
@@ -164,14 +146,7 @@ void SysTick_Handler(void)
 	rt_interrupt_leave();
 }
 
-/*******************************************************************************
- *                 STM32F10x Peripherals Interrupt Handlers
- *  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the
- *  available peripheral interrupt handler's name please refer to the startup
- *  file (startup_stm32f10x_xx.s).
-/******************************************************************************/
-
-/***************************************************************************//**
+/**
  * @brief
  * 	Common DMA interrupt handler
  *
@@ -179,11 +154,11 @@ void SysTick_Handler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void DMA_IRQHandler_All(rt_uint32_t channel, rt_bool_t primary, void *user)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	/* invoke callback function */
 	if (dmaCbTable[channel].cbFunc != RT_NULL)
@@ -191,11 +166,11 @@ void DMA_IRQHandler_All(rt_uint32_t channel, rt_bool_t primary, void *user)
 		(dmaCbTable[channel].cbFunc)(dmaCbTable[channel].userPtr);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common Timer0 interrupt handler
  *
@@ -220,8 +195,7 @@ void TIMER0_IRQHandler(void)
 	}
 }
 
-
-/***************************************************************************//**
+/*
  * @brief
  * 	Common Timer1 interrupt handler
  *
@@ -230,7 +204,7 @@ void TIMER0_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void TIMER1_IRQHandler(void)
 {
 	if (TIMER1->IF & TIMER_IF_OF)
@@ -246,7 +220,7 @@ void TIMER1_IRQHandler(void)
 	}
 }
 
-/***************************************************************************//**
+/*
  * @brief
  * 	Common Timer2 interrupt handler
  *
@@ -255,7 +229,7 @@ void TIMER1_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void TIMER2_IRQHandler(void)
 {
 	if (TIMER2->IF & TIMER_IF_OF)
@@ -272,7 +246,7 @@ void TIMER2_IRQHandler(void)
 }
 
 #if defined(LETIMER_PRESENT)
-/***************************************************************************//**
+/**
  * @brief
  * 	Common Low Energy Timer0 interrupt handler
  *
@@ -281,32 +255,33 @@ void TIMER2_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void LETIMER0_IRQHandler(void)
 {
 	if (LETIMER0->IF & LETIMER_IF_UF)
 	{
-        /* enter interrupt */
-        // rt_interrupt_enter();
+#if defined(EFM32_USING_LETIMER0_COMPENSATION)
+		/* enter interrupt */
+		rt_interrupt_enter();
 
-        // rt_tick_increase();
+		rt_tick_increase();
 
-        /* leave interrupt */
-        // rt_interrupt_leave();
-
+		/* leave interrupt */
+		rt_interrupt_leave();
+#else
 		/* invoke callback function */
 		if (letimerCbTable[0].cbFunc != RT_NULL)
 		{
 			(letimerCbTable[0].cbFunc)(letimerCbTable[0].userPtr);
 		}
-
+#endif
 		/* clear interrupt */
 		BITBAND_Peripheral(&(LETIMER0->IFC), _LETIMER_IF_UF_SHIFT, 0x1UL);
 	}
 }
 #endif
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common RTC interrupt handler
  *
@@ -315,11 +290,11 @@ void LETIMER0_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void RTC_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (RTC->IF & RTC_IF_OF)
 	{
@@ -330,11 +305,11 @@ void RTC_IRQHandler(void)
 		}
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common even number GPIO interrupt handler
  *
@@ -342,7 +317,7 @@ void RTC_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void GPIO_EVEN_IRQHandler(void)
 {
 	rt_uint16_t flag, n;
@@ -350,12 +325,12 @@ void GPIO_EVEN_IRQHandler(void)
 
 	/* Disable interrupt */
 	level = rt_hw_interrupt_disable();
-    /* Enter ISR */
-    rt_interrupt_enter();
+	/* Enter ISR */
+	rt_interrupt_enter();
 
-	 /* invoke callback function */
+	/* invoke callback function */
 	flag = (rt_uint16_t)(GPIO->IF & 0xFFFF);
-	for ( n = 0; flag > 0; flag = flag >> 2, n = n + 2)
+	for (n = 0; flag > 0; flag = flag >> 2, n = n + 2)
 	{
 		if ((flag & 0x0001) && (gpioCbTable[n].cbFunc != RT_NULL))
 		{
@@ -366,13 +341,13 @@ void GPIO_EVEN_IRQHandler(void)
 	/* clear interrupt */
 	GPIO->IFC = 0x5555UL;
 
-    /* Leave ISR */
+	/* Leave ISR */
 	rt_interrupt_leave();
 	/* Enable interrupt */
-    rt_hw_interrupt_enable(level);
+	rt_hw_interrupt_enable(level);
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common odd number GPIO interrupt handler
  *
@@ -380,7 +355,7 @@ void GPIO_EVEN_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void GPIO_ODD_IRQHandler(void)
 {
 	rt_uint16_t flag, n;
@@ -389,11 +364,11 @@ void GPIO_ODD_IRQHandler(void)
 	/* Disable interrupt */
 	level = rt_hw_interrupt_disable();
 	/* Enter ISR */
-    rt_interrupt_enter();
+	rt_interrupt_enter();
 
-	 /* invoke callback function */
+	/* invoke callback function */
 	flag = (rt_uint16_t)(GPIO->IF & 0xFFFF) >> 1;
-	for ( n = 1; flag > 0; flag = flag >> 2, n = n + 2)
+	for (n = 1; flag > 0; flag = flag >> 2, n = n + 2)
 	{
 		if ((flag & 0x0001) && (gpioCbTable[n].cbFunc != RT_NULL))
 		{
@@ -404,13 +379,13 @@ void GPIO_ODD_IRQHandler(void)
 	/* clear interrupt */
 	GPIO->IFC = 0xAAAAUL;
 
-    /* Leave ISR */
+	/* Leave ISR */
 	rt_interrupt_leave();
 	/* Enable interrupt */
-    rt_hw_interrupt_enable(level);
+	rt_hw_interrupt_enable(level);
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common ACMP interrupt handler
  *
@@ -419,11 +394,11 @@ void GPIO_ODD_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void ACMP0_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (ACMP0->IF & ACMP_IF_EDGE)
 	{
@@ -449,12 +424,12 @@ void ACMP0_IRQHandler(void)
 		BITBAND_Peripheral(&(ACMP1->IFC), _ACMP_IF_EDGE_SHIFT, 0x1UL);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
 #if defined(USART_PRESENT)
-/***************************************************************************//**
+/**
  * @brief
  * 	Common USART0 TX interrupt handler
  *
@@ -463,11 +438,11 @@ void ACMP0_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void USART0_TX_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (USART0->IF & USART_IF_TXC)
 	{
@@ -481,11 +456,11 @@ void USART0_TX_IRQHandler(void)
 		BITBAND_Peripheral(&(USART0->IFC), _USART_IF_TXC_SHIFT, 0x1UL);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/***************************************************************************/ /**
  * @brief
  * 	Common USART0 RX interrupt handler
  *
@@ -509,7 +484,7 @@ void USART0_RX_IRQHandler(void)
 #endif
 
 #if (defined(USART_PRESENT) && (USART_COUNT > 1))
-/***************************************************************************//**
+/**
  * @brief
  * 	Common USART1 TX interrupt handler
  *
@@ -518,11 +493,11 @@ void USART0_RX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void USART1_TX_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (USART1->IF & USART_IF_TXC)
 	{
@@ -536,11 +511,11 @@ void USART1_TX_IRQHandler(void)
 		BITBAND_Peripheral(&(USART1->IFC), _USART_IF_TXC_SHIFT, 0x1UL);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common USART1 RX interrupt handler
  *
@@ -549,7 +524,7 @@ void USART1_TX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void USART1_RX_IRQHandler(void)
 {
 	if (USART1->IF & USART_IF_RXDATAV)
@@ -564,7 +539,7 @@ void USART1_RX_IRQHandler(void)
 #endif
 
 #if (defined(USART_PRESENT) && (USART_COUNT > 2))
-/***************************************************************************//**
+/**
  * @brief
  * 	Common USART2 TX interrupt handler
  *
@@ -573,11 +548,11 @@ void USART1_RX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void USART2_TX_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (USART2->IF & USART_IF_TXC)
 	{
@@ -591,11 +566,11 @@ void USART2_TX_IRQHandler(void)
 		BITBAND_Peripheral(&(USART2->IFC), _USART_IF_TXC_SHIFT, 0x1UL);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common USART2 RX interrupt handler
  *
@@ -604,7 +579,7 @@ void USART2_TX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void USART2_RX_IRQHandler(void)
 {
 	if (USART2->IF & USART_IF_RXDATAV)
@@ -619,7 +594,7 @@ void USART2_RX_IRQHandler(void)
 #endif
 
 #if defined(UART_PRESENT)
-/***************************************************************************//**
+/**
  * @brief
  * 	Common UART0 TX interrupt handler
  *
@@ -628,11 +603,11 @@ void USART2_RX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void UART0_TX_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (UART0->IF & UART_IF_TXC)
 	{
@@ -646,11 +621,11 @@ void UART0_TX_IRQHandler(void)
 		BITBAND_Peripheral(&(UART0->IFC), _UART_IF_TXC_SHIFT, 0x1UL);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common UART0 RX interrupt handler
  *
@@ -659,7 +634,7 @@ void UART0_TX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void UART0_RX_IRQHandler(void)
 {
 	if (UART0->IF & UART_IF_RXDATAV)
@@ -674,7 +649,7 @@ void UART0_RX_IRQHandler(void)
 #endif
 
 #if (defined(UART_PRESENT) && (UART_COUNT > 1))
-/***************************************************************************//**
+/**
  * @brief
  * 	Common UART1 TX interrupt handler
  *
@@ -683,11 +658,11 @@ void UART0_RX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void UART1_TX_IRQHandler(void)
 {
-    /* enter interrupt */
-    rt_interrupt_enter();
+	/* enter interrupt */
+	rt_interrupt_enter();
 
 	if (UART1->IF & UART_IF_TXC)
 	{
@@ -701,11 +676,11 @@ void UART1_TX_IRQHandler(void)
 		BITBAND_Peripheral(&(UART1->IFC), _UART_IF_TXC_SHIFT, 0x1UL);
 	}
 
-    /* leave interrupt */
-    rt_interrupt_leave();
+	/* leave interrupt */
+	rt_interrupt_leave();
 }
 
-/***************************************************************************//**
+/**
  * @brief
  * 	Common UART1 RX interrupt handler
  *
@@ -714,7 +689,7 @@ void UART1_TX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void UART1_RX_IRQHandler(void)
 {
 	if (UART1->IF & UART_IF_RXDATAV)
@@ -729,7 +704,7 @@ void UART1_RX_IRQHandler(void)
 #endif
 
 #if defined(LEUART_PRESENT)
-/***************************************************************************//**
+/**
  * @brief
  * 	Common LEUART0 interrupt handler
  *
@@ -738,7 +713,7 @@ void UART1_RX_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void LEUART0_IRQHandler(void)
 {
 	if (LEUART0->IF & LEUART_IF_RXDATAV)
@@ -753,7 +728,7 @@ void LEUART0_IRQHandler(void)
 #endif
 
 #if (defined(LEUART_PRESENT) && (LEUART_COUNT > 1))
-/***************************************************************************//**
+/*
  * @brief
  * 	Common LEUART1 interrupt handler
  *
@@ -762,7 +737,7 @@ void LEUART0_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void LEUART1_IRQHandler(void)
 {
 	if (LEUART1->IF & LEUART_IF_RXDATAV)
@@ -777,7 +752,7 @@ void LEUART1_IRQHandler(void)
 #endif
 
 #if defined(I2C_PRESENT)
-/***************************************************************************//**
+/**
  * @brief
  * 	Common IIC0 interrupt handler
  *
@@ -786,11 +761,11 @@ void LEUART1_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void I2C0_IRQHandler(void)
 {
-	if ((I2C0->IF & I2C_IF_ADDR) || \
-		(I2C0->IF & I2C_IF_RXDATAV) || \
+	if ((I2C0->IF & I2C_IF_ADDR) ||
+		(I2C0->IF & I2C_IF_RXDATAV) ||
 		(I2C0->IF & I2C_IF_SSTOP))
 	{
 		/* invoke callback function */
@@ -804,7 +779,7 @@ void I2C0_IRQHandler(void)
 }
 #endif
 
-/***************************************************************************//**
+/**
  * @brief
  * 	EFM32 common interrupt handlers register function
  *
@@ -812,7 +787,7 @@ void I2C0_IRQHandler(void)
  *
  * @note
  *
- ******************************************************************************/
+*/
 void efm32_irq_hook_register(efm32_irq_hook_init_t *hook)
 {
 	switch (hook->type)
@@ -859,10 +834,10 @@ void efm32_irq_hook_register(efm32_irq_hook_init_t *hook)
 		break;
 #endif
 #if defined(LEUART_PRESENT)
-    case efm32_irq_type_leuart:
-        leuartCbTable[hook->unit].cbFunc = hook->cbFunc;
-        leuartCbTable[hook->unit].userPtr = hook->userPtr;
-        break;
+	case efm32_irq_type_leuart:
+		leuartCbTable[hook->unit].cbFunc = hook->cbFunc;
+		leuartCbTable[hook->unit].userPtr = hook->userPtr;
+		break;
 #endif
 #if defined(I2C_PRESENT)
 	case efm32_irq_type_iic:
@@ -874,10 +849,10 @@ void efm32_irq_hook_register(efm32_irq_hook_init_t *hook)
 		break;
 	}
 
-	hdl_debug("Hook Registered: type: %s, unit: %x, cbFunc: %x, userPtr: %x\n", \
-		hook->type, hook->unit, hook->cbFunc, hook->userPtr);
+	hdl_debug("Hook Registered: type: %s, unit: %x, cbFunc: %x, userPtr: %x\n",
+			  hook->type, hook->unit, hook->cbFunc, hook->userPtr);
 }
 
-/***************************************************************************//**
+/*
  * @}
- ******************************************************************************/
+*/

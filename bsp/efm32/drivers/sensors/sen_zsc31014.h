@@ -1,14 +1,15 @@
+
 /* ********************************************************************************
  * 
  * Copyright (C) 2019 - 2020 Shanghai 3H Inc. All rights reserved.
  * 
  * SPDX-License-Identifier: Apache-2.0
  * 
- * File: dev_rx8803.h
- * File Created: Monday, 17th August 2020 03:18:49
+ * File: sensor_zsc31014.h
+ * File Created: Monday, 23rd March 2020 02:45:31
  * Author: Sam.Shen (samshen1017@sina.com)
  * 
- * Last Modified: Monday, 14th September 2020 03:32:06
+ * Last Modified: Wednesday, 29th April 2020 01:18:59
  * Modified By: Sam.Shen (samshen1017@sina.com>)
  * 
  * Automatically generated; DO NOT EDIT.
@@ -18,14 +19,14 @@
  * ----------	---	---------------------------------------------------------
  * ********************************************************************************/
 
-#ifndef DEV_RX8803_H
-#define DEV_RX8803_H
+#ifndef SEN_ZSC31014_H
+#define SEN_ZSC31014_H
 
-#include <rtthread.h>
+#include "sensor.h"
 
-rt_err_t rtc_timer_Start(int interval_sec);
-void rtc_timer_Stop(void);
-void rtc_timer_SetTimerCallback(void (*cb)(void *args));
-void rt_hw_rx8803_init(void);
+#define ZSC31014_ADDR_DEFAULT (0x28)
 
-#endif /* DRV_RX8803_H */
+int rt_hw_zsc31014_init(const char *name, struct rt_sensor_config *cfg, rt_uint16_t pow_pin);
+
+void rt_hw_zsc31014_detach(rt_sensor_t dev);
+#endif // SEN_ZSC31014_H

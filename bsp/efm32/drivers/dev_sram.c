@@ -6,7 +6,7 @@
 void rt_hw_ext_sram_init(void)
 {
     /* initialize the built-in SRAM as a memory heap */
-    rt_memheap_init(&ext_heap, "ext_sram", (void *)EFM32_EXT_HEAP_BEGIN, 384 * 1024);
+    rt_memheap_init(&ext_heap, "ext_sram", (void *)EFM32_EXT_HEAP_BEGIN, 512 * 1024);
 }
 
 void *ext_sram_alloc(size_t size)

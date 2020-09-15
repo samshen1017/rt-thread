@@ -1,4 +1,14 @@
 # =================== efm32 driver option ===================
+
+menu "EFM32 Power Management"
+    depends on RT_USING_PM
+    comment "Start a low-power timer after cardiac arrest to compensate for the OS tick"
+    config EFM32_USING_LETIMER0_COMPENSATION
+        bool "using letimer0 to compensate for the OS tick"
+        default n
+        depends on !RT_USING_LETIMER0
+endmenu
+
 menu "EFM32 Using Bootloader Options"
     comment "if using bootloader, remember modify efm32gg_rom.ld script."
     config EFM32_BOOT_WITH_BOOTLOADER
@@ -297,24 +307,11 @@ menu "EFM32 LS027B7DH Device support"
     config RT_USING_LS027B7DH
     bool "Enable LS027B7DH(SPI LCD) support, PKG_USING_GUIENGINE will be selected when enable it."
     default n
-    select PKG_USING_GUIENGINE
 
     config LS027B7DH_USING_SPI_NAME
     string "LS027B7DH using spi bus name"
     default "spi1"
     depends on RT_USING_LS027B7DH
-endmenu
-
-menu "EFM32 SI114X Device support"
-    depends on RT_USING_I2C
-    config RT_USING_SI114X
-    bool "Enable SI114X support"
-    default n
-
-    config SI114X_USING_I2C_NAME
-    string "SI114X using i2c bus name"
-    default "i2c0"
-    depends on RT_USING_SI114X
 endmenu
 
 menu "EFM32 BlueMod_SR Device support"

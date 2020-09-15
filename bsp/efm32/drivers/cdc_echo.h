@@ -1,4 +1,4 @@
-/***************************************************************************//**
+/***************************************************************************/ /**
  * @file  cdc.h
  * @brief USB Communication Device Class (CDC) driver
  * @version 5.5.0
@@ -16,12 +16,23 @@
 #define CDC_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-  
-void cdcInit(void);
-int  cdcSetupCmd(const USB_Setup_TypeDef *setup);
-void cdcStateChangeEvent(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+#include "em_usb.h"
+
+    typedef struct
+    {
+        void (*connected)(void);
+        void (*disconnect)(void);
+        void (*receiveCallback)(const void *usbRxBuffer, size_t xferred);
+    } efm32_cdc_callback;
+
+    void cdcInit(void);
+    int cdcSetupCmd(const USB_Setup_TypeDef *setup);
+    void cdcStateChangeEvent(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
+    size_t cdcWrite(void *usbTxBuf, size_t xferred);
+    void cdcCallbackRegister(efm32_cdc_callback *cb);
 
 #ifdef __cplusplus
 }

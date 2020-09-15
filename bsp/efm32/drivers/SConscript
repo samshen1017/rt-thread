@@ -12,11 +12,13 @@ src = Split("""
     hdl_interrupt.c
     drv_dma.c
 """)
-#    dev_zsc31014.c
 
 #pm driver
 if GetDepend(['RT_USING_PM']):
 	src +=['emodes.c', 'drv_pm.c']
+
+if GetDepend(['EFM32_USING_LETIMER0_COMPENSATION']):
+    src +=['drv_pmtimer.c']
 	
 #ebi driver
 if GetDepend(['RT_USING_EBI']):
@@ -28,7 +30,7 @@ if GetDepend(['RT_USING_PIN']):
 
 #i2c bus driver
 if GetDepend(['RT_USING_I2C']):
-    src += ['drv_i2c.c', 'i2cspm.c']
+    src += ['drv_iic.c']
 	
 #spi bus driver
 if GetDepend(['RT_USING_SPI']):
@@ -66,10 +68,6 @@ if GetDepend(['RT_USING_LS027B7DH']):
 #w25qxx device
 if GetDepend(['RT_USING_W25QXX']):
     src += ['dev_w25qxx.c']
-
-#si114x device
-if GetDepend(['RT_USING_SI114X']):
-    src += ['dev_si114x.c']
 
 #BlueMod SR device
 if GetDepend(['RT_USING_BLUEMOD_SR']):

@@ -10,7 +10,7 @@
 #define RT_ALIGN_SIZE 4
 #define RT_THREAD_PRIORITY_32
 #define RT_THREAD_PRIORITY_MAX 32
-#define RT_TICK_PER_SECOND 1000
+#define RT_TICK_PER_SECOND 100
 #define RT_USING_OVERFLOW_CHECK
 #define RT_USING_HOOK
 #define RT_USING_IDLE_HOOK
@@ -101,13 +101,8 @@
 #define RT_USBD_THREAD_STACK_SZ 4096
 #define USB_VENDOR_ID 0x2544
 #define USB_PRODUCT_ID 0xFFFF
-#define _RT_USB_DEVICE_CDC
-#define RT_USB_DEVICE_CDC
-#define RT_VCOM_TASK_STK_SIZE 512
-#define RT_CDC_RX_BUFSIZE 128
-#define RT_VCOM_SERNO "32021919830108"
-#define RT_VCOM_SER_LEN 14
-#define RT_VCOM_TX_TIMEOUT 1000
+#define _RT_USB_DEVICE_NONE
+#define RT_USB_DEVICE_NONE
 
 /* POSIX layer and C standard library */
 
@@ -189,8 +184,6 @@
 #define PKG_USING_RGB888_PIXEL_BITS_32
 #define PKG_USING_RGB888_PIXEL_BITS 32
 #define GUIENGINE_CMD_STRING_MAX 16
-#define GUIENGINE_USING_FONT16
-#define GUIENGINE_USING_FONT12
 #define PKG_USING_LITTLEVGL2RTT
 #define PKG_USING_LITTLEVGL2RTT_LATEST_VERSION
 
@@ -213,6 +206,12 @@
 
 /* samples: kernel and components samples */
 
+
+/* EFM32 Power Management */
+
+/* Start a low-power timer after cardiac arrest to compensate for the OS tick */
+
+#define EFM32_USING_LETIMER0_COMPENSATION
 
 /* EFM32 Using Bootloader Options */
 
@@ -269,8 +268,6 @@
 
 /* EFM32 TIMER */
 
-#define RT_USING_LETIMER0
-#define RT_LETIMER0_NAME "letimer0"
 
 /* EFM32 W25QXX Device support */
 
@@ -280,11 +277,6 @@
 #define RT_USING_LS027B7DH
 #define LS027B7DH_USING_SPI_NAME "spi1"
 
-/* EFM32 SI114X Device support */
-
-#define RT_USING_SI114X
-#define SI114X_USING_I2C_NAME "i2c1"
-
 /* EFM32 BlueMod_SR Device support */
 
 #define RT_USING_BLUEMOD_SR
@@ -292,12 +284,13 @@
 
 /* EFM32 RTC Device support */
 
-#define RT_USING_RX8025
-#define RX8025_RTC_NAME "rtc"
-#define RX8025_USING_I2C_NAME "i2c0"
+#define RT_USING_RX8803
+#define RX8803_RTC_NAME "rtc"
+#define RX8803_USING_I2C_NAME "i2c0"
 
 /* EFM32 Sensor support */
 
 #define RT_USING_ZSC31014
+#define RT_USING_SI114X
 
 #endif

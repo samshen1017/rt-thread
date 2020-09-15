@@ -1,12 +1,11 @@
-#include "sensor_zsc31014.h"
+#include "sen_zsc31014.h"
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <rtdbg.h>
 #include "drv_pin.h"
 
 #define ZSC31014_COE 16383
-#define ZSC31014_POWER_PROT GPIO_B_PORT
-#define ZSC31014_POWER_PIN 0
+
 struct zsc31014
 {
     rt_uint8_t chip_id;
@@ -48,10 +47,11 @@ static rt_err_t zsc31014_get_data(struct zsc31014_data *data, const struct zsc31
     data->size = rt_i2c_transfer(i2c_bus, msgs, 1);
     if (data->size == 0)
     {
-        rt_kprintf("zsc31014 read failed.\n");
+        rt_kprintf("zsc err.\n");
         return RT_EIO;
     }
     value = ((tmp[0] & 0x7F) << 8) | tmp[1];
+    // rt_kprintf("%s:%d\n", dev->i2c_bus->parent.parent.name, value);
     data->baro = calc_pressure(value, dev->range, 0);
     return RT_EOK;
 }
@@ -89,18 +89,30 @@ static rt_size_t zsc31014_fetch_data(rt_sensor_t sensor, void *buf, rt_size_t le
 {
     struct zsc31014 *_zsc31014_dev = sensor->parent.user_data;
     struct rt_sensor_data *data = buf;
-    rt_size_t size = 0;
+    rt_size_t cnt = 0;
+    rt_err_t result;
     if (sensor->info.type == RT_SENSOR_CLASS_BARO)
     {
-        struct zsc31014_data comp_data;
-        zsc31014_get_data(&comp_data, _zsc31014_dev);
-        data->type = RT_SENSOR_CLASS_BARO;
-        data->data.baro = comp_data.baro;
-        data->timestamp = rt_sensor_get_ts();
-        size = comp_data.size;
-        return size;
+        for (int i = 0; i < len; i++)
+        {
+            struct zsc31014_data comp_data;
+            result = zsc31014_get_data(&comp_data, _zsc31014_dev);
+            if (result != RT_EOK)
+            {
+                data[i].type = RT_SENSOR_CLASS_NONE;
+                data[i].data.baro = 0x8000000;
+                data[i].timestamp = rt_sensor_get_ts();
+            }
+            else
+            {
+                data[i].type = RT_SENSOR_CLASS_BARO;
+                data[i].data.baro = comp_data.baro;
+                data[i].timestamp = rt_sensor_get_ts();
+                cnt++;
+            }
+        }
     }
-    return 0;
+    return cnt;
 }
 
 static rt_err_t zsc31014_control(rt_sensor_t sensor, int cmd, void *args)
@@ -110,7 +122,6 @@ static rt_err_t zsc31014_control(rt_sensor_t sensor, int cmd, void *args)
     {
     case RT_SENSOR_CTRL_GET_ID:
         LOG_D("GET_ID");
-
         break;
     case RT_SENSOR_CTRL_SET_RANGE:
         LOG_D("SET_RANGE");
@@ -132,9 +143,8 @@ static struct rt_sensor_ops sensor_ops =
         zsc31014_control,
 };
 
-int rt_hw_zsc31014_init(const char *name, struct rt_sensor_config *cfg)
+int rt_hw_zsc31014_init(const char *name, struct rt_sensor_config *cfg, rt_uint16_t pow_pin)
 {
-    LOG_D("rt_hw_zsc31014_init.");
     rt_int8_t result;
     rt_sensor_t sensor = RT_NULL;
     struct zsc31014 *_zsc31014_dev = RT_NULL;
@@ -142,6 +152,7 @@ int rt_hw_zsc31014_init(const char *name, struct rt_sensor_config *cfg)
     sensor = rt_calloc(1, sizeof(struct rt_sensor_device));
     if (sensor == RT_NULL)
     {
+        LOG_E("rt_sensor_t rt_calloc failed.");
         return -RT_ERROR;
     }
     sensor->info.type = RT_SENSOR_CLASS_BARO;
@@ -158,24 +169,40 @@ int rt_hw_zsc31014_init(const char *name, struct rt_sensor_config *cfg)
     result = rt_hw_sensor_register(sensor, name, RT_DEVICE_FLAG_RDWR, RT_NULL);
     if (result != RT_EOK)
     {
-        LOG_E("device register err code: %d", result);
+        LOG_E("ZSC31014 register err code: %d", result);
         rt_free(sensor);
         return -RT_ERROR;
     }
-    LOG_I("zsc31014 sensor init success");
+    LOG_I("ZSC31014 sensor init success.");
 
     _zsc31014_dev = rt_calloc(1, sizeof(struct zsc31014));
     if (_zsc31014_dev == RT_NULL)
     {
-        LOG_E("sensor create failed");
+        LOG_E("ZSC31014 create failed.");
         return -RT_ERROR;
     }
     _zsc31014_dev->addr = (rt_uint32_t)(cfg->intf.user_data) & 0xff;
     _zsc31014_dev->i2c_bus = (struct rt_i2c_bus_device *)rt_device_find(cfg->intf.dev_name);
     _zsc31014_dev->range = cfg->range;
-    _zsc31014_dev->pow_pinnum = get_PinNumber(ZSC31014_POWER_PROT, ZSC31014_POWER_PIN);
+    _zsc31014_dev->pow_pinnum = pow_pin;
     rt_pin_mode(_zsc31014_dev->pow_pinnum, PIN_MODE_OUTPUT);
-    rt_pin_write(_zsc31014_dev->pow_pinnum, PIN_HIGH);
+    rt_pin_write(_zsc31014_dev->pow_pinnum, PIN_HIGH); //默认关闭
     sensor->parent.user_data = _zsc31014_dev;
     return RT_EOK;
+}
+
+void rt_hw_zsc31014_detach(rt_sensor_t dev)
+{
+    rt_err_t result;
+    zsc31014_set_power(dev, RT_SENSOR_POWER_DOWN);
+    result = rt_device_unregister((rt_device_t)dev);
+    if (result != RT_EOK)
+    {
+        LOG_E("rt_device_unregister failed.");
+    }
+    rt_free(dev->parent.user_data);
+    dev->parent.user_data = RT_NULL;
+    rt_free(dev);
+    dev = RT_NULL;
+    LOG_D("rt_hw_zsc31014_detach.");
 }

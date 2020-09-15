@@ -7,10 +7,12 @@ cwd = GetCurrentDir()
 
 # ------------- Sensor device -------------
 if GetDepend(['RT_USING_ZSC31014']):
-    src += ['sensor_zsc31014.c']
-#    src += ['sensor_zsc31014.c', 'zsc31014.c']
+    src += ['sen_zsc31014.c']
     
-CPPPATH = [cwd]
+if GetDepend(['RT_USING_SI114X']):
+    src += ['sen_si114x.c', 'libraries/Si114x.c']
+
+CPPPATH = [cwd, cwd + '/libraries']
 
 group = DefineGroup('Sensors', src, depend = [''], CPPPATH = CPPPATH)
 

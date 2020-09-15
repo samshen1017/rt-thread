@@ -61,13 +61,13 @@ extern volatile rt_uint32_t rt_system_status;
 #define EFM32_BASE_PRI_DEFAULT (0x0UL << 5)
 #define EFM32_IRQ_PRI_DEFAULT (0x4UL << 5)
 
-#define RT_USING_EXT_SRAM
+// #define RT_USING_EXT_SRAM
 #ifdef RT_USING_EXT_SRAM
 #define EFM32_EXT_SRAM_BEGIN 0x84000000
 #define EFM32_EXT_SRAM_END 0x84080000
 /* Use 192kB for external heap */
 #define EFM32_EXT_HEAP_BEGIN (EFM32_EXT_SRAM_BEGIN)
-#define EFM32_EXT_HEAP_END (EFM32_EXT_HEAP_BEGIN + 384 * 1024)
+#define EFM32_EXT_HEAP_END (EFM32_EXT_HEAP_BEGIN + 512 * 1024)
 struct rt_memheap ext_heap;
 #endif
 
@@ -81,6 +81,7 @@ struct rt_memheap ext_heap;
 
 #if defined(EFM32_USING_LFXO)
 #define EFM32_LETIMER_TOP_100HZ (41)
+#define EFM32_LFXO_FREQUENCY (32768)
 #endif
 
 #define RT_DEVICE_CTRL_USART_RBUFFER (0xF1)  /*!< set USART/UART rx buffer */

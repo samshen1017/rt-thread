@@ -3,4 +3,8 @@ menu "EFM32 Sensor support"
     config RT_USING_ZSC31014
     bool "Enable ZSC31014 support"
     default n
+
+    config RT_USING_SI114X
+    bool "Enable SI114x support"
+    default n
 endmenu

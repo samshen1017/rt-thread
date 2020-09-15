@@ -5,7 +5,7 @@
 
 #define RT_USING_HWTIMER
 #if defined(RT_USING_HWTIMER)
-#define RT_LETIMER_DEBUG
+
 #ifdef RT_LETIMER_DEBUG
 #define letimer_debug(format, args...) rt_kprintf(format, ##args)
 #else

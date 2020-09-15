@@ -1,15 +1,14 @@
-
 /* ********************************************************************************
  * 
  * Copyright (C) 2019 - 2020 Shanghai 3H Inc. All rights reserved.
  * 
  * SPDX-License-Identifier: Apache-2.0
  * 
- * File: sensor_zsc31014.h
- * File Created: Monday, 23rd March 2020 02:45:31
+ * File: drv_iic.h
+ * File Created: Thursday, 23rd July 2020 05:41:12
  * Author: Sam.Shen (samshen1017@sina.com)
  * 
- * Last Modified: Tuesday, 24th March 2020 02:28:59
+ * Last Modified: Monday, 3rd August 2020 01:15:06
  * Modified By: Sam.Shen (samshen1017@sina.com>)
  * 
  * Automatically generated; DO NOT EDIT.
@@ -18,14 +17,14 @@
  * Date      	By	Comments
  * ----------	---	---------------------------------------------------------
  * ********************************************************************************/
+#ifndef DRV_IIC_H
+#define DRV_IIC_H
 
-#ifndef SENSOR_ZSC31014_H
-#define SENSOR_ZSC31014_H
+#include <rtthread.h>
+#include <rtdevice.h>
 
-#include "sensor.h"
+#define IIC_TRANSFER_TIMEOUT 8000
 
-#define ZSC31014_ADDR_DEFAULT (0x28)
+void rt_hw_iic_init(void);
 
-int rt_hw_zsc31014_init(const char *name, struct rt_sensor_config *cfg);
-
-#endif // SENSOR_ZSC31014_H
+#endif //DRV_IIC_H

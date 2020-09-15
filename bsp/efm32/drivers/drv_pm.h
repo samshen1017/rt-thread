@@ -10,5 +10,6 @@
 #include <rtdevice.h>
 #include "board.h"
 
+void rt_pm_run_lock(bool islock);
 int rt_hw_pm_init(void);
 #endif

@@ -16,14 +16,29 @@
 #define pin_debug(format, args...)
 #endif
 
+#define PIN_COUNT 16
+
 rt_uint16_t get_PinNumber(GPIO_PIN_PORT port, rt_uint8_t pin)
 {
-    return (port << 8) | pin;
+    switch (port)
+    {
+    case GPIO_A_PORT:
+    case GPIO_B_PORT:
+    case GPIO_C_PORT:
+    case GPIO_D_PORT:
+    case GPIO_E_PORT:
+    case GPIO_F_PORT:
+    {
+        return (port * PIN_COUNT) + pin;
+    }
+    default:
+        return 0xFF;
+    }
 }
 
 static GPIO_Port_TypeDef get_gpio_port(rt_uint16_t pinNumber)
 {
-    switch ((pinNumber & 0xFF00) >> 8)
+    switch (pinNumber / PIN_COUNT)
     {
     case GPIO_A_PORT:
         return gpioPortA;
@@ -38,13 +53,13 @@ static GPIO_Port_TypeDef get_gpio_port(rt_uint16_t pinNumber)
     case GPIO_F_PORT:
         return gpioPortF;
     default:
-        return RT_NULL;
+        return 0xFF;
     }
 }
 
 static rt_uint8_t get_gpio_pin(rt_uint16_t pinNumber)
 {
-    return pinNumber & 0xFF;
+    return (pinNumber % PIN_COUNT);
 }
 
 static void efm32_pin_write(rt_device_t dev, rt_base_t pinNumber, rt_base_t value)
@@ -115,7 +130,7 @@ rt_err_t efm32_pin_attach_irq(struct rt_device *device, rt_int32_t pinNumber, rt
         GPIO_IntConfig(port, pin, false, true, true);
         break;
     case PIN_IRQ_MODE_RISING_FALLING:
-        GPIO_PinModeSet(port, pin, gpioModeInputPullFilter, 0);
+        GPIO_PinModeSet(port, pin, gpioModeInputPullFilter, 1);
         GPIO_IntConfig(port, pin, true, true, true);
         break;
     case PIN_IRQ_MODE_HIGH_LEVEL:
@@ -142,7 +157,7 @@ rt_err_t efm32_pin_detach_irq(struct rt_device *device, rt_int32_t pinNumber)
 {
     rt_uint8_t pin = get_gpio_pin(pinNumber);
     GPIO_Port_TypeDef port = get_gpio_port(pinNumber);
-    GPIO_PinModeSet(port, pin, gpioModeDisabled, 0);
+    GPIO_IntConfig(port, pin, false, false, false);
     efm32_irq_hook_init_t hook;
     hook.type = efm32_irq_type_gpio;
     hook.unit = pin;
@@ -204,5 +219,25 @@ int rt_hw_pin_init(void)
     return result;
 }
 INIT_BOARD_EXPORT(rt_hw_pin_init);
+
+static void pin_ctl(int argc, char **argv)
+{
+    if (argc < 4)
+    {
+        rt_kprintf("Usage: io_test [gpio group (a ... f)] [gpio number] [0/1]\n");
+    }
+    else
+    {
+        char port = (char)argv[1][0];
+        int pin = strtol(argv[2], NULL, 0);
+        int pin_state = strtol(argv[3], NULL, 0);
+        rt_uint16_t pin_number = get_PinNumber((GPIO_PIN_PORT)(port - 'a'), pin);
+        rt_kprintf("PinNum=%u, State:%d\n", pin_number, pin_state);
+        rt_pin_mode(pin_number, PIN_MODE_OUTPUT);
+        rt_pin_write(pin_number, pin_state);
+    }
+}
+/* 导出到 msh 命令列表中 */
+MSH_CMD_EXPORT(pin_ctl, gpio ctrl);
 
 #endif

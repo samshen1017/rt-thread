@@ -8,15 +8,16 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-rt_err_t bluemod_sr_open(void);                              //open
-void bluemod_sr_close(void);                                 //close
-rt_size_t bluemod_sr_write(const char *data, rt_size_t len); //write
+void bluemodSR_Open(void);                                  //open
+void bluemodSR_Close(void);                                 //close
+rt_size_t bluemodSR_Write(const char *data, rt_size_t len); //write
 
-void bluemod_sr_set_connect_callback(void (*cb)(void));
-void bluemod_sr_set_disconnect_callback(void (*cb)(void));
-void bluemod_sr_set_receive_callback(void (*cb)(const char *data, rt_size_t size));
-rt_err_t bluemod_sr_set_bname(const char *bname); // io_ctrl
+void bluemodSR_SetConnectCallback(void (*cb)(void));
+void bluemodSR_SetDisconnectCallback(void (*cb)(void));
+void bluemodSR_SetReceiveCallback(void (*cb)(const char *data, rt_size_t size));
+rt_err_t bluemodSR_SetBCName(const char *bname); // io_ctrl
+rt_err_t bluemodSR_GetVersion(char *buffer);
 
-rt_err_t rt_hw_bluemod_sr_init(void);
+rt_err_t rt_hw_bluemodSR_init(void);
 
 #endif

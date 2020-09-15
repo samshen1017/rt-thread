@@ -4,11 +4,11 @@
  * 
  * SPDX-License-Identifier: Apache-2.0
  * 
- * File: dev_rx8803.h
- * File Created: Monday, 17th August 2020 03:18:49
+ * File: sen_si114x.h
+ * File Created: Wednesday, 22nd July 2020 04:02:31
  * Author: Sam.Shen (samshen1017@sina.com)
  * 
- * Last Modified: Monday, 14th September 2020 03:32:06
+ * Last Modified: Friday, 31st July 2020 05:55:38
  * Modified By: Sam.Shen (samshen1017@sina.com>)
  * 
  * Automatically generated; DO NOT EDIT.
@@ -18,14 +18,15 @@
  * ----------	---	---------------------------------------------------------
  * ********************************************************************************/
 
-#ifndef DEV_RX8803_H
-#define DEV_RX8803_H
+#ifndef SEN_SI114X_H
+#define SEN_SI114X_H
 
-#include <rtthread.h>
+#include "sensor.h"
 
-rt_err_t rtc_timer_Start(int interval_sec);
-void rtc_timer_Stop(void);
-void rtc_timer_SetTimerCallback(void (*cb)(void *args));
-void rt_hw_rx8803_init(void);
+#define SI114X_INT_PIN_PORT GPIO_D_PORT
+#define SI114X_INT_PIN_NUM 6
 
-#endif /* DRV_RX8803_H */
+int rt_hw_si114x_init(const char *name, struct rt_sensor_config *cfg);
+
+void rt_hw_si114x_detach(rt_sensor_t dev);
+#endif // SEN_SI114X_H

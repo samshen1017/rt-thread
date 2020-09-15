@@ -217,6 +217,19 @@ void Swo_Configuration(void)
     ITM->TCR = 0x10009;
 }
 
+/* reboot */
+void rt_hw_cpu_reset(void)
+{
+    NVIC_SystemReset();
+    RT_ASSERT(0);
+}
+#ifdef RT_USING_FINSH
+FINSH_FUNCTION_EXPORT_ALIAS(rt_hw_cpu_reset, reboot, reset the mcu);
+#endif
+#ifdef FINSH_USING_MSH
+MSH_CMD_EXPORT_ALIAS(rt_hw_cpu_reset, reboot, reset the mcu);
+#endif
+
 /**
  * This function will delay for some us.
  *
@@ -270,6 +283,9 @@ void rt_hw_board_init(void)
     NVIC_Configuration();
 
 #if defined(EFM32_USING_HFXO)
+    /* Enable HFOX */
+    CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+
     /* Configure external oscillator */
     SystemHFXOClockSet(EFM32_HFXO_FREQUENCY);
 
@@ -281,9 +297,16 @@ void rt_hw_board_init(void)
 #endif
 
 #if defined(EFM32_USING_LFXO)
+    /* Enable HFOX */
+    CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+
+    /* Configure external oscillator */
+    SystemLFXOClockSet(EFM32_LFXO_FREQUENCY);
+
     /* LFA LFB using LFXO */
     CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
     CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
+
     /* Turing off LFRCO */
     CMU_OscillatorEnable(cmuOsc_LFRCO, false, false);
 #endif
@@ -295,21 +318,24 @@ void rt_hw_board_init(void)
 
     /* Enable high frequency peripheral clock */
     CMU_ClockEnable(cmuClock_HFPER, true);
-    /* Enabling clock to the interface of the low energy modules */
-    CMU_ClockEnable(cmuClock_CORELE, true);
+
     /* Enable GPIO clock */
     CMU_ClockEnable(cmuClock_GPIO, true);
-    /* Enable RTC clock */
-    CMU_ClockEnable(cmuClock_RTC, true);
 
-    // Configure RTC to 32768Hz.
-    CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_1);
+    /* Enabling clock to the interface of the low energy modules */
+    CMU_ClockEnable(cmuClock_CORELE, true);
 
-    // Setup RTC parameters.
-    RTC_Init_TypeDef rtcInit = RTC_INIT_DEFAULT;
+    // /* Enable RTC clock */
+    // CMU_ClockEnable(cmuClock_RTC, true);
 
-    // Initialize RTC.
-    RTC_Init(&rtcInit);
+    // // Configure RTC to 32768Hz.
+    // CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_1);
+
+    // // Setup RTC parameters.
+    // RTC_Init_TypeDef rtcInit = RTC_INIT_DEFAULT;
+
+    // // Initialize RTC.
+    // RTC_Init(&rtcInit);
 
     /* Configure the SysTick */
     SysTick_Configuration();
@@ -387,7 +413,7 @@ void rt_hw_driver_init(void)
 #endif
 
 #if defined(RT_USING_I2C)
-    rt_hw_i2c_bus_init();
+    rt_hw_iic_init();
 #endif
 
 /* Initialize RTC */
@@ -398,23 +424,19 @@ void rt_hw_driver_init(void)
 #if defined(RT_USING_RX8803)
     rt_hw_rx8803_init();
 #endif
-// #if defined(RT_USING_RTC)
-//     rt_hw_rtc_init();
-// #endif
 
-/* Initialize USB DEVICE*/
-#if defined(RT_USING_USB_DEVICE)
-    rt_hw_usbd_init();
-#endif
+    // #if defined(RT_USING_RTC)
+    //     rt_hw_rtc_init();
+    // #endif
 
-/* Initialize LS027B7DH*/
-#if defined(RT_USING_LS027B7DH)
-    rt_hw_memlcd_init();
-#endif
+    /* Initialize LS027B7DH*/
+    // #if defined(RT_USING_LS027B7DH)
+    //     rt_hw_memlcd_init();
+    // #endif
 
-#if defined(RT_USING_SI114X)
-    rt_hw_si114x_init();
-#endif
+    // #if defined(RT_USING_SI114X)
+    //     rt_hw_si114x_init();
+    // #endif
 
     // #if defined(RT_USING_ZSC31014)
     //     rt_hw_zsc31014_init();

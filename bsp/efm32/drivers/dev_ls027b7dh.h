@@ -10,6 +10,8 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
+void rt_hw_memlcd_clearScreen(void);
+void rt_hw_memlcd_fillMemory(void *buf);
 int rt_hw_memlcd_init(void);
 
-#endif //__DEV_MEMLCD__
+#endif //__DEV_MEMLCD__i

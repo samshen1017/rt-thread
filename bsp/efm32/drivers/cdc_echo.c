@@ -1,4 +1,4 @@
-/***************************************************************************//**
+/***************************************************************************/ /**
  * @file cdc.c
  * @brief USB Communication Device Class (CDC) driver for a VCOM echo
  * application.
@@ -16,16 +16,41 @@
 
 #include "em_usb.h"
 #include "cdc_echo.h"
+#include <rtthread.h>
+#include <rtdevice.h>
+
+#if defined(RT_USING_PM)
+#include "drv_pm.h"
+#define REQUEST_PM                           \
+  do                                         \
+  {                                          \
+    rt_pm_request(PM_SLEEP_MODE_NONE);       \
+    rt_pm_run_enter(PM_RUN_MODE_HIGH_SPEED); \
+  } while (0)
+
+#define RELEASE_PM                          \
+  do                                        \
+  {                                         \
+    rt_pm_run_enter(PM_RUN_MODE_LOW_SPEED); \
+    rt_pm_release(PM_SLEEP_MODE_NONE);      \
+  } while (0)
+#else
+#define REQUEST_PM
+#define RELEASE_PM
+#endif
+
+static efm32_cdc_callback *_cdc_callback = RT_NULL;
 
 // The serial port LINE CODING data structure, used to carry information
 // about serial port baudrate, parity, etc. between host and device.
 SL_PACK_START(1)
-typedef struct {
-  uint32_t dwDTERate;   // Baudrate
-  uint8_t  bCharFormat; // Stop bits: 0 = one stop bit, 1 = 1.5 stop bits, 2 = two stop bits
-  uint8_t  bParityType; // Parity: 0 = none, 1 = odd, 2 = even, 3 = mark, 4 = space
-  uint8_t  bDataBits;   // Data bits: 5, 6, 7, 8, or 16
-  uint8_t  dummy;       // To ensure size is a multiple of 4 bytes
+typedef struct
+{
+  uint32_t dwDTERate;  // Baudrate
+  uint8_t bCharFormat; // Stop bits: 0 = one stop bit, 1 = 1.5 stop bits, 2 = two stop bits
+  uint8_t bParityType; // Parity: 0 = none, 1 = odd, 2 = even, 3 = mark, 4 = space
+  uint8_t bDataBits;   // Data bits: 5, 6, 7, 8, or 16
+  uint8_t dummy;       // To ensure size is a multiple of 4 bytes
 } SL_ATTRIBUTE_PACKED cdcLineCoding_TypeDef;
 SL_PACK_END()
 
@@ -33,17 +58,17 @@ SL_PACK_END()
 SL_ALIGN(4)
 SL_PACK_START(1)
 static cdcLineCoding_TypeDef SL_ATTRIBUTE_ALIGN(4) cdcLineCoding = {
-  115200, // Baud rate
-  0,      // One stop bit
-  0,      // No parity bits
-  8,      // 8 data bits
-  0       // Dummy value to ensure size is a multiple of 4 bytes
+    921600, // Baud rate
+    0,      // One stop bit
+    0,      // No parity bits
+    8,      // 8 data bits
+    0       // Dummy value to ensure size is a multiple of 4 bytes
 };
 SL_PACK_END()
 
 // Note: change this to change the receive buffer size
 // By default, the receive buffer size is same size as the max size of a full speed bulk endpoint
-#define CDC_USB_RX_BUF_SIZE  (USB_FS_BULK_EP_MAXSIZE)
+#define CDC_USB_RX_BUF_SIZE (USB_FS_BULK_EP_MAXSIZE)
 
 // Create a 4-byte aligned uint8_t array for the USB receive buffer
 STATIC_UBUF(usbRxBuffer, CDC_USB_RX_BUF_SIZE);
@@ -55,7 +80,7 @@ static bool usbTxActive;
 static int usbDataReceived(USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining);
 static int usbDataTransmitted(USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining);
 
-/**************************************************************************//**
+/**************************************************************************/ /**
 * @brief
 *    Callback that gets called when the data stage of a CDC_SET_LINECODING
 *    setup command has completed
@@ -75,60 +100,90 @@ static int usbDataTransmitted(USB_Status_TypeDef status, uint32_t xferred, uint3
 *****************************************************************************/
 static int lineCodingReceived(USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining)
 {
- (void) remaining;
+  (void)remaining;
 
- uint32_t frame = 0;
+  uint32_t frame = 0;
 
- // We have received new serial port communication settings from USB host
- if ((status == USB_STATUS_OK) && (xferred == 7)) {
+  // We have received new serial port communication settings from USB host
+  if ((status == USB_STATUS_OK) && (xferred == 7))
+  {
 
-   // Check bDataBits, valid values are: 5, 6, 7, 8 or 16 bits
-   if (cdcLineCoding.bDataBits == 5) {
-     frame |= USART_FRAME_DATABITS_FIVE;
-   } else if (cdcLineCoding.bDataBits == 6) {
-     frame |= USART_FRAME_DATABITS_SIX;
-   } else if (cdcLineCoding.bDataBits == 7) {
-     frame |= USART_FRAME_DATABITS_SEVEN;
-   } else if (cdcLineCoding.bDataBits == 8) {
-     frame |= USART_FRAME_DATABITS_EIGHT;
-   } else if (cdcLineCoding.bDataBits == 16) {
-     frame |= USART_FRAME_DATABITS_SIXTEEN;
-   } else {
-     return USB_STATUS_REQ_ERR;
-   }
+    // Check bDataBits, valid values are: 5, 6, 7, 8 or 16 bits
+    if (cdcLineCoding.bDataBits == 5)
+    {
+      frame |= USART_FRAME_DATABITS_FIVE;
+    }
+    else if (cdcLineCoding.bDataBits == 6)
+    {
+      frame |= USART_FRAME_DATABITS_SIX;
+    }
+    else if (cdcLineCoding.bDataBits == 7)
+    {
+      frame |= USART_FRAME_DATABITS_SEVEN;
+    }
+    else if (cdcLineCoding.bDataBits == 8)
+    {
+      frame |= USART_FRAME_DATABITS_EIGHT;
+    }
+    else if (cdcLineCoding.bDataBits == 16)
+    {
+      frame |= USART_FRAME_DATABITS_SIXTEEN;
+    }
+    else
+    {
+      return USB_STATUS_REQ_ERR;
+    }
 
-   // Check bParityType, valid values are: 0=None 1=Odd 2=Even 3=Mark 4=Space
-   if (cdcLineCoding.bParityType == 0) {
-     frame |= USART_FRAME_PARITY_NONE;
-   } else if (cdcLineCoding.bParityType == 1) {
-     frame |= USART_FRAME_PARITY_ODD;
-   } else if (cdcLineCoding.bParityType == 2) {
-     frame |= USART_FRAME_PARITY_EVEN;
-   } else if (cdcLineCoding.bParityType == 3) {
-     return USB_STATUS_REQ_ERR;
-   } else if (cdcLineCoding.bParityType == 4) {
-     return USB_STATUS_REQ_ERR;
-   } else {
-     return USB_STATUS_REQ_ERR;
-   }
+    // Check bParityType, valid values are: 0=None 1=Odd 2=Even 3=Mark 4=Space
+    if (cdcLineCoding.bParityType == 0)
+    {
+      frame |= USART_FRAME_PARITY_NONE;
+    }
+    else if (cdcLineCoding.bParityType == 1)
+    {
+      frame |= USART_FRAME_PARITY_ODD;
+    }
+    else if (cdcLineCoding.bParityType == 2)
+    {
+      frame |= USART_FRAME_PARITY_EVEN;
+    }
+    else if (cdcLineCoding.bParityType == 3)
+    {
+      return USB_STATUS_REQ_ERR;
+    }
+    else if (cdcLineCoding.bParityType == 4)
+    {
+      return USB_STATUS_REQ_ERR;
+    }
+    else
+    {
+      return USB_STATUS_REQ_ERR;
+    }
 
-   // Check bCharFormat, valid values are: 0=1 1=1.5 2=2 stop bits
-   if (cdcLineCoding.bCharFormat == 0) {
-     frame |= USART_FRAME_STOPBITS_ONE;
-   } else if (cdcLineCoding.bCharFormat == 1) {
-     frame |= USART_FRAME_STOPBITS_ONEANDAHALF;
-   } else if (cdcLineCoding.bCharFormat == 2) {
-     frame |= USART_FRAME_STOPBITS_TWO;
-   } else {
-     return USB_STATUS_REQ_ERR;
-   }
+    // Check bCharFormat, valid values are: 0=1 1=1.5 2=2 stop bits
+    if (cdcLineCoding.bCharFormat == 0)
+    {
+      frame |= USART_FRAME_STOPBITS_ONE;
+    }
+    else if (cdcLineCoding.bCharFormat == 1)
+    {
+      frame |= USART_FRAME_STOPBITS_ONEANDAHALF;
+    }
+    else if (cdcLineCoding.bCharFormat == 2)
+    {
+      frame |= USART_FRAME_STOPBITS_TWO;
+    }
+    else
+    {
+      return USB_STATUS_REQ_ERR;
+    }
 
-   return USB_STATUS_OK;
- }
- return USB_STATUS_REQ_ERR;
+    return USB_STATUS_OK;
+  }
+  return USB_STATUS_REQ_ERR;
 }
 
-/**************************************************************************//**
+/**************************************************************************/ /**
  * @brief
  *    Callback that gets called whenever a USB setup command is received from
  *    the host.
@@ -145,50 +200,50 @@ int cdcSetupCmd(const USB_Setup_TypeDef *setup)
 {
   int retVal = USB_STATUS_REQ_UNHANDLED;
 
-  if ((setup->Type == USB_SETUP_TYPE_CLASS) && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)) {
+  if ((setup->Type == USB_SETUP_TYPE_CLASS) && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE))
+  {
 
     // Determine the type of setup request
-    switch (setup->bRequest) {
+    switch (setup->bRequest)
+    {
 
-      // USB host is trying to get the line coding settings from the device
-      case USB_CDC_GETLINECODING:
-        if ((setup->wValue == 0)
-              && (setup->wIndex == CDC_CTRL_INTERFACE_NO) // Interface number
-              && (setup->wLength == 7)                    // Length of cdcLineCoding
-              && (setup->Direction == USB_SETUP_DIR_IN))  // Transfer direction (from host perspective)
-        {
-          USBD_Write(0, (void*) &cdcLineCoding, 7, NULL); // Send current settings to the host
-          retVal = USB_STATUS_OK;
-        }
-        break;
+    // USB host is trying to get the line coding settings from the device
+    case USB_CDC_GETLINECODING:
+      if ((setup->wValue == 0) && (setup->wIndex == CDC_CTRL_INTERFACE_NO) // Interface number
+          && (setup->wLength == 7)                                         // Length of cdcLineCoding
+          && (setup->Direction == USB_SETUP_DIR_IN))                       // Transfer direction (from host perspective)
+      {
+        USBD_Write(0, (void *)&cdcLineCoding, 7, NULL); // Send current settings to the host
+        retVal = USB_STATUS_OK;
+      }
+      break;
 
-      // USB host is trying to set the device's line coding settings
-      case USB_CDC_SETLINECODING:
-        if ((setup->wValue == 0)
-              && (setup->wIndex == CDC_CTRL_INTERFACE_NO) // Interface number
-              && (setup->wLength == 7)                    // Length of cdcLineCoding
-              && (setup->Direction == USB_SETUP_DIR_OUT)) // Transfer direction (from host perspective)
-        {
-          USBD_Read(0, (void*) &cdcLineCoding, 7, lineCodingReceived); // Get new settings from the host
-          retVal = USB_STATUS_OK;
-        }
-        break;
+    // USB host is trying to set the device's line coding settings
+    case USB_CDC_SETLINECODING:
+      if ((setup->wValue == 0) && (setup->wIndex == CDC_CTRL_INTERFACE_NO) // Interface number
+          && (setup->wLength == 7)                                         // Length of cdcLineCoding
+          && (setup->Direction == USB_SETUP_DIR_OUT))                      // Transfer direction (from host perspective)
+      {
+        USBD_Read(0, (void *)&cdcLineCoding, 7, lineCodingReceived); // Get new settings from the host
+        retVal = USB_STATUS_OK;
+      }
+      break;
 
-      // RS-232 signal used to tell the DCE device the DTE device is now present
-      case USB_CDC_SETCTRLLINESTATE:
-        if ((setup->wIndex == CDC_CTRL_INTERFACE_NO) // Interface number
-              && (setup->wLength == 0))              // No data
-        {
-          retVal = USB_STATUS_OK; // Do nothing (non-compliant behaviour)
-        }
-        break;
+    // RS-232 signal used to tell the DCE device the DTE device is now present
+    case USB_CDC_SETCTRLLINESTATE:
+      if ((setup->wIndex == CDC_CTRL_INTERFACE_NO) // Interface number
+          && (setup->wLength == 0))                // No data
+      {
+        retVal = USB_STATUS_OK; // Do nothing (non-compliant behaviour)
+      }
+      break;
     }
   }
 
   return retVal;
 }
 
-/**************************************************************************//**
+/**************************************************************************/ /**
  * @brief
  *    Callback that gets called each time the USB device state is changed.
  *    Also starts CDC operation once the device has been configured by the
@@ -214,30 +269,52 @@ int cdcSetupCmd(const USB_Setup_TypeDef *setup)
  *****************************************************************************/
 void cdcStateChangeEvent(USBD_State_TypeDef oldState, USBD_State_TypeDef newState)
 {
+  // rt_kprintf("cdcStateChangeEvent %d ,%d\n", oldState, newState);
+  if (newState == USBD_STATE_POWERED)
+  {
+    REQUEST_PM;
+    if (_cdc_callback != RT_NULL)
+    {
+      _cdc_callback->connected();
+    }
+  }
+  if (newState == USBD_STATE_NONE)
+  {
+    if (_cdc_callback != RT_NULL)
+    {
+      _cdc_callback->disconnect();
+    }
+    RELEASE_PM;
+  }
   // If the USB device was configured
-  if (newState == USBD_STATE_CONFIGURED) {
+  if (newState == USBD_STATE_CONFIGURED)
+  {
 
     // If we transitioned from the suspended state to the configured state due to bus activity
-    if (oldState == USBD_STATE_SUSPENDED) {} // Currently does nothing
+    if (oldState == USBD_STATE_SUSPENDED)
+    {
+    } // Currently does nothing
 
     // Initially, we are waiting to receive data from the USB host over USB
     usbTxActive = false;
 
     // Setup a new USB receive transfer on the USB host's OUT endpoint
-    USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer,
+    USBD_Read(CDC_EP_DATA_OUT, (void *)usbRxBuffer,
               CDC_USB_RX_BUF_SIZE, usbDataReceived);
   }
   // Else if we have been de-configured
-  else if ((oldState == USBD_STATE_CONFIGURED) && (newState != USBD_STATE_SUSPENDED)) {
+  else if ((oldState == USBD_STATE_CONFIGURED) && (newState != USBD_STATE_SUSPENDED))
+  {
     // Currently nothing is done here
   }
   // Else if we have been suspended
-  else if (newState == USBD_STATE_SUSPENDED) {
+  else if (newState == USBD_STATE_SUSPENDED)
+  {
     // Currently nothing is done here
   }
 }
 
-/**************************************************************************//**
+/**************************************************************************/ /**
  * @brief
  *    Callback function that gets called whenever data is received from the
  *    host over USB
@@ -256,28 +333,29 @@ void cdcStateChangeEvent(USBD_State_TypeDef oldState, USBD_State_TypeDef newStat
  *****************************************************************************/
 static int usbDataReceived(USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining)
 {
-  (void) remaining; // Unused parameter
+  (void)remaining; // Unused parameter
 
   // If the status is OK and we actually received data
-  if ((status == USB_STATUS_OK) && (xferred > 0)) {
+  if ((status == USB_STATUS_OK) && (xferred > 0))
+  {
 
     // If the TX line is not busy, we can send a new USB packet
-    if (!usbTxActive) {
-
-      // Setup a USB transmit transfer
-      usbTxActive = true;
-      USBD_Write(CDC_EP_DATA_IN, (void*) usbRxBuffer,
-          xferred, usbDataTransmitted);
-
+    if (!usbTxActive)
+    {
+      if (_cdc_callback != RT_NULL)
+      {
+        _cdc_callback->receiveCallback(usbRxBuffer, CDC_USB_RX_BUF_SIZE);
+      }
+      rt_memset(usbRxBuffer, 0, CDC_USB_RX_BUF_SIZE);
       // Setup a new USB receive transfer
-      USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer,
-          CDC_USB_RX_BUF_SIZE, usbDataReceived);
+      USBD_Read(CDC_EP_DATA_OUT, (void *)usbRxBuffer,
+                CDC_USB_RX_BUF_SIZE, usbDataReceived);
     }
   }
   return USB_STATUS_OK;
 }
 
-/**************************************************************************//**
+/**************************************************************************/ /**
  * @brief
  *    Callback function that gets called whenever a packet with data has
  *    been transmitted over USB to the USB host
@@ -296,14 +374,50 @@ static int usbDataReceived(USB_Status_TypeDef status, uint32_t xferred, uint32_t
  *****************************************************************************/
 static int usbDataTransmitted(USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining)
 {
-  (void) xferred;   // Unused parameter
-  (void) remaining; // Unused parameter
+  (void)xferred;   // Unused parameter
+  (void)remaining; // Unused parameter
 
   // Mark that the USB transmit transaction has been completed
-  if (status == USB_STATUS_OK) {
+  if (status == USB_STATUS_OK)
+  {
     usbTxActive = false;
   }
 
   return USB_STATUS_OK;
 }
 
+size_t cdcWrite(void *usbTxBuf, size_t xferred)
+{
+  // Setup a USB transmit transfer
+  usbTxActive = true;
+  int result;
+
+  /* USBD_Write需要四个字节对齐, 用于补齐4个字节*/
+  int ext_len = 4 - xferred % 4;
+
+  /* 补齐后需要发送的字节数*/
+  int tx_len = xferred + (ext_len == 4 ? 0 : ext_len);
+
+  /* 当发送正好为64byte的倍数时，会被USBD_Write缓冲，而无法发送，所以增加4个字节，完成发送 */
+  if ((tx_len % 64) == 0)
+  {
+    tx_len += 4;
+  }
+
+  result = USBD_Write(CDC_EP_DATA_IN, usbTxBuf, tx_len, usbDataTransmitted);
+  if (result != USB_STATUS_OK)
+  {
+    return 0;
+  }
+  return xferred;
+}
+
+void cdcCallbackRegister(efm32_cdc_callback *cb)
+{
+  _cdc_callback = cb;
+}
+
+// void cdcRxCallbackRegister(void (*_rxcb)(const void *usbRxBuffer, size_t xferred))
+// {
+//   rxcb = _rxcb;
+// }

@@ -8,7 +8,7 @@
  * File Created: Wednesday, 19th February 2020 09:46:56
  * Author: Sam.Shen (samshen1017@sina.com)
  * 
- * Last Modified: Thursday, 26th March 2020 10:30:22
+ * Last Modified: Thursday, 23rd July 2020 05:07:06
  * Modified By: Sam.Shen (samshen1017@sina.com>)
  * 
  * Automatically generated; DO NOT EDIT.
@@ -21,8 +21,10 @@
 #include "dev_nand.h"
 #include <drivers/mtd_nand.h>
 #include "board.h"
+#if defined(RT_USING_DFS)
 #include "dfs_uffs.h"
 #include "dfs_posix.h"
+#endif
 
 #if defined(RT_USING_EXT_NAND)
 #define NANDFLASH_DEBUG
@@ -34,24 +36,24 @@
 
 static struct efm32gg_nandflash _nand;
 
-// #if defined(RT_USING_PM)
-// #define REQUEST_PM                               \
-//     do                                           \
-//     {                                            \
-//         rt_pm_run_enter(PM_RUN_MODE_HIGH_SPEED); \
-//         rt_pm_release(PM_SLEEP_MODE_DEEP);       \
-//     } while (0)
+#if defined(RT_USING_PM)
+#define REQUEST_PM                               \
+    do                                           \
+    {                                            \
+        rt_pm_request(PM_SLEEP_MODE_NONE);       \
+        rt_pm_run_enter(PM_RUN_MODE_HIGH_SPEED); \
+    } while (0)
 
-// #define RELEASE_PM                              \
-//     do                                          \
-//     {                                           \
-//         rt_pm_run_enter(PM_RUN_MODE_LOW_SPEED); \
-//         rt_pm_request(PM_SLEEP_MODE_DEEP);      \
-//     } while (0)
-// #else
+#define RELEASE_PM                              \
+    do                                          \
+    {                                           \
+        rt_pm_release(PM_SLEEP_MODE_NONE);      \
+        rt_pm_run_enter(PM_RUN_MODE_LOW_SPEED); \
+    } while (0)
+#else
 #define REQUEST_PM
 #define RELEASE_PM
-// #endif
+#endif
 
 static void completion_callback(unsigned int channel, bool primary, void *user)
 {
@@ -668,6 +670,7 @@ void rt_hw_mtd_nand_init(void)
     rt_mtd_nand_register_device("nand1", &_partition[1]);
 }
 
+#if defined(RT_USING_DFS)
 void uffs_init(void)
 {
     rt_err_t ret;
@@ -743,6 +746,7 @@ void uffs_auto_mount(void)
     uffs_init();
     uffs_mount();
 }
+#endif
 
 void nid(void)
 {

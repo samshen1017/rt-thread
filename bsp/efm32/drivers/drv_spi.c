@@ -191,6 +191,53 @@ static rt_uint32_t spiDmaXfer(struct rt_spi_device *device, struct rt_spi_messag
     spi_debug("spi xfer:%d\n", message->length);
     return message->length;
 }
+#else
+static rt_uint32_t spiXfer(struct rt_spi_device *device, struct rt_spi_message *message)
+{
+
+    rt_err_t err_code;
+    RT_ASSERT(device != RT_NULL);
+    RT_ASSERT(device->bus != RT_NULL);
+    RT_ASSERT(device->bus->parent.user_data != RT_NULL);
+    struct efm32_spi *hspi = (struct efm32_spi *)(device->bus->parent.user_data);
+    struct efm32_hw_spi_cs *cs = device->parent.user_data;
+    if (message->cs_take)
+    {
+        rt_pin_write(cs->pin, cs->select_by_high);
+    }
+    const rt_uint8_t *sndb = message->send_buf;
+    rt_uint8_t *rcvb = message->recv_buf;
+    rt_int32_t length = message->length;
+    err_code = rt_sem_take(hspi->lock, RT_WAITING_FOREVER);
+    if (err_code != RT_EOK)
+    {
+        spi_debug("rt_sem_take failed.\n");
+        return 0;
+    }
+    while (length)
+    {
+
+        rt_uint8_t txbuf = 0xff;
+        int index = message->length - length;
+        if (sndb != RT_NULL)
+        {
+            txbuf = sndb[index];
+        }
+        USART_Tx(hspi->Instance, txbuf);
+        while (!(hspi->Instance->STATUS & USART_STATUS_TXC))
+            ;
+        rcvb[index] = USART_Rx(hspi->Instance);
+        length--;
+    }
+    rt_sem_release(hspi->lock);
+    rt_set_errno(err_code);
+    if (message->cs_release)
+    {
+
+        rt_pin_write(cs->pin, !cs->select_by_high);
+    }
+    return message->length - length;
+}
 #endif
 
 static void efm32_spi_unit_init(SPI_TypeDef *spix, rt_uint8_t location)
@@ -373,53 +420,6 @@ static rt_err_t efm32_spi_init(struct rt_spi_device *device)
     return RT_EOK;
 }
 
-static rt_uint32_t spiXfer(struct rt_spi_device *device, struct rt_spi_message *message)
-{
-
-    rt_err_t err_code;
-    RT_ASSERT(device != RT_NULL);
-    RT_ASSERT(device->bus != RT_NULL);
-    RT_ASSERT(device->bus->parent.user_data != RT_NULL);
-    struct efm32_spi *hspi = (struct efm32_spi *)(device->bus->parent.user_data);
-    struct efm32_hw_spi_cs *cs = device->parent.user_data;
-    if (message->cs_take)
-    {
-        rt_pin_write(cs->pin, cs->select_by_high);
-    }
-    const rt_uint8_t *sndb = message->send_buf;
-    rt_uint8_t *rcvb = message->recv_buf;
-    rt_int32_t length = message->length;
-    err_code = rt_sem_take(hspi->lock, RT_WAITING_FOREVER);
-    if (err_code != RT_EOK)
-    {
-        spi_debug("rt_sem_take failed.\n");
-        return 0;
-    }
-    while (length)
-    {
-
-        rt_uint8_t txbuf = 0xff;
-        int index = message->length - length;
-        if (sndb != RT_NULL)
-        {
-            txbuf = sndb[index];
-        }
-        USART_Tx(hspi->Instance, txbuf);
-        while (!(hspi->Instance->STATUS & USART_STATUS_TXC))
-            ;
-        rcvb[index] = USART_Rx(hspi->Instance);
-        length--;
-    }
-    rt_sem_release(hspi->lock);
-    rt_set_errno(err_code);
-    if (message->cs_release)
-    {
-
-        rt_pin_write(cs->pin, !cs->select_by_high);
-    }
-    return message->length - length;
-}
-
 rt_err_t spi_configure(struct rt_spi_device *device, struct rt_spi_configuration *configuration)
 {
     RT_ASSERT(device != RT_NULL);
@@ -451,13 +451,11 @@ rt_err_t efm32_spi_register_bus(SPI_TypeDef *SPIx, const char *name, int locatio
 
     hspi->location = location;
     hspi->Instance = SPIx;
-    char sem_name[12] = {0};
-    sprintf(sem_name, "s_%s", name);
 
     hspi->lock = (struct rt_semaphore *)rt_malloc(sizeof(struct rt_semaphore));
     RT_ASSERT(hspi->lock != RT_NULL);
 
-    if (rt_sem_init(hspi->lock, sem_name, 1, RT_IPC_FLAG_FIFO) != RT_EOK)
+    if (rt_sem_init(hspi->lock, name, 1, RT_IPC_FLAG_FIFO) != RT_EOK)
     {
         rt_kprintf("rt sem init failed!\n");
         while (1)

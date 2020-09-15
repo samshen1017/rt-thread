@@ -23,6 +23,7 @@ struct efm32_uart
     //struct rt_serial_rx_fifo rx_fifo;
 };
 
+void rt_hw_serial_enable(const char *serialName, rt_bool_t enable);
 void rt_hw_serial_init(void);
 
 #endif //__DRV_SERIAL_H__
