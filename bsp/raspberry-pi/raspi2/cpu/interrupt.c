@@ -1,11 +1,7 @@
 /*
- * File      : interrupt.c
- * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2013-2014, RT-Thread Development Team
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
- * The license and distribution terms for this file may be
- * found in the file LICENSE in this distribution or at
- * http://www.rt-thread.org/license/LICENSE
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
@@ -29,7 +25,13 @@ rt_uint32_t rt_interrupt_from_thread;
 rt_uint32_t rt_interrupt_to_thread;
 rt_uint32_t rt_thread_switch_interrupt_flag;
 
+extern void rt_cpu_vector_set_base(unsigned int addr);
 extern int system_vectors;
+
+void rt_hw_vector_init(void)
+{
+    rt_cpu_vector_set_base((unsigned int)&system_vectors);
+}
 
 static void default_isr_handler(int vector, void *param)
 {

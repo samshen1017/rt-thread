@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2018, RT-Thread Development Team
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -191,7 +191,7 @@ static int finsh_compile(struct finsh_node* node)
         case FINSH_NODE_VALUE_NULL:
         case FINSH_NODE_VALUE_STRING:
             finsh_code_byte(FINSH_OP_LD_DWORD);
-            finsh_code_dword((uint32_t)node->value.ptr);
+            finsh_code_dword((rt_ubase_t)node->value.ptr);
             break;
 
         /* arithmetic operation */

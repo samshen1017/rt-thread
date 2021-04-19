@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2006-2021, RT-Thread Development Team
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ */
+
 #include <rtthread.h>
 #include <string.h>
 
@@ -229,8 +238,8 @@ static void tcpserver_test(int argc, char** argv)
         {
             if (started)
             {
-                LOG_I("The tcpclient has started!");
-                LOG_I("Please stop tcpclient firstly, by: tcpclient --stop");
+                LOG_I("The tcpserver has started!");
+                LOG_I("Please stop tcpserver firstly, by: tcpserver --stop");
                 return;
             }
 

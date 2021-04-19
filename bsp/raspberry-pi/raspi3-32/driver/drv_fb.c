@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2019, RT-Thread Development Team
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -205,20 +205,6 @@ void clear_line(fb_t *fb, const int line)
 
 }
 
-void clear(fb_t *fb, const uint32_t color)
-{
-
-    uint32_t *addr = (uint32_t*) fb->addr;
-    uint32_t i;
-    for (i = 0; i < (fb->height * fb->width); i++)
-    {
-        *addr++ = color;
-    }
-    fb->x = 0;
-    fb->y = 0;
-
-}
-
 void fb_draw_char(fb_t *fb, char s)
 {
     unsigned char* addr = (unsigned char*) fb->addr;
@@ -320,7 +306,7 @@ rt_err_t hdmi_fb_control(rt_device_t dev, int cmd, void *args)
     return RT_EOK;
 }
 
-const static struct rt_device_ops hdmi_fb_ops = 
+const static struct rt_device_ops hdmi_fb_ops =
 {
     RT_NULL,
     hdmi_fb_open,
@@ -382,7 +368,7 @@ static void hdmi_blit_line(const char* pixels, int x, int y, rt_size_t size)
     }
 }
 
-static struct rt_device_graphic_ops hdmi_ops = 
+static struct rt_device_graphic_ops hdmi_ops =
 {
     hdmi_set_pixel,
     hdmi_get_pixel,
